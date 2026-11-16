@@ -1,11 +1,10 @@
-# Turkish Type Designers Index
+# Yazı Tasarımcıları ve Yazıevleri — Türkiye
 
 **Türkiye menşeli yazı tasarımcıları ve bağımsız yazıevleri için yaşayan, açık ve editoryal bir dijital dizin.**
 
 Bu proje, [Türkçe Tipografi Topluluğu](https://tipografitoplulugu.github.io/bulten-arsivi/) tarafından Türkiye'den yazı tasarımcılarını, bağımsız yazıevlerini (type foundries) ve özgün yazı tasarımı üretimlerini belgelemek, görünür kılmak ve tipografi araştırmacılarına derli toplu bir başvuru kaynağı sunmak amacıyla hazırlanmıştır.
 
 - **Canlı Site:** [https://tipografitoplulugu.github.io/turkish-type-index/](https://tipografitoplulugu.github.io/turkish-type-index/)
-- **Veri Kaynağı:** [Dropmark — Yazı Tasarımcıları ve Yazıevleri (Türkiye)](https://tipografi.dropmark.com/1262690)
 - **Kardeş Proje:** [Tipografi Bülteni Arşivi](https://tipografitoplulugu.github.io/bulten-arsivi/)
 
 ---
@@ -41,7 +40,7 @@ Sitenin görsel dili, arayüzü ve tipografisi, **Tipografi Bülteni Arşivi** i
 
 3. **Alfabetik Sıralama:**
    - Türkçe alfabesine (`Intl.Collator('tr')`) tam uyumlu A → Z ve Z → A sıralama.
-   - Orijinal Dropmark dizin sırasına tek tıkla dönüş.
+   - Orijinal dizin sırasına tek tıkla dönüş.
 
 4. **URL Senkronizasyonu:**
    - Arama sorguları ve kategori filtreleri URL parametreleriyle (`?q=...&category=...`) otomatik senkronize edilir; filtreli görünümler doğrudan paylaşılabilir.
@@ -104,8 +103,8 @@ Proje, GitHub Pages için statik olarak tamamen hazırdır:
 
 Dizinde eksik olan veya güncellenmesi gereken bir Türk yazı tasarımcısı veya bağımsız yazıevi olduğunu düşünüyorsanız:
 
-1. [Dropmark Koleksiyonu](https://tipografi.dropmark.com/1262690) üzerinden öneri bırakabilir,
-2. Veya bir GitHub Issue / Pull Request açarak `data/index.json` dosyasına katkıda bulunabilirsiniz.
+- Bir GitHub Issue veya Pull Request açarak `data/index.json` dosyasına katkıda bulunabilir,
+- Veya [Türkçe Tipografi Topluluğu](https://tipografitoplulugu.github.io/bulten-arsivi/) üzerinden iletişime geçebilirsiniz.
 
 ---
 

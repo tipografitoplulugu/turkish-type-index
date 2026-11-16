@@ -1,5 +1,5 @@
 /**
- * Turkish Type Designers Index (app.js)
+ * Yazı Tasarımcıları ve Yazıevleri — Türkiye (app.js)
  * Türkçe Tipografi Topluluğu
  * 
  * İstemci taraflı canlı arama, kategori filtreleme, alfabetik sıralama,
