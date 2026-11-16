@@ -257,45 +257,6 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   line-height: 1.72;
 }
 
-.hero-intro-row {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 1.5rem;
-  flex-wrap: wrap;
-}
-
-.add-designer-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: .45rem;
-  padding: .55rem 1rem;
-  border: 1px solid var(--line-strong);
-  border-radius: 12px;
-  background: var(--surface);
-  color: var(--ink);
-  font-family: "DM Mono", monospace;
-  font-size: .84rem;
-  font-weight: 500;
-  text-decoration: none;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: border-color 140ms ease, background-color 140ms ease, color 140ms ease;
-  user-select: none;
-  margin-bottom: .2rem;
-}
-
-.add-designer-btn svg {
-  stroke: currentColor;
-  flex-shrink: 0;
-}
-
-.add-designer-btn:hover {
-  border-color: var(--focus);
-  background: var(--surface-subtle);
-  color: var(--link);
-}
-
 .footer-add-link a {
   font-family: "DM Mono", monospace;
   color: var(--link);
@@ -987,17 +948,6 @@ mark.search-hit {
 
   .hero-copy {
     font-size: 1rem;
-  }
-
-  .hero-intro-row {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1.1rem;
-  }
-
-  .add-designer-btn {
-    width: 100%;
-    justify-content: center;
   }
 
   .archive-brand-header {
