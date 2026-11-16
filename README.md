@@ -52,9 +52,27 @@ Sitenin görsel dili, arayüzü ve tipografisi, **Tipografi Bülteni Arşivi** i
 
 ---
 
-## Dizin Veri Yapısı (`data/index.json`)
+## Yeni Yazı Tasarımcısı veya Yazıevi Ekleme
 
-Tüm kayıtlar `data/index.json` dosyası içerisinde düzenli bir yapıda tutulur. Yeni bir tasarımcı veya yazıevi eklemek için bu dosyaya yeni bir nesne eklemek yeterlidir:
+Dropmark'a ihtiyaç duymadan yeni kayıt eklemenin **3 çok kolay yolu** bulunmaktadır:
+
+### 1. Terminal Sihirbazı ile (En Hızlı — Önerilen)
+Terminalde sadece şu komutu çalıştırın:
+
+```bash
+python3 add.py
+```
+
+Sihirbaz size adım adım tasarımcı adını, web sitesini, kategorisini sorar; varsa görseli otomatik indirip kaydeder, `data/index.json` dosyasını ve istatistik sayaçlarını anında günceller. Ardından GitHub Desktop'tan **Push origin** demeniz yeterlidir.
+
+### 2. Web Formu ile (`ekle.html`)
+Terminal kullanmak istemiyorsanız, proje klasöründeki [ekle.html](file:///Users/muraterturk/Downloads/turkish-type-index/ekle.html) dosyasını tarayıcınızda açın:
+- Formu doldurun.
+- Canlı kart önizlemesini anında görün.
+- **"Güncel data/index.json Dosyasını İndir"** butonuna basıp indirilen dosyayı `data/` klasörüne atın.
+
+### 3. Doğrudan `data/index.json` Dosyasını Düzenleyerek
+Dilerseniz doğrudan `data/index.json` içerisindeki `items` listesinin sonuna yeni bir kayıt objesi ekleyebilirsiniz:
 
 ```json
 {
@@ -69,7 +87,7 @@ Tüm kayıtlar `data/index.json` dosyası içerisinde düzenli bir yapıda tutul
   "domain": "ornek-yazi-tasarimci.com",
   "platform": "Web Sitesi",
   "description": "Kısa açıklama metni (varsa)",
-  "image": "assets/thumbnails/item_45.jpg"
+  "image": null
 }
 ```
 
