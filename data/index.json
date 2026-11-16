@@ -1,0 +1,871 @@
+{
+  "title": "Turkish Type Designers Index",
+  "subtitle": "Türkiye'den yazı tasarımcılarını, bağımsız yazıevlerini ve özgün yazı tasarımı üretimlerini bir araya getiren açık bir dizin.",
+  "source": "https://tipografi.dropmark.com/1262690",
+  "updated_at": "2026-11-16",
+  "total_count": 44,
+  "designers_count": 42,
+  "foundries_count": 14,
+  "items": [
+    {
+      "id": "01-tamer-koseli",
+      "index": 1,
+      "name": "Tamer Köşeli",
+      "designer": "Tamer Köşeli",
+      "studio": null,
+      "categories": [
+        "designer"
+      ],
+      "category_labels": [
+        "Yazı Tasarımcısı"
+      ],
+      "link": "https://www.myfonts.com/collections/tamer-koseli-foundry",
+      "domain": "myfonts.com",
+      "platform": "MyFonts",
+      "description": "",
+      "image": "assets/thumbnails/item_01.jpg",
+      "dropmark_id": 37103057
+    },
+    {
+      "id": "02-vignette-studio-melih-ucan-ve-reyhan-fidan",
+      "index": 2,
+      "name": "Vignette Studio (Melih Uçan ve Reyhan Fidan)",
+      "designer": "Melih Uçan ve Reyhan Fidan",
+      "studio": "Vignette Studio",
+      "categories": [
+        "foundry",
+        "designer"
+      ],
+      "category_labels": [
+        "Yazı Tasarımcısı",
+        "Yazıevi"
+      ],
+      "link": "https://vignettetype.com",
+      "domain": "vignettetype.com",
+      "platform": "Web Sitesi",
+      "description": "",
+      "image": "assets/thumbnails/item_02.jpg",
+      "dropmark_id": 36935667
+    },
+    {
+      "id": "03-talha-akcay",
+      "index": 3,
+      "name": "Talha Akçay",
+      "designer": "Talha Akçay",
+      "studio": "TypeoType",
+      "categories": [
+        "designer",
+        "foundry"
+      ],
+      "category_labels": [
+        "Yazı Tasarımcısı",
+        "Yazıevi"
+      ],
+      "link": "https://www.typeotype.com",
+      "domain": "typeotype.com",
+      "platform": "Web Sitesi",
+      "description": "",
+      "image": "assets/thumbnails/item_03.jpg",
+      "dropmark_id": 36340627
+    },
+    {
+      "id": "04-ruslan-abasov",
+      "index": 4,
+      "name": "Ruslan Abasov",
+      "designer": "Ruslan Abasov",
+      "studio": null,
+      "categories": [
+        "designer"
+      ],
+      "category_labels": [
+        "Yazı Tasarımcısı"
+      ],
+      "link": "https://ruslanabasov.com/TYPE-SHOP",
+      "domain": "ruslanabasov.com",
+      "platform": "Web Sitesi",
+      "description": "",
+      "image": "assets/thumbnails/item_04.jpg",
+      "dropmark_id": 35725871
+    },
+    {
+      "id": "05-christopher-colak",
+      "index": 5,
+      "name": "Christopher Çolak",
+      "designer": "Christopher Çolak",
+      "studio": null,
+      "categories": [
+        "designer"
+      ],
+      "category_labels": [
+        "Yazı Tasarımcısı"
+      ],
+      "link": "https://sergi.gmk.org.tr/?author=723",
+      "domain": "sergi.gmk.org.tr",
+      "platform": "GMK Sergi",
+      "description": "",
+      "image": "assets/thumbnails/item_05.jpg",
+      "dropmark_id": 34688082
+    },
+    {
+      "id": "06-tugrul-peker",
+      "index": 6,
+      "name": "Tuğrul Peker",
+      "designer": "Tuğrul Peker",
+      "studio": null,
+      "categories": [
+        "designer"
+      ],
+      "category_labels": [
+        "Yazı Tasarımcısı"
+      ],
+      "link": "https://www.myfonts.com/collections/tugrul-peker",
+      "domain": "myfonts.com",
+      "platform": "MyFonts",
+      "description": "",
+      "image": "assets/thumbnails/item_06.jpg",
+      "dropmark_id": 34577726
+    },
+    {
+      "id": "07-yaprak-buse-caglar",
+      "index": 7,
+      "name": "Yaprak Buse Çağlar",
+      "designer": "Yaprak Buse Çağlar",
+      "studio": "Typolea",
+      "categories": [
+        "designer",
+        "foundry"
+      ],
+      "category_labels": [
+        "Yazı Tasarımcısı",
+        "Yazıevi"
+      ],
+      "link": "https://typolea.com",
+      "domain": "typolea.com",
+      "platform": "Web Sitesi",
+      "description": "",
+      "image": "assets/thumbnails/item_07.jpg",
+      "dropmark_id": 34177664
+    },
+    {
+      "id": "08-element-type-i-brahim-kactioglu-ve-dogukan-karapinar",
+      "index": 8,
+      "name": "Element Type (İbrahim Kaçtıoğlu ve Doğukan Karapınar)",
+      "designer": "İbrahim Kaçtıoğlu ve Doğukan Karapınar",
+      "studio": "Element Type",
+      "categories": [
+        "foundry",
+        "designer"
+      ],
+      "category_labels": [
+        "Yazı Tasarımcısı",
+        "Yazıevi"
+      ],
+      "link": "https://elementtype.co",
+      "domain": "elementtype.co",
+      "platform": "Web Sitesi",
+      "description": "",
+      "image": "assets/thumbnails/item_08.jpg",
+      "dropmark_id": 34076862
+    },
+    {
+      "id": "09-i-smail-aydin",
+      "index": 9,
+      "name": "İsmail Aydın",
+      "designer": "İsmail Aydın",
+      "studio": null,
+      "categories": [
+        "designer"
+      ],
+      "category_labels": [
+        "Yazı Tasarımcısı"
+      ],
+      "link": "https://www.myfonts.com/collections/fontuma-foundry",
+      "domain": "myfonts.com",
+      "platform": "MyFonts",
+      "description": "",
+      "image": "assets/thumbnails/item_09.jpg",
+      "dropmark_id": 34051573
+    },
+    {
+      "id": "10-osman-nuri-alkan",
+      "index": 10,
+      "name": "Osman Nuri Alkan",
+      "designer": "Osman Nuri Alkan",
+      "studio": null,
+      "categories": [
+        "designer"
+      ],
+      "category_labels": [
+        "Yazı Tasarımcısı"
+      ],
+      "link": "https://www.myfonts.com/collections/osman-nuri-alkan",
+      "domain": "myfonts.com",
+      "platform": "MyFonts",
+      "description": "",
+      "image": "assets/thumbnails/item_10.jpg",
+      "dropmark_id": 33722771
+    },
+    {
+      "id": "11-zeynep-akay",
+      "index": 11,
+      "name": "Zeynep Akay",
+      "designer": "Zeynep Akay",
+      "studio": null,
+      "categories": [
+        "designer"
+      ],
+      "category_labels": [
+        "Yazı Tasarımcısı"
+      ],
+      "link": "https://fonts.google.com/specimen/Rakkas",
+      "domain": "fonts.google.com",
+      "platform": "Google Fonts",
+      "description": "",
+      "image": "assets/thumbnails/item_11.jpg",
+      "dropmark_id": 33581728
+    },
+    {
+      "id": "12-yasin-yalcin",
+      "index": 12,
+      "name": "Yasin Yalçın",
+      "designer": "Yasin Yalçın",
+      "studio": null,
+      "categories": [
+        "designer"
+      ],
+      "category_labels": [
+        "Yazı Tasarımcısı"
+      ],
+      "link": "https://creativemarket.com/yasinyalcin",
+      "domain": "creativemarket.com",
+      "platform": "Creative Market",
+      "description": "",
+      "image": "assets/thumbnails/item_12.jpg",
+      "dropmark_id": 33481466
+    },
+    {
+      "id": "13-koray-ozbey",
+      "index": 13,
+      "name": "Koray Özbey",
+      "designer": "Koray Özbey",
+      "studio": null,
+      "categories": [
+        "designer"
+      ],
+      "category_labels": [
+        "Yazı Tasarımcısı"
+      ],
+      "link": "https://www.myfonts.com/collections/koray-ozbey-foundry",
+      "domain": "myfonts.com",
+      "platform": "MyFonts",
+      "description": "",
+      "image": "assets/thumbnails/item_13.jpg",
+      "dropmark_id": 33267949
+    },
+    {
+      "id": "14-tugrul-mustafa-gunaydin",
+      "index": 14,
+      "name": "Tuğrul Mustafa Günaydın",
+      "designer": "Tuğrul Mustafa Günaydın",
+      "studio": null,
+      "categories": [
+        "designer"
+      ],
+      "category_labels": [
+        "Yazı Tasarımcısı"
+      ],
+      "link": "https://www.myfonts.com/collections/tugrul-mustafa-gunaydin-foundry",
+      "domain": "myfonts.com",
+      "platform": "MyFonts",
+      "description": "",
+      "image": "assets/thumbnails/item_14.jpg",
+      "dropmark_id": 33117153
+    },
+    {
+      "id": "15-burcin-canbay",
+      "index": 15,
+      "name": "Burçin Canbay",
+      "designer": "Burçin Canbay",
+      "studio": null,
+      "categories": [
+        "designer"
+      ],
+      "category_labels": [
+        "Yazı Tasarımcısı"
+      ],
+      "link": "https://www.myfonts.com/collections/bc-away-font-egg-fonts",
+      "domain": "myfonts.com",
+      "platform": "MyFonts",
+      "description": "",
+      "image": "assets/thumbnails/item_15.jpg",
+      "dropmark_id": 32922798
+    },
+    {
+      "id": "16-abdullah-tasci",
+      "index": 16,
+      "name": "Abdullah Taşcı",
+      "designer": "Abdullah Taşcı",
+      "studio": null,
+      "categories": [
+        "designer"
+      ],
+      "category_labels": [
+        "Yazı Tasarımcısı"
+      ],
+      "link": "https://www.myfonts.com/collections/abdullah-tasci-foundry",
+      "domain": "myfonts.com",
+      "platform": "MyFonts",
+      "description": "",
+      "image": "assets/thumbnails/item_16.jpg",
+      "dropmark_id": 32694309
+    },
+    {
+      "id": "17-anil-aykan",
+      "index": 17,
+      "name": "Anıl Aykan",
+      "designer": "Anıl Aykan",
+      "studio": null,
+      "categories": [
+        "designer"
+      ],
+      "category_labels": [
+        "Yazı Tasarımcısı"
+      ],
+      "link": "https://www.anilaykan.com/phd",
+      "domain": "anilaykan.com",
+      "platform": "Web Sitesi",
+      "description": "",
+      "image": "assets/thumbnails/item_17.jpg",
+      "dropmark_id": 32426501
+    },
+    {
+      "id": "18-emre-parlak",
+      "index": 18,
+      "name": "Emre Parlak",
+      "designer": "Emre Parlak",
+      "studio": null,
+      "categories": [
+        "designer"
+      ],
+      "category_labels": [
+        "Yazı Tasarımcısı"
+      ],
+      "link": "https://www.emreparlak.com/work/major",
+      "domain": "emreparlak.com",
+      "platform": "Web Sitesi",
+      "description": "",
+      "image": "assets/thumbnails/item_18.jpg",
+      "dropmark_id": 32426500
+    },
+    {
+      "id": "19-digdem-ogmen",
+      "index": 19,
+      "name": "Diğdem Öğmen",
+      "designer": "Diğdem Öğmen",
+      "studio": null,
+      "categories": [
+        "designer"
+      ],
+      "category_labels": [
+        "Yazı Tasarımcısı"
+      ],
+      "link": "https://didemogmen.com/",
+      "domain": "didemogmen.com",
+      "platform": "Web Sitesi",
+      "description": "",
+      "image": "assets/thumbnails/item_19.jpg",
+      "dropmark_id": 32307238
+    },
+    {
+      "id": "20-i-brahim-kactioglu",
+      "index": 20,
+      "name": "İbrahim Kaçtıoğlu",
+      "designer": "İbrahim Kaçtıoğlu",
+      "studio": null,
+      "categories": [
+        "designer"
+      ],
+      "category_labels": [
+        "Yazı Tasarımcısı"
+      ],
+      "link": "https://www.ibrahimkactioglu.com/",
+      "domain": "ibrahimkactioglu.com",
+      "platform": "Web Sitesi",
+      "description": "",
+      "image": "assets/thumbnails/item_20.jpg",
+      "dropmark_id": 32307237
+    },
+    {
+      "id": "21-ertekin-erdin",
+      "index": 21,
+      "name": "Ertekin Erdin",
+      "designer": "Ertekin Erdin",
+      "studio": null,
+      "categories": [
+        "designer"
+      ],
+      "category_labels": [
+        "Yazı Tasarımcısı"
+      ],
+      "link": "https://ertekin.xyz/",
+      "domain": "ertekin.xyz",
+      "platform": "Web Sitesi",
+      "description": "",
+      "image": "assets/thumbnails/item_21.jpg",
+      "dropmark_id": 32307236
+    },
+    {
+      "id": "22-emin-i-mamoglu-plantype",
+      "index": 22,
+      "name": "Emin İmamoğlu (PlanType)",
+      "designer": "Emin İmamoğlu",
+      "studio": "PlanType",
+      "categories": [
+        "designer",
+        "foundry"
+      ],
+      "category_labels": [
+        "Yazı Tasarımcısı",
+        "Yazıevi"
+      ],
+      "link": "http://plantype.co",
+      "domain": "plantype.co",
+      "platform": "Web Sitesi",
+      "description": "",
+      "image": "assets/thumbnails/item_22.jpg",
+      "dropmark_id": 30453096
+    },
+    {
+      "id": "23-taner-ardali",
+      "index": 23,
+      "name": "Taner Ardalı",
+      "designer": "Taner Ardalı",
+      "studio": null,
+      "categories": [
+        "designer"
+      ],
+      "category_labels": [
+        "Yazı Tasarımcısı"
+      ],
+      "link": "https://tanerardali.com/",
+      "domain": "tanerardali.com",
+      "platform": "Web Sitesi",
+      "description": "",
+      "image": "assets/thumbnails/item_23.jpg",
+      "dropmark_id": 30453001
+    },
+    {
+      "id": "24-somestr-studio",
+      "index": 24,
+      "name": "Sömestr Studio",
+      "designer": null,
+      "studio": "Sömestr Studio",
+      "categories": [
+        "foundry"
+      ],
+      "category_labels": [
+        "Yazıevi"
+      ],
+      "link": "https://somestrstudio.com/category/type/",
+      "domain": "somestrstudio.com",
+      "platform": "Web Sitesi",
+      "description": "",
+      "image": "assets/thumbnails/item_24.jpg",
+      "dropmark_id": 30453000
+    },
+    {
+      "id": "25-onur-yazicigil",
+      "index": 25,
+      "name": "Onur Yazıcıgil",
+      "designer": "Onur Yazıcıgil",
+      "studio": null,
+      "categories": [
+        "designer"
+      ],
+      "category_labels": [
+        "Yazı Tasarımcısı"
+      ],
+      "link": "http://www.onuryazicigil.com/typefaces",
+      "domain": "onuryazicigil.com",
+      "platform": "Web Sitesi",
+      "description": "",
+      "image": "assets/thumbnails/item_25.jpg",
+      "dropmark_id": 30452999
+    },
+    {
+      "id": "26-oguzhan-cengiz-hurufat-font",
+      "index": 26,
+      "name": "Oğuzhan Cengiz (Hurufat Font)",
+      "designer": "Oğuzhan Cengiz",
+      "studio": "Hurufat Font",
+      "categories": [
+        "designer",
+        "foundry"
+      ],
+      "category_labels": [
+        "Yazı Tasarımcısı",
+        "Yazıevi"
+      ],
+      "link": "https://www.myfonts.com/foundry/hurufatfont-type-foundry/",
+      "domain": "myfonts.com",
+      "platform": "MyFonts",
+      "description": "",
+      "image": "assets/thumbnails/item_26.jpg",
+      "dropmark_id": 30452998
+    },
+    {
+      "id": "27-ozhan-yurtseven",
+      "index": 27,
+      "name": "Özhan Yurtseven",
+      "designer": "Özhan Yurtseven",
+      "studio": null,
+      "categories": [
+        "designer"
+      ],
+      "category_labels": [
+        "Yazı Tasarımcısı"
+      ],
+      "link": "https://www.myfonts.com/collections/ozhan-yurtseven-foundry",
+      "domain": "myfonts.com",
+      "platform": "MyFonts",
+      "description": "",
+      "image": "assets/thumbnails/item_27.jpg",
+      "dropmark_id": 30452997
+    },
+    {
+      "id": "28-salih-kizilkaya",
+      "index": 28,
+      "name": "Salih Kızılkaya",
+      "designer": "Salih Kızılkaya",
+      "studio": null,
+      "categories": [
+        "designer"
+      ],
+      "category_labels": [
+        "Yazı Tasarımcısı"
+      ],
+      "link": "https://www.salihkizilkaya.com/font",
+      "domain": "salihkizilkaya.com",
+      "platform": "Web Sitesi",
+      "description": "",
+      "image": "assets/thumbnails/item_28.jpg",
+      "dropmark_id": 30452996
+    },
+    {
+      "id": "29-muhittin-gunes",
+      "index": 29,
+      "name": "Muhittin Güneş",
+      "designer": "Muhittin Güneş",
+      "studio": null,
+      "categories": [
+        "designer"
+      ],
+      "category_labels": [
+        "Yazı Tasarımcısı"
+      ],
+      "link": "https://gunesmuhittin.com/",
+      "domain": "gunesmuhittin.com",
+      "platform": "Web Sitesi",
+      "description": "",
+      "image": "assets/thumbnails/item_29.jpg",
+      "dropmark_id": 30452995
+    },
+    {
+      "id": "30-ufuk-aracioglu-horizon-type",
+      "index": 30,
+      "name": "Ufuk Aracıoğlu (Horizon Type)",
+      "designer": "Ufuk Aracıoğlu",
+      "studio": "Horizon Type",
+      "categories": [
+        "designer",
+        "foundry"
+      ],
+      "category_labels": [
+        "Yazı Tasarımcısı",
+        "Yazıevi"
+      ],
+      "link": "https://horizontype.com/",
+      "domain": "horizontype.com",
+      "platform": "Web Sitesi",
+      "description": "",
+      "image": "assets/thumbnails/item_30.jpg",
+      "dropmark_id": 30452994
+    },
+    {
+      "id": "31-murathan-biliktu-biliktu-yazievi",
+      "index": 31,
+      "name": "Murathan Biliktü (Biliktü Yazıevi)",
+      "designer": "Murathan Biliktü",
+      "studio": "Biliktü Yazıevi",
+      "categories": [
+        "designer",
+        "foundry"
+      ],
+      "category_labels": [
+        "Yazı Tasarımcısı",
+        "Yazıevi"
+      ],
+      "link": "https://biliktufoundry.com",
+      "domain": "biliktufoundry.com",
+      "platform": "Web Sitesi",
+      "description": "",
+      "image": "assets/thumbnails/item_31.jpg",
+      "dropmark_id": 30452993
+    },
+    {
+      "id": "32-mehmet-reha-tugcu",
+      "index": 32,
+      "name": "Mehmet Reha Tuğcu",
+      "designer": "Mehmet Reha Tuğcu",
+      "studio": null,
+      "categories": [
+        "designer"
+      ],
+      "category_labels": [
+        "Yazı Tasarımcısı"
+      ],
+      "link": "https://www.tugcu.co/",
+      "domain": "tugcu.co",
+      "platform": "Web Sitesi",
+      "description": "",
+      "image": "assets/thumbnails/item_32.jpg",
+      "dropmark_id": 30452992
+    },
+    {
+      "id": "33-emre-yildiz-i-dotless-yazievi",
+      "index": 33,
+      "name": "Emre Yıldız (I Dotless Yazıevi)",
+      "designer": "Emre Yıldız",
+      "studio": "I Dotless Yazıevi",
+      "categories": [
+        "designer",
+        "foundry"
+      ],
+      "category_labels": [
+        "Yazı Tasarımcısı",
+        "Yazıevi"
+      ],
+      "link": "https://www.idotless.com/",
+      "domain": "idotless.com",
+      "platform": "Web Sitesi",
+      "description": "",
+      "image": "assets/thumbnails/item_33.jpg",
+      "dropmark_id": 30452991
+    },
+    {
+      "id": "34-erman-yilmaz-informal-type-foundry",
+      "index": 34,
+      "name": "Erman Yılmaz (Informal Type Foundry)",
+      "designer": "Erman Yılmaz",
+      "studio": "Informal Type Foundry",
+      "categories": [
+        "designer",
+        "foundry"
+      ],
+      "category_labels": [
+        "Yazı Tasarımcısı",
+        "Yazıevi"
+      ],
+      "link": "https://informaltype.com/",
+      "domain": "informaltype.com",
+      "platform": "Web Sitesi",
+      "description": "",
+      "image": "assets/thumbnails/item_34.jpg",
+      "dropmark_id": 30452990
+    },
+    {
+      "id": "35-fatih-hardal",
+      "index": 35,
+      "name": "Fatih Hardal",
+      "designer": "Fatih Hardal",
+      "studio": null,
+      "categories": [
+        "designer"
+      ],
+      "category_labels": [
+        "Yazı Tasarımcısı"
+      ],
+      "link": "https://www.typografische.com/",
+      "domain": "typografische.com",
+      "platform": "Web Sitesi",
+      "description": "",
+      "image": "assets/thumbnails/item_35.jpg",
+      "dropmark_id": 30452989
+    },
+    {
+      "id": "36-esin-type",
+      "index": 36,
+      "name": "Esin Type",
+      "designer": null,
+      "studio": "Esin Type",
+      "categories": [
+        "foundry"
+      ],
+      "category_labels": [
+        "Yazıevi"
+      ],
+      "link": "https://esintype.com/",
+      "domain": "esintype.com",
+      "platform": "Web Sitesi",
+      "description": "",
+      "image": "assets/thumbnails/item_36.jpg",
+      "dropmark_id": 30452988
+    },
+    {
+      "id": "37-ceyhun-birinci-artegra-type",
+      "index": 37,
+      "name": "Ceyhun Birinci (Artegra Type)",
+      "designer": "Ceyhun Birinci",
+      "studio": "Artegra Type",
+      "categories": [
+        "designer",
+        "foundry"
+      ],
+      "category_labels": [
+        "Yazı Tasarımcısı",
+        "Yazıevi"
+      ],
+      "link": "https://www.behance.net/Artegra",
+      "domain": "behance.net",
+      "platform": "Behance",
+      "description": "Artegra is a type foundry run by Turkish type designer Ceyhun Birinci. He studied graphic design at Marmara University in Istanbul, the typography classes he took marked the beginning of his interest in typeface design. He created his first font Primus back in 2012, which had started as a part of his personal branding project.",
+      "image": "assets/thumbnails/item_37.png",
+      "dropmark_id": 30452987
+    },
+    {
+      "id": "38-emre-guven",
+      "index": 38,
+      "name": "Emre Güven",
+      "designer": "Emre Güven",
+      "studio": null,
+      "categories": [
+        "designer"
+      ],
+      "category_labels": [
+        "Yazı Tasarımcısı"
+      ],
+      "link": "https://www.myfonts.com/person/emre-guven/",
+      "domain": "myfonts.com",
+      "platform": "MyFonts",
+      "description": "",
+      "image": "assets/thumbnails/item_38.jpg",
+      "dropmark_id": 30452986
+    },
+    {
+      "id": "39-cem-eskinazi",
+      "index": 39,
+      "name": "Cem Eskinazi",
+      "designer": "Cem Eskinazi",
+      "studio": null,
+      "categories": [
+        "designer"
+      ],
+      "category_labels": [
+        "Yazı Tasarımcısı"
+      ],
+      "link": "https://www.cemeskinazi.com/",
+      "domain": "cemeskinazi.com",
+      "platform": "Web Sitesi",
+      "description": "",
+      "image": "assets/thumbnails/item_39.jpg",
+      "dropmark_id": 30452985
+    },
+    {
+      "id": "40-erkin-karamemet",
+      "index": 40,
+      "name": "Erkin Karamemet",
+      "designer": "Erkin Karamemet",
+      "studio": null,
+      "categories": [
+        "designer"
+      ],
+      "category_labels": [
+        "Yazı Tasarımcısı"
+      ],
+      "link": "https://karamemet.com/",
+      "domain": "karamemet.com",
+      "platform": "Web Sitesi",
+      "description": "",
+      "image": "assets/thumbnails/item_40.jpg",
+      "dropmark_id": 30452984
+    },
+    {
+      "id": "41-bulent-yuksel",
+      "index": 41,
+      "name": "Bülent Yüksel",
+      "designer": "Bülent Yüksel",
+      "studio": null,
+      "categories": [
+        "designer"
+      ],
+      "category_labels": [
+        "Yazı Tasarımcısı"
+      ],
+      "link": "https://www.myfonts.com/collections/bulent-yuksel-foundry",
+      "domain": "myfonts.com",
+      "platform": "MyFonts",
+      "description": "",
+      "image": "assets/thumbnails/item_41.jpg",
+      "dropmark_id": 30452983
+    },
+    {
+      "id": "42-ayca-atalay",
+      "index": 42,
+      "name": "Ayça Atalay",
+      "designer": "Ayça Atalay",
+      "studio": null,
+      "categories": [
+        "designer"
+      ],
+      "category_labels": [
+        "Yazı Tasarımcısı"
+      ],
+      "link": "https://creativemarket.com/aycaatalay",
+      "domain": "creativemarket.com",
+      "platform": "Creative Market",
+      "description": "",
+      "image": "assets/thumbnails/item_42.jpg",
+      "dropmark_id": 30452982
+    },
+    {
+      "id": "43-serdar-ozturk-arodora-typeface",
+      "index": 43,
+      "name": "Serdar Öztürk (Arodora Typeface)",
+      "designer": "Serdar Öztürk",
+      "studio": "Arodora Typeface",
+      "categories": [
+        "designer",
+        "foundry"
+      ],
+      "category_labels": [
+        "Yazı Tasarımcısı",
+        "Yazıevi"
+      ],
+      "link": "https://www.behance.net/ArodoraTypeface",
+      "domain": "behance.net",
+      "platform": "Behance",
+      "description": "Istanbul, Turkey",
+      "image": "assets/thumbnails/item_43.png",
+      "dropmark_id": 30452981
+    },
+    {
+      "id": "44-ahmet-altun",
+      "index": 44,
+      "name": "Ahmet Altun",
+      "designer": "Ahmet Altun",
+      "studio": null,
+      "categories": [
+        "designer"
+      ],
+      "category_labels": [
+        "Yazı Tasarımcısı"
+      ],
+      "link": "https://www.myfonts.com/foundry/Ahmet_Altun/?sort=new",
+      "domain": "myfonts.com",
+      "platform": "MyFonts",
+      "description": "",
+      "image": "assets/thumbnails/item_44.jpg",
+      "dropmark_id": 30452980
+    }
+  ]
+}
