@@ -11,19 +11,22 @@ Bu proje, [Türkçe Tipografi Topluluğu](https://tipografitoplulugu.github.io/b
 
 ## Görsel Kimlik ve Tasarım Yaklaşımı
 
-Sitenin görsel dili, arayüzü ve tipografisi, **Tipografi Bülteni Arşivi** ile birebir aynı tasarım ailesinden ve tasarım sisteminden türetilmiştir:
+Site, **Tipografi Bülteni Arşivi** ile ortak bir marka katmanını paylaşırken, ürün katmanında belirgin bir "katalog ve vitrin" mimarisine sahiptir:
 
-- **Minimalist & Editoryal:** Gereksiz dekorasyonlardan, ağır gölgelerden ve dikkat dağıtıcı öğelerden arındırılmış, tipografi odaklı sayfa mimarisi.
-- **Tipografik Aile:**
-  - Başlıklar: **Instrument Serif**
-  - Gövde ve arayüz: **Inter**
-  - Üst başlıklar, etiketler ve teknik detaylar: **DM Mono**
-- **Renk Paleti & Koyu Mod Desteği:**
-  - Açık mod: Kırık beyaz kağıt zemini (`#F7F8F5`), sıcak beyaz yüzey (`#FFFFFF`), derin mürekkep (`#161811`), yumuşak yeşil vurgu (`#D5FD42`).
-  - Koyu mod: Gece zemini (`#121212`), koyu yüzey (`#1B1B1B`), açık mürekkep (`#F5F5F0`). Sistem teması ve kullanıcı tercihiyle anında uyumlu, sıfır FOUC (Flash of Unstyled Content).
-- **Esnek Görünüm:**
-  - **Kart Görünümü:** Görsel önizlemeli editoryal kart ızgarası.
-  - **Liste Görünümü:** Hızlı tarama ve dizin araştırması için kompakt editoryal liste.
+- **Marka Katmanı (Ortak):**
+  - **Logo ve İsim:** Türkçe Tipografi Topluluğu kimliği.
+  - **Tipografik Aile:** Başlıklar için **Instrument Serif**, gövde için **Inter**, etiketler ve sayaçlar için **DM Mono**.
+  - **Renk Sistemi & Koyu Mod:** Kâğıt (`#F7F8F5`), mürekkep (`#161811`), kilitli tasarım token'ları ve iki site arasında senkronize koyu tema.
+  - **Çizgi Dili:** 1px ince çizgiler (`--line`), sıfır gölge, 12px köşe yarıçapı.
+
+- **Ürün Katmanı (Dizine Özgü — Katalog ve Vitrin Karakteri):**
+  - **Geniş Sayfa Düzeni:** Arşivin 1120px dar okuma sütunu yerine **1320px** genişliğinde ferah vitrin düzeni.
+  - **Kompakt Üst Bölüm (Künye):** Arşivdeki dev hero ve 3 sütunlu sayaç şeridi yerine; sol tarafta iki satırlık Instrument Serif başlık ve tek paragraf açıklama, sağ tarafta vurgulu "Yazı Tasarımcısı Ekle" aksiyonu ve dinamik "Son güncelleme" bilgisi.
+  - **Yapışkan Araç Çubuğu:** Canlı arama, dinamik sayaçlı segmentli kategori kontrolü (`Tümü 44 / Yazı Tasarımcıları 42 / Yazıevleri 14`), sıralama ve "Vitrin | Liste" seçicisi tek satırda üstte sabitlenir.
+  - **Kutusuz Vitrin Izgarası:** 3 sütunlu yerleşimde (1100px+), beyaz kart kutuları yerine kâğıt zemin üzerinde duran 4:3 en-boy oranlı görsel vitrini (`object-fit: cover; object-position: top;`), Instrument Serif ad ve doğrudan hücre bağlantısı.
+  - **Harf Ayraçları ve Yapışkan Harf İndeksi:** Alfabetik sıralamada her harf grubu ızgarada dev harfli ayraç kartıyla başlar; sol tarafta dikey yapışkan harf indeksi (`IntersectionObserver` ile aktif harf vurgulu) gezinmeyi hızlandırır.
+  - **Yoğun Dizin Listesi:** Liste modunda her satır ~64px yüksekliğinde, tipografik hiyerarşiyi koruyan kompakt bir dizin satırına dönüşür.
+  - **Ölçülü Lime Kullanımı:** Vurgu rengi (`#D5FD42`) yalnızca birincil düğmede, harf indeksindeki aktif işarette, arama vurgularında ve yazıevi rozetinde kullanılır.
 
 ---
 

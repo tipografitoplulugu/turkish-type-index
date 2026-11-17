@@ -1,5 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&display=swap');
 
+/* ==========================================================================
+   1. Brand Layer: Tokens & Color Schemes (LOCKED)
+   ========================================================================== */
+
 :root {
   --scheme: light;
   --paper: #F7F8F5;
@@ -81,13 +85,20 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* Base Container (default / ekle.html) */
 .archive-container {
   max-width: 1120px;
   margin: 0 auto;
   padding: 2.2rem 2.25rem 5rem;
 }
 
-/* Headers & Typography */
+/* Expanded Container for Directory Site (1320px) */
+body.page-dizin .archive-container {
+  max-width: 1320px;
+  padding: 2rem 2rem 5rem;
+}
+
+/* Typography Defaults */
 h1, h2, h3, h4 {
   color: var(--ink);
   font-family: "Instrument Serif", Georgia, serif;
@@ -97,25 +108,6 @@ h1, h2, h3, h4 {
   -webkit-font-variant-ligatures: common-ligatures contextual;
   font-feature-settings: "liga" 1, "dlig" 1, "locl" 0;
   -webkit-font-feature-settings: "liga" 1, "dlig" 1, "locl" 0;
-}
-
-h1 {
-  font-size: clamp(2.6rem, 5.5vw, 4.8rem);
-  line-height: 1.04;
-  margin: .3rem 0 .8rem;
-  letter-spacing: normal;
-}
-
-h2 {
-  font-size: clamp(1.45rem, 2.8vw, 1.95rem);
-  line-height: 1.2;
-  margin: 0;
-}
-
-h3 {
-  font-size: 1.4rem;
-  line-height: 1.25;
-  margin: .35rem 0 .7rem;
 }
 
 p {
@@ -128,7 +120,7 @@ a {
   color: var(--link);
   text-decoration: underline;
   text-underline-offset: 3px;
-  transition: color 120ms ease;
+  transition: color 140ms ease;
 }
 
 a:hover {
@@ -140,7 +132,25 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   outline-offset: 2px;
 }
 
-/* Brand Header */
+/* Search Highlights */
+mark.search-hit {
+  border-radius: 3px;
+  background: var(--accent-soft);
+  color: var(--accent-soft-ink);
+  padding: 0 .12em;
+}
+
+/* Divider */
+.hero-rule {
+  border: 0;
+  border-top: 1px solid var(--line);
+  margin: 1.5rem 0;
+}
+
+/* ==========================================================================
+   2. Shared Brand Header & Footer
+   ========================================================================== */
+
 .archive-brand-header {
   display: flex;
   align-items: center;
@@ -227,604 +237,10 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   stroke: currentColor;
 }
 
-/* Hero Section */
-.hero-rule {
-  border: 0;
-  border-top: 1px solid var(--line);
-  margin: 1.8rem 0 1.5rem;
-}
-
-.hero-header {
-  margin-bottom: 2rem;
-}
-
-.hero-eyebrow, .section-eyebrow {
-  font-family: "DM Mono", monospace;
-  color: var(--link);
-  font-size: .72rem;
-  font-weight: 500;
-  letter-spacing: .12em;
-  text-transform: uppercase;
-  display: block;
-  margin-bottom: .65rem;
-}
-
-.hero-copy {
-  max-width: 690px;
-  margin: 0;
-  color: var(--muted);
-  font-size: 1.08rem;
-  line-height: 1.72;
-}
-
-.footer-add-link a {
-  font-family: "DM Mono", monospace;
-  color: var(--link);
-  font-weight: 400;
-  text-decoration: none;
-}
-
-.footer-add-link a:hover {
-  text-decoration: underline;
-}
-
-/* Statistics Grid */
-.stat-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  column-gap: 1.5rem;
-  row-gap: 1.1rem;
-}
-
-.stat-item {
-  min-width: 0;
-}
-
-.stat-label {
-  font-family: "DM Mono", monospace;
-  margin-bottom: .2rem;
-  color: var(--muted);
-  font-size: .72rem;
-  line-height: 1.4;
-  letter-spacing: .06em;
-  text-transform: uppercase;
-}
-
-.stat-value {
-  color: var(--ink);
-  font: 1.55rem/1.2 "Instrument Serif", Georgia, serif;
-  letter-spacing: -.02em;
-  overflow-wrap: anywhere;
-}
-
-/* Search & Filter Form */
-.controls-section {
-  margin-bottom: 2rem;
-}
-
-.search-form {
-  display: grid;
-  grid-template-columns: 3.5fr 1.6fr 1.6fr;
-  gap: .85rem;
-  align-items: end;
-  margin-bottom: 1.25rem;
-}
-
-.form-group {
-  display: flex;
-  flex-direction: column;
-}
-
-.search-input-wrapper {
-  position: relative;
-  display: flex;
-  align-items: center;
-  height: 48px;
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  background: var(--surface);
-  transition: border-color 140ms ease;
-}
-
-.search-input-wrapper:focus-within {
-  border: 2px solid var(--focus);
-}
-
-.search-input {
-  width: 100%;
-  height: 100%;
-  border: 0;
-  border-radius: 12px;
-  background: transparent;
-  color: var(--ink);
-  font-family: inherit;
-  font-size: .98rem;
-  padding: 0 2.5rem 0 1rem;
-  outline: none;
-}
-
-.search-input::placeholder {
-  color: var(--placeholder);
-  opacity: .6;
-}
-
-.search-clear-btn {
-  position: absolute;
-  right: 8px;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  width: 28px;
-  height: 28px;
-  border: 0;
-  border-radius: 50%;
-  background: var(--surface-subtle);
-  color: var(--muted);
-  font-size: 1.1rem;
-  cursor: pointer;
-  line-height: 1;
-}
-
-.search-clear-btn:hover {
-  color: var(--ink);
-}
-
-.select-wrapper {
-  position: relative;
-  height: 48px;
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  background: var(--surface);
-  transition: border-color 140ms ease;
-}
-
-.select-wrapper:focus-within {
-  border: 2px solid var(--focus);
-}
-
-.year-select {
-  width: 100%;
-  height: 100%;
-  border: 0;
-  border-radius: 12px;
-  background: transparent;
-  color: var(--ink);
-  font-family: inherit;
-  font-size: .95rem;
-  padding: 0 2.2rem 0 1rem;
-  appearance: none;
-  -webkit-appearance: none;
-  outline: none;
-  cursor: pointer;
-}
-
-.select-chevron {
-  position: absolute;
-  right: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  pointer-events: none;
-  color: var(--muted);
-  display: flex;
-  align-items: center;
-}
-
-.select-chevron svg {
-  width: 16px;
-  height: 16px;
-  fill: currentColor;
-}
-
-/* Filter Bar: Pills & View Mode */
-.filter-bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: .85rem;
-  margin-top: .75rem;
-}
-
-.filter-pills {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: .55rem;
-}
-
-.topic-btn {
-  min-height: 38px;
-  padding: .45rem .85rem;
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  background: var(--surface);
-  color: var(--ink);
-  font-family: "DM Mono", monospace;
-  font-size: .82rem;
-  cursor: pointer;
-  opacity: .75;
-  transition: opacity 140ms ease, border-color 140ms ease, background 140ms ease;
-  user-select: none;
-  display: inline-flex;
-  align-items: center;
-  gap: .4rem;
-}
-
-.topic-btn:hover, .topic-btn:focus-visible {
-  opacity: 1;
-  border-color: var(--line-strong);
-  background: var(--surface-subtle);
-}
-
-.topic-btn.active {
-  opacity: 1;
-  border-color: var(--focus);
-  background: var(--surface-subtle);
-  font-weight: 500;
-  color: var(--link);
-}
-
-.pill-count {
-  font-size: .75rem;
-  opacity: .7;
-}
-
-.view-switcher {
-  display: inline-flex;
-  align-items: center;
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  background: var(--surface);
-  padding: 2px;
-}
-
-.view-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: .35rem;
-  padding: .35rem .65rem;
-  border: 0;
-  border-radius: 8px;
-  background: transparent;
-  color: var(--muted);
-  font-family: "DM Mono", monospace;
-  font-size: .78rem;
-  cursor: pointer;
-  transition: background-color 120ms ease, color 120ms ease;
-}
-
-.view-btn svg {
-  stroke: currentColor;
-}
-
-.view-btn:hover {
-  color: var(--ink);
-}
-
-.view-btn.active {
-  background: var(--surface-subtle);
-  color: var(--link);
-  font-weight: 500;
-}
-
-/* Results Area */
-.results-area {
-  margin-top: 1.5rem;
-}
-
-.result-summary-bar {
-  margin-bottom: 1.25rem;
-}
-
-.result-summary {
-  font-family: "DM Mono", monospace;
-  font-size: .84rem;
-  color: var(--muted);
-}
-
-.result-summary strong {
-  color: var(--link);
-  font-weight: 500;
-}
-
-/* Directory Layout — GRID VIEW */
-.directory-container.view-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 1.25rem;
-}
-
-/* Card Component */
-.index-card {
-  border: 1px solid var(--line);
-  border-radius: 16px;
-  background: var(--surface);
-  padding: 1.45rem;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  transition: border-color 140ms ease, background-color 140ms ease;
-  position: relative;
-}
-
-.index-card:hover {
-  border-color: var(--line-strong);
-}
-
-.card-top {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: .75rem;
-  margin-bottom: 1rem;
-}
-
-.card-badges {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: .4rem;
-}
-
-.badge {
-  display: inline-block;
-  font-family: "DM Mono", monospace;
-  font-size: .7rem;
-  font-weight: 500;
-  letter-spacing: .05em;
-  text-transform: uppercase;
-  padding: .2rem .5rem;
-  border-radius: 6px;
-  line-height: 1.3;
-}
-
-.badge-designer {
-  background: var(--surface-subtle);
-  color: var(--muted);
-  border: 1px solid var(--line);
-}
-
-.badge-foundry {
-  background: var(--accent-soft);
-  color: var(--accent-soft-ink);
-  border: 1px solid transparent;
-}
-
-.badge-platform {
-  font-family: "DM Mono", monospace;
-  font-size: .7rem;
-  color: var(--muted);
-  background: transparent;
-  letter-spacing: .04em;
-  text-transform: uppercase;
-  white-space: nowrap;
-}
-
-.card-middle {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 1.2rem;
-  flex: 1 1 auto;
-  margin-bottom: 1.1rem;
-}
-
-.card-info {
-  flex: 1 1 auto;
-  min-width: 0;
-}
-
-.entry-title {
-  margin: 0 0 .3rem;
-  color: var(--ink);
-  font-size: 1.65rem;
-  line-height: 1.2;
-}
-
-.entry-title a {
-  color: inherit;
-  text-decoration: none;
-}
-
-.entry-title a:hover {
-  color: var(--link);
-  text-decoration: underline;
-  text-underline-offset: 3px;
-}
-
-.entry-subtitle {
-  font-family: inherit;
-  font-size: .92rem;
-  font-weight: 500;
-  color: var(--muted);
-  margin-bottom: .6rem;
-  line-height: 1.4;
-}
-
-.entry-description {
-  font-size: .88rem;
-  line-height: 1.65;
-  color: var(--muted);
-  margin: .4rem 0 0;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.card-media {
-  flex: 0 0 100px;
-  width: 100px;
-  height: 100px;
-  border-radius: 10px;
-  border: 1px solid var(--line);
-  background: var(--surface-subtle);
-  overflow: hidden;
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.card-media img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-  transition: transform 180ms ease;
-}
-
-.index-card:hover .card-media img {
-  transform: scale(1.04);
-}
-
-.media-fallback {
-  display: none;
-  font-family: "Instrument Serif", Georgia, serif;
-  font-size: 1.9rem;
-  color: var(--muted);
-  letter-spacing: -.02em;
-  user-select: none;
-}
-
-.card-media.no-img img {
-  display: none;
-}
-
-.card-media.no-img .media-fallback {
-  display: block;
-}
-
-.card-bottom {
-  border-top: 1px solid var(--line);
-  padding-top: .85rem;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: .75rem;
-  font-family: "DM Mono", monospace;
-  font-size: .82rem;
-}
-
-.entry-link-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: .35rem;
-  color: var(--link);
-  text-decoration: none;
-  font-weight: 500;
-  transition: color 120ms ease;
-}
-
-.entry-link-btn:hover {
-  color: var(--link-hover);
-  text-decoration: underline;
-  text-underline-offset: 3px;
-}
-
-.entry-link-btn .arrow-icon {
-  font-size: .95rem;
-  line-height: 1;
-}
-
-.entry-domain {
-  color: var(--muted);
-  font-size: .78rem;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-/* Directory Layout — LIST VIEW */
-.directory-container.view-list {
-  display: flex;
-  flex-direction: column;
-  gap: .75rem;
-}
-
-.directory-container.view-list .index-card {
-  padding: 1.1rem 1.4rem;
-}
-
-.directory-container.view-list .card-middle {
-  margin-bottom: .6rem;
-}
-
-.directory-container.view-list .card-media {
-  flex: 0 0 64px;
-  width: 64px;
-  height: 64px;
-  border-radius: 8px;
-}
-
-.directory-container.view-list .media-fallback {
-  font-size: 1.4rem;
-}
-
-.directory-container.view-list .entry-title {
-  font-size: 1.45rem;
-}
-
-/* Search Hit Highlight */
-mark.search-hit {
-  border-radius: 3px;
-  background: var(--accent-soft);
-  color: var(--accent-soft-ink);
-  padding: 0 .12em;
-}
-
-/* Status / Empty Alert */
-.app-status {
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  background: var(--surface);
-  color: var(--ink);
-  padding: 2rem 1.5rem;
-  text-align: center;
-  margin: 1.5rem 0;
-}
-
-.empty-title {
-  font-family: "Instrument Serif", Georgia, serif;
-  font-size: 1.85rem;
-  margin-bottom: .4rem;
-  color: var(--ink);
-}
-
-.empty-desc {
-  color: var(--muted);
-  font-size: .98rem;
-  max-width: 480px;
-  margin: 0 auto 1.25rem;
-  line-height: 1.6;
-}
-
-.reset-filter-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  height: 40px;
-  padding: 0 1.2rem;
-  border: 1px solid var(--accent);
-  border-radius: 10px;
-  background: var(--accent);
-  color: var(--on-accent);
-  font-family: "DM Mono", monospace;
-  font-size: .88rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background-color 120ms ease, border-color 120ms ease;
-}
-
-.reset-filter-btn:hover {
-  background: var(--accent-hover);
-  border-color: var(--accent-hover);
-}
-
 /* Footer */
 .archive-footer {
   font-family: "DM Mono", monospace;
-  margin-top: 2rem;
+  margin-top: 3rem;
   border-top: 1px solid var(--line);
   padding: 1.25rem 0 .2rem;
   color: var(--muted);
@@ -874,14 +290,14 @@ mark.search-hit {
   gap: .75rem 1.1rem;
 }
 
-.footer-subscribe a {
+.footer-add-link a, .footer-subscribe a {
   font-family: "DM Mono", monospace;
   color: var(--link);
   font-weight: 400;
   text-decoration: none;
 }
 
-.footer-subscribe a:hover {
+.footer-add-link a:hover, .footer-subscribe a:hover {
   text-decoration: underline;
 }
 
@@ -925,29 +341,1065 @@ mark.search-hit {
   stroke-width: 2;
 }
 
-/* Responsive Media Queries */
-@media (max-width: 860px) {
-  .directory-container.view-grid {
-    grid-template-columns: 1fr;
+/* ==========================================================================
+   3. Directory Product Layer: Compact Hero (Künye)
+   ========================================================================== */
+
+.dizin-hero {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 2rem;
+  margin: .4rem 0 1.8rem;
+}
+
+.dizin-hero-main {
+  max-width: 820px;
+}
+
+.hero-eyebrow {
+  font-family: "DM Mono", monospace;
+  color: var(--muted);
+  font-size: .72rem;
+  font-weight: 500;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  display: block;
+  margin-bottom: .5rem;
+}
+
+.dizin-h1 {
+  font-size: clamp(2.2rem, 4.2vw, 3.6rem);
+  line-height: 1.05;
+  margin: 0 0 .7rem;
+  letter-spacing: normal;
+}
+
+.dizin-h1 .title-line1 {
+  display: block;
+}
+
+.dizin-h1 .title-line2 {
+  display: inline-block;
+  color: var(--ink);
+}
+
+.dizin-hero-copy {
+  max-width: 60ch;
+  margin: 0;
+  color: var(--muted);
+  font-size: 1.02rem;
+  line-height: 1.65;
+}
+
+.dizin-hero-aside {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: .65rem;
+  flex-shrink: 0;
+}
+
+.hero-cta-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: .45rem;
+  height: 44px;
+  padding: 0 1.35rem;
+  border: 1px solid var(--accent);
+  border-radius: 12px;
+  background: var(--accent);
+  color: var(--on-accent);
+  font-family: "DM Mono", monospace;
+  font-size: .88rem;
+  font-weight: 500;
+  letter-spacing: .02em;
+  text-decoration: none;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 140ms ease, border-color 140ms ease;
+  user-select: none;
+}
+
+.hero-cta-btn:hover {
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
+  color: var(--on-accent);
+}
+
+.hero-cta-btn .cta-arrow {
+  font-size: .95rem;
+  line-height: 1;
+}
+
+.hero-updated-at {
+  font-family: "DM Mono", monospace;
+  font-size: .76rem;
+  color: var(--muted);
+  letter-spacing: .03em;
+  white-space: nowrap;
+}
+
+/* ==========================================================================
+   4. Sticky Toolbar & Segmented Controls
+   ========================================================================== */
+
+.dizin-toolbar-wrapper {
+  position: sticky;
+  top: 0;
+  z-index: 45;
+  background: var(--paper);
+  transition: border-color 140ms ease, box-shadow 140ms ease;
+  margin: 0 0 1.25rem;
+}
+
+.dizin-toolbar-wrapper.is-stuck {
+  border-bottom: 1px solid var(--line);
+}
+
+.dizin-toolbar {
+  width: 100%;
+}
+
+.toolbar-inner {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  padding: .85rem 0;
+}
+
+/* Wide Search */
+.toolbar-search {
+  position: relative;
+  flex: 1 1 320px;
+  min-width: 180px;
+  display: flex;
+  align-items: center;
+  height: 46px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+  transition: border-color 140ms ease;
+}
+
+.toolbar-search:focus-within {
+  border: 2px solid var(--focus);
+}
+
+.toolbar-search .search-icon {
+  position: absolute;
+  left: 14px;
+  pointer-events: none;
+  color: var(--muted);
+}
+
+.toolbar-search-input {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  color: var(--ink);
+  font-family: inherit;
+  font-size: .94rem;
+  padding: 0 2.2rem 0 2.5rem;
+  outline: none;
+}
+
+.toolbar-search-input::placeholder {
+  color: var(--placeholder);
+  opacity: .55;
+}
+
+.toolbar-search-clear {
+  position: absolute;
+  right: 8px;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--surface-subtle);
+  color: var(--muted);
+  font-size: 1.1rem;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.toolbar-search-clear:hover {
+  color: var(--ink);
+}
+
+/* Segmented Category Control */
+.segmented-control {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.segment-btn {
+  height: 38px;
+  padding: 0 .9rem;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: var(--muted);
+  font-family: "DM Mono", monospace;
+  font-size: .82rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  transition: background-color 140ms ease, color 140ms ease;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.segment-btn:hover {
+  color: var(--ink);
+  background: var(--surface-subtle);
+}
+
+/* Active Segment uses --ink background and --paper text (NOT LIME) */
+.segment-btn.active {
+  background: var(--ink);
+  color: var(--paper);
+  font-weight: 500;
+}
+
+.seg-count {
+  font-size: .74rem;
+  opacity: .8;
+}
+
+/* Sort Dropdown */
+.toolbar-sort {
+  position: relative;
+  height: 46px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  transition: border-color 140ms ease;
+}
+
+.toolbar-sort:focus-within {
+  border: 2px solid var(--focus);
+}
+
+.toolbar-sort-select {
+  height: 100%;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  color: var(--ink);
+  font-family: "DM Mono", monospace;
+  font-size: .82rem;
+  padding: 0 2rem 0 .95rem;
+  appearance: none;
+  -webkit-appearance: none;
+  outline: none;
+  cursor: pointer;
+}
+
+.sort-chevron {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+}
+
+/* View Switcher */
+.toolbar-view {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+  padding: 3px;
+  gap: 2px;
+  flex-shrink: 0;
+  height: 46px;
+}
+
+.view-btn {
+  height: 38px;
+  padding: 0 .75rem;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: var(--muted);
+  font-family: "DM Mono", monospace;
+  font-size: .8rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: .35rem;
+  transition: background-color 140ms ease, color 140ms ease;
+  user-select: none;
+}
+
+.view-btn svg {
+  stroke: currentColor;
+}
+
+.view-btn:hover {
+  color: var(--ink);
+}
+
+.view-btn.active {
+  background: var(--surface-subtle);
+  color: var(--ink);
+  font-weight: 500;
+}
+
+/* Mobile Letter Strip (Hidden on Desktop) */
+.mobile-letter-strip {
+  display: none;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  white-space: nowrap;
+  gap: .3rem;
+  padding: .4rem 0 .2rem;
+  border-top: 1px solid var(--line);
+}
+
+.mobile-letter-strip::-webkit-scrollbar {
+  display: none;
+}
+
+.strip-letter-btn {
+  min-width: 28px;
+  height: 28px;
+  padding: 0 .4rem;
+  border-radius: 6px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--muted);
+  font-family: "DM Mono", monospace;
+  font-size: .74rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 140ms ease, color 140ms ease;
+}
+
+.strip-letter-btn:hover {
+  background: var(--surface-subtle);
+  color: var(--ink);
+}
+
+.strip-letter-btn.active {
+  background: var(--accent);
+  color: var(--on-accent);
+  border-color: var(--accent);
+  font-weight: 700;
+}
+
+/* Sub-Bar: Result Summary & Overlap Notice */
+.toolbar-sub-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: .35rem 0 .75rem;
+  font-family: "DM Mono", monospace;
+  font-size: .82rem;
+  color: var(--muted);
+  border-bottom: 1px solid var(--line);
+  flex-wrap: wrap;
+}
+
+.result-summary strong {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.overlap-notice {
+  font-size: .78rem;
+  color: var(--muted);
+  letter-spacing: .02em;
+}
+
+/* ==========================================================================
+   5. Directory Layout: Sticky Rail + Main Area
+   ========================================================================== */
+
+.dizin-body-wrapper {
+  display: flex;
+  align-items: flex-start;
+  gap: 2.25rem;
+  position: relative;
+  margin-top: 1.5rem;
+}
+
+/* Sticky Letter Rail (>= 1100px) */
+.letter-index-rail {
+  flex: 0 0 36px;
+  width: 36px;
+  position: sticky;
+  top: 76px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .25rem;
+  z-index: 30;
+  padding: .2rem 0;
+  max-height: calc(100vh - 90px);
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+
+.letter-index-rail::-webkit-scrollbar {
+  display: none;
+}
+
+.rail-letter-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  font-family: "DM Mono", monospace;
+  font-size: .78rem;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 140ms ease, color 140ms ease;
+  user-select: none;
+}
+
+.rail-letter-btn:hover {
+  background: var(--surface-subtle);
+  color: var(--ink);
+}
+
+/* Active letter gets lime circle */
+.rail-letter-btn.active {
+  background: var(--accent);
+  color: var(--on-accent);
+  font-weight: 700;
+}
+
+/* Main Directory Listing Area */
+.dizin-main-area {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+/* ==========================================================================
+   6. Showcase View (Vitrin / Grid View)
+   ========================================================================== */
+
+.directory-container.view-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 2.5rem 1.65rem;
+}
+
+/* Letter Separator Card (occupies 1 grid cell) */
+.letter-separator-card {
+  aspect-ratio: 4 / 3;
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface-subtle);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 1.5rem;
+  user-select: none;
+  scroll-margin-top: 90px;
+}
+
+.sep-letter {
+  font-family: "Instrument Serif", Georgia, serif;
+  font-size: 6.2rem;
+  line-height: .88;
+  margin: 0 0 .5rem;
+  font-weight: 400;
+  color: var(--ink);
+}
+
+.sep-count {
+  font-family: "DM Mono", monospace;
+  font-size: .78rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: .08em;
+}
+
+/* Vitrin Item (Individual Showcase Unit on Paper) */
+.vitrin-item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: .65rem;
+  scroll-margin-top: 90px;
+}
+
+.vitrin-media {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface-subtle);
+  overflow: hidden;
+  transition: border-color 140ms ease;
+}
+
+.vitrin-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top;
+  display: block;
+  transition: transform 180ms ease;
+}
+
+.vitrin-item:hover .vitrin-media img {
+  transform: scale(1.03);
+}
+
+.vitrin-item:hover .vitrin-media {
+  border-color: var(--line-strong);
+}
+
+/* Fallback Monogram */
+.vitrin-fallback {
+  position: absolute;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  font-family: "Instrument Serif", Georgia, serif;
+  font-size: 4.5rem;
+  color: var(--muted);
+  user-select: none;
+}
+
+.vitrin-media.no-img img {
+  display: none;
+}
+
+.vitrin-media.no-img .vitrin-fallback {
+  display: flex;
+}
+
+/* Accessible focus ring on the image frame */
+.vitrin-card-link:focus-visible ~ .vitrin-media,
+.vitrin-item:has(.vitrin-card-link:focus-visible) .vitrin-media {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+/* Vitrin Metadata Row */
+.vitrin-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .5rem;
+  font-family: "DM Mono", monospace;
+  font-size: .72rem;
+  letter-spacing: .04em;
+}
+
+.vitrin-badges {
+  display: flex;
+  align-items: center;
+  gap: .35rem;
+  flex-wrap: wrap;
+}
+
+.badge {
+  display: inline-block;
+  font-family: "DM Mono", monospace;
+  font-size: .68rem;
+  font-weight: 500;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  padding: .18rem .45rem;
+  border-radius: 5px;
+  line-height: 1.25;
+}
+
+.badge-designer {
+  background: var(--surface-subtle);
+  color: var(--muted);
+  border: 1px solid var(--line);
+}
+
+.badge-foundry {
+  background: var(--accent-soft);
+  color: var(--accent-soft-ink);
+  border: 1px solid transparent;
+}
+
+.vitrin-platform {
+  color: var(--muted);
+  text-transform: uppercase;
+  font-size: .7rem;
+  white-space: nowrap;
+}
+
+/* Title & Card-covering Link */
+.vitrin-title {
+  font-family: "Instrument Serif", Georgia, serif;
+  font-size: 1.75rem;
+  line-height: 1.15;
+  margin: .1rem 0 0;
+  font-weight: 400;
+  color: var(--ink);
+}
+
+.vitrin-card-link {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Entire cell becomes clickable link */
+.vitrin-card-link::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+.vitrin-item:hover .vitrin-title {
+  color: var(--link);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.vitrin-sub {
+  font-family: "Inter", sans-serif;
+  font-size: .9rem;
+  color: var(--muted);
+  line-height: 1.4;
+  margin-top: -.3rem;
+}
+
+.vitrin-domain {
+  font-family: "DM Mono", monospace;
+  font-size: .78rem;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: .3rem;
+  margin-top: auto;
+  padding-top: .2rem;
+}
+
+.vitrin-domain .arrow-icon {
+  font-size: .9rem;
+  line-height: 1;
+  transition: transform 140ms ease;
+}
+
+.vitrin-item:hover .vitrin-domain .arrow-icon {
+  transform: translate(2px, -2px);
+  color: var(--link);
+}
+
+/* ==========================================================================
+   7. List View (Dense Editorial Index Rows)
+   ========================================================================== */
+
+.directory-container.view-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+/* Full-width section header in list view */
+.list-letter-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 1.75rem 0 .65rem;
+  border-bottom: 2px solid var(--line-strong);
+  margin-bottom: .25rem;
+  scroll-margin-top: 90px;
+}
+
+.list-sep-letter {
+  font-family: "Instrument Serif", Georgia, serif;
+  font-size: 2.4rem;
+  margin: 0;
+  font-weight: 400;
+  color: var(--ink);
+}
+
+.list-sep-count {
+  font-family: "DM Mono", monospace;
+  font-size: .8rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}
+
+/* Dizin List Row */
+.dizin-list-row {
+  position: relative;
+  border-bottom: 1px solid var(--line);
+  transition: background-color 140ms ease;
+  scroll-margin-top: 90px;
+}
+
+.list-row-link {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  padding: .8rem .75rem;
+  color: inherit;
+  text-decoration: none;
+  min-height: 64px;
+  border-radius: 8px;
+}
+
+.dizin-list-row:hover {
+  background: var(--surface-subtle);
+}
+
+.dizin-list-row:hover .list-row-title {
+  color: var(--link);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.dizin-list-row:has(.list-row-link:focus-visible) {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.list-row-media {
+  flex: 0 0 56px;
+  width: 56px;
+  height: 42px;
+  aspect-ratio: 4 / 3;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  overflow: hidden;
+  background: var(--surface-subtle);
+  position: relative;
+}
+
+.list-row-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top;
+  display: block;
+}
+
+.list-row-media.no-img img {
+  display: none;
+}
+
+.list-row-media .media-fallback {
+  position: absolute;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  font-family: "Instrument Serif", Georgia, serif;
+  font-size: 1.3rem;
+  color: var(--muted);
+}
+
+.list-row-media.no-img .media-fallback {
+  display: flex;
+}
+
+.list-row-name-group {
+  flex: 1 1 260px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: .15rem;
+}
+
+.list-row-title {
+  font-family: "Instrument Serif", Georgia, serif;
+  font-size: 1.38rem;
+  line-height: 1.15;
+  color: var(--ink);
+  font-weight: 400;
+}
+
+.list-row-sub {
+  font-size: .84rem;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.list-row-badges {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: .35rem;
+}
+
+.list-row-platform {
+  flex: 0 0 110px;
+  font-family: "DM Mono", monospace;
+  font-size: .76rem;
+  color: var(--muted);
+  text-align: right;
+  text-transform: uppercase;
+}
+
+.list-row-domain {
+  flex: 0 0 160px;
+  font-family: "DM Mono", monospace;
+  font-size: .78rem;
+  color: var(--link);
+  text-align: right;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: .3rem;
+}
+
+.list-row-domain .arrow-icon {
+  font-size: .85rem;
+}
+
+/* ==========================================================================
+   8. Status & Empty State
+   ========================================================================== */
+
+.app-status {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+  color: var(--ink);
+  padding: 3rem 1.5rem;
+  text-align: center;
+  margin: 1.5rem 0;
+}
+
+.empty-title {
+  font-family: "Instrument Serif", Georgia, serif;
+  font-size: 2.2rem;
+  margin: 0 0 .5rem;
+  color: var(--ink);
+}
+
+.empty-desc {
+  color: var(--muted);
+  font-size: .98rem;
+  max-width: 480px;
+  margin: 0 auto 1.5rem;
+  line-height: 1.6;
+}
+
+.reset-filter-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 42px;
+  padding: 0 1.4rem;
+  border: 1px solid var(--accent);
+  border-radius: 10px;
+  background: var(--accent);
+  color: var(--on-accent);
+  font-family: "DM Mono", monospace;
+  font-size: .88rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 140ms ease, border-color 140ms ease;
+}
+
+.reset-filter-btn:hover {
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
+}
+
+/* ==========================================================================
+   9. ekle.html Compatibility Styles (Scoped so preview still works)
+   ========================================================================== */
+
+.index-card {
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--surface);
+  padding: 1.45rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: .75rem;
+  margin-bottom: 1rem;
+}
+
+.card-badges {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: .4rem;
+}
+
+.badge-platform {
+  font-family: "DM Mono", monospace;
+  font-size: .7rem;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+
+.card-middle {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.2rem;
+  margin-bottom: 1.1rem;
+}
+
+.card-info {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.entry-title {
+  margin: 0 0 .3rem;
+  color: var(--ink);
+  font-size: 1.65rem;
+  line-height: 1.2;
+}
+
+.entry-description {
+  font-size: .88rem;
+  line-height: 1.65;
+  color: var(--muted);
+  margin: .4rem 0 0;
+}
+
+.card-media {
+  flex: 0 0 100px;
+  width: 100px;
+  height: 100px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: var(--surface-subtle);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card-media .media-fallback {
+  font-family: "Instrument Serif", Georgia, serif;
+  font-size: 1.9rem;
+  color: var(--muted);
+}
+
+.card-bottom {
+  border-top: 1px solid var(--line);
+  padding-top: .85rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: "DM Mono", monospace;
+  font-size: .82rem;
+}
+
+.entry-link-btn {
+  color: var(--link);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.entry-domain {
+  color: var(--muted);
+  font-size: .78rem;
+}
+
+/* ==========================================================================
+   10. Responsive Media Queries
+   ========================================================================== */
+
+/* 1100px: Toolbar stacks, hide desktop rail, show mobile strip, 2 cols */
+@media (max-width: 1100px) {
+  .toolbar-inner {
+    flex-wrap: wrap;
+    gap: .75rem;
   }
 
-  .search-form {
-    grid-template-columns: 1fr;
-    gap: .75rem;
+  .toolbar-search {
+    flex: 1 1 100%;
+    order: 1;
+  }
+
+  .segmented-control {
+    order: 2;
+    flex: 1 1 auto;
+  }
+
+  .toolbar-sort {
+    order: 3;
+  }
+
+  .toolbar-view {
+    order: 4;
+  }
+
+  .letter-index-rail {
+    display: none !important;
+  }
+
+  .mobile-letter-strip {
+    display: flex;
+  }
+
+  .dizin-body-wrapper {
+    gap: 0;
+  }
+
+  .directory-container.view-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 2rem 1.25rem;
+  }
+
+  .list-row-platform {
+    flex: 0 0 85px;
+  }
+
+  .list-row-domain {
+    flex: 0 0 130px;
   }
 }
 
+/* 760px: Tablet & Mobile Headings & Padding */
 @media (max-width: 760px) {
-  .archive-container {
-    padding: 1.15rem 1rem 3rem;
-  }
-
-  h1 {
-    font-size: clamp(2.35rem, 10vw, 3.4rem);
-  }
-
-  .hero-copy {
-    font-size: 1rem;
+  body.page-dizin .archive-container {
+    padding: 1.25rem 1rem 3.5rem;
   }
 
   .archive-brand-header {
@@ -963,14 +1415,21 @@ mark.search-hit {
     right: 0;
   }
 
-  .stat-grid {
-    grid-template-columns: 1fr;
-    row-gap: 1.05rem;
-  }
-
-  .filter-bar {
+  .dizin-hero {
     flex-direction: column;
     align-items: flex-start;
+    gap: 1.25rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .dizin-hero-aside {
+    align-items: flex-start;
+    width: 100%;
+  }
+
+  .hero-cta-btn {
+    width: 100%;
+    justify-content: center;
   }
 
   .footer-content {
@@ -981,21 +1440,72 @@ mark.search-hit {
   .footer-actions {
     justify-content: flex-start;
   }
+}
 
-  .footer-social {
-    gap: .8rem;
+/* 640px: 1 Column Grid & Simplified List */
+@media (max-width: 640px) {
+  .directory-container.view-grid {
+    grid-template-columns: 1fr;
+    gap: 1.85rem;
+  }
+
+  .letter-separator-card {
+    aspect-ratio: 16 / 9;
+  }
+
+  .sep-letter {
+    font-size: 4.8rem;
+  }
+
+  .list-row-link {
+    gap: .85rem;
+    padding: .75rem .4rem;
+  }
+
+  .list-row-platform, .list-row-domain {
+    display: none;
+  }
+
+  .list-row-name-group {
+    flex: 1 1 auto;
+  }
+
+  .list-row-title {
+    font-size: 1.25rem;
+  }
+
+  .list-row-sub {
+    font-size: .8rem;
   }
 }
 
-@media (max-width: 480px) {
-  .card-middle {
-    flex-direction: column-reverse;
+/* 390px Mobile Viewport: Unstick toolbar so it doesn't take 1/3 of screen */
+@media (max-width: 440px) {
+  .dizin-toolbar-wrapper {
+    position: static;
   }
 
-  .card-media {
+  .toolbar-inner {
+    padding: .5rem 0;
+  }
+
+  .segmented-control {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
     width: 100%;
-    height: 140px;
-    margin-bottom: .5rem;
+    scrollbar-width: none;
+  }
+
+  .segmented-control::-webkit-scrollbar {
+    display: none;
+  }
+
+  .segment-btn {
+    padding: 0 .75rem;
+  }
+
+  .toolbar-sort-select {
+    font-size: .78rem;
   }
 }
 

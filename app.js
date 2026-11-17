@@ -2,15 +2,16 @@
  * Yazı Tasarımcıları ve Yazıevleri — Türkiye (app.js)
  * Türkçe Tipografi Topluluğu
  * 
- * İstemci taraflı canlı arama, kategori filtreleme, alfabetik sıralama,
- * görünüm modu değiştirici ve koyu/açık tema yönetimi.
+ * İstemci taraflı canlı arama, kategori süzgeci, alfabetik sıralama,
+ * harf ayraçları ve yapışkan harf indeksi, vitrin/liste görünüm motoru.
  */
 
 (() => {
   "use strict";
 
   const DATA_URL = "./data/index.json";
-  const THEME_STORAGE_KEY = "tipografi-index-theme";
+  const THEME_STORAGE_KEY_INDEX = "tipografi-index-theme";
+  const THEME_STORAGE_KEY_ARCHIVE = "tipografi-archive-theme";
   const VIEW_STORAGE_KEY = "tipografi-index-view";
 
   const SUN_SVG = `<circle cx="12" cy="12" r="3.5"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/>`;
@@ -23,31 +24,33 @@
   let activeCategory = "all"; // 'all' | 'designer' | 'foundry'
   let activeSort = "name-asc"; // 'name-asc' | 'name-desc' | 'default'
   let activeView = "grid"; // 'grid' | 'list'
+  let activeLetterInView = "";
 
   // DOM Elements
   const themeToggleBtn = document.getElementById("theme-toggle");
   const themeIcon = document.getElementById("theme-icon");
   const searchInput = document.getElementById("search-input");
   const searchClearBtn = document.getElementById("search-clear-btn");
-  const categorySelect = document.getElementById("category-select");
+  const categorySegmented = document.getElementById("category-segmented");
   const sortSelect = document.getElementById("sort-select");
-  const categoryPills = document.getElementById("category-pills");
   const directoryList = document.getElementById("directory-list");
   const statusContainer = document.getElementById("status-container");
   const resultSummary = document.getElementById("result-summary");
-  const viewCardBtn = document.getElementById("view-card-btn");
+  const overlapNotice = document.getElementById("overlap-notice");
+  const viewGridBtn = document.getElementById("view-grid-btn");
   const viewListBtn = document.getElementById("view-list-btn");
+  const letterIndexRail = document.getElementById("letter-index-rail");
+  const mobileLetterStrip = document.getElementById("mobile-letter-strip");
+  const heroUpdatedAt = document.getElementById("hero-updated-at");
+  const toolbarWrapper = document.getElementById("dizin-toolbar-section");
 
   // Stat Elements
-  const statDesigners = document.getElementById("stat-designers");
-  const statFoundries = document.getElementById("stat-foundries");
-  const statTotal = document.getElementById("stat-total");
   const countAll = document.getElementById("count-all");
   const countDesigners = document.getElementById("count-designers");
   const countFoundries = document.getElementById("count-foundries");
 
   // -------------------------------------------------------------
-  // Theme Management
+  // Theme Management (Synchronized across both archive & index)
   // -------------------------------------------------------------
 
   function getSystemTheme() {
@@ -76,7 +79,8 @@
     const next = getActiveTheme() === "dark" ? "light" : "dark";
     updateThemeUI(next);
     try {
-      localStorage.setItem(THEME_STORAGE_KEY, next);
+      localStorage.setItem(THEME_STORAGE_KEY_ARCHIVE, next);
+      localStorage.setItem(THEME_STORAGE_KEY_INDEX, next);
     } catch (e) {
       /* ignore */
     }
@@ -85,7 +89,7 @@
   function initTheme() {
     let saved = null;
     try {
-      saved = localStorage.getItem(THEME_STORAGE_KEY) || localStorage.getItem("tipografi-archive-theme");
+      saved = localStorage.getItem(THEME_STORAGE_KEY_ARCHIVE) || localStorage.getItem(THEME_STORAGE_KEY_INDEX);
     } catch (e) {
       /* ignore */
     }
@@ -98,7 +102,7 @@
 
     try {
       window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", (e) => {
-        if (!localStorage.getItem(THEME_STORAGE_KEY)) {
+        if (!localStorage.getItem(THEME_STORAGE_KEY_ARCHIVE) && !localStorage.getItem(THEME_STORAGE_KEY_INDEX)) {
           updateThemeUI(e.matches ? "dark" : "light");
         }
       });
@@ -140,17 +144,46 @@
     return normText.includes(normQuery);
   }
 
+  const TURKISH_HIGHLIGHT_MAP = {
+    c: "[cçCÇ]",
+    ç: "[cçCÇ]",
+    g: "[gğGĞ]",
+    ğ: "[gğGĞ]",
+    i: "[iıİI]",
+    ı: "[iıİI]",
+    o: "[oöOÖ]",
+    ö: "[oöOÖ]",
+    s: "[sşSŞ]",
+    ş: "[sşSŞ]",
+    u: "[uüUÜ]",
+    ü: "[uüUÜ]",
+  };
+
+  function buildTurkishHighlightPattern(term) {
+    let pattern = "";
+    for (const ch of term) {
+      const lower = ch.toLocaleLowerCase("tr-TR");
+      if (TURKISH_HIGHLIGHT_MAP[lower]) {
+        pattern += TURKISH_HIGHLIGHT_MAP[lower];
+      } else {
+        pattern += ch.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      }
+    }
+    return pattern;
+  }
+
   function highlightMatches(text, query) {
-    if (!text || !query) return escapeHtml(text);
+    if (!text) return "";
     const escaped = escapeHtml(text);
+    if (!query) return escaped;
+
     const trimmed = query.trim();
     if (!trimmed) return escaped;
 
-    // Build regex supporting Turkish char variants
     const terms = trimmed.split(/\s+/).filter(Boolean);
     if (!terms.length) return escaped;
 
-    const pattern = terms.map((t) => t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|");
+    const pattern = terms.map(buildTurkishHighlightPattern).join("|");
     try {
       const reg = new RegExp(`(${pattern})`, "gi");
       return escaped.replace(reg, '<mark class="search-hit">$1</mark>');
@@ -169,8 +202,28 @@
     return clean.slice(0, 2).toLocaleUpperCase("tr-TR");
   }
 
+  function getInitialLetter(name) {
+    if (!name) return "#";
+    const clean = name.trim();
+    const first = clean.charAt(0).toLocaleUpperCase("tr-TR");
+    if (/^[A-ZÇĞİIÖŞÜ]$/i.test(first)) {
+      return first;
+    }
+    return "#";
+  }
+
+  function formatTurkishDate(dateStr) {
+    if (!dateStr) return "";
+    try {
+      const date = new Date(dateStr + "T00:00:00");
+      return date.toLocaleDateString("tr-TR", { day: "numeric", month: "long", year: "numeric" });
+    } catch (e) {
+      return dateStr;
+    }
+  }
+
   // -------------------------------------------------------------
-  // Data Loading & Statistics
+  // Data Loading & Dynamic Counts
   // -------------------------------------------------------------
 
   async function loadData() {
@@ -182,7 +235,13 @@
       const data = await response.json();
       allItems = Array.isArray(data.items) ? data.items : [];
 
-      calculateAndRenderStats(data);
+      // Format updated_at in Turkish
+      if (heroUpdatedAt && data.updated_at) {
+        const trDate = formatTurkishDate(data.updated_at);
+        heroUpdatedAt.textContent = `Son güncelleme: ${trDate}`;
+      }
+
+      calculateAndRenderCounts(data);
       readUrlParams();
       applyFiltersAndSort();
     } catch (error) {
@@ -190,7 +249,7 @@
       if (statusContainer) {
         statusContainer.innerHTML = `
           <div class="app-status">
-            <h3 class="empty-title">Dizin Yüklenemedi</h3>
+            <h2 class="empty-title">Dizin Yüklenemedi</h2>
             <p class="empty-desc">Veriler yüklenirken bir sorun oluştu (${escapeHtml(error.message)}). Lütfen sayfayı yenilemeyi deneyin.</p>
           </div>
         `;
@@ -198,18 +257,21 @@
     }
   }
 
-  function calculateAndRenderStats(data) {
+  function calculateAndRenderCounts(data) {
     const total = allItems.length;
     const designers = allItems.filter((it) => it.categories && it.categories.includes("designer")).length;
     const foundries = allItems.filter((it) => it.categories && it.categories.includes("foundry")).length;
+    const both = allItems.filter(
+      (it) => it.categories && it.categories.includes("designer") && it.categories.includes("foundry")
+    ).length;
 
-    if (statDesigners) statDesigners.textContent = designers;
-    if (statFoundries) statFoundries.textContent = foundries;
-    if (statTotal) statTotal.textContent = total;
+    if (countAll) countAll.textContent = total;
+    if (countDesigners) countDesigners.textContent = designers;
+    if (countFoundries) countFoundries.textContent = foundries;
 
-    if (countAll) countAll.textContent = `(${total})`;
-    if (countDesigners) countDesigners.textContent = `(${designers})`;
-    if (countFoundries) countFoundries.textContent = `(${foundries})`;
+    if (overlapNotice) {
+      overlapNotice.textContent = `${both} kayıt hem yazı tasarımcısı hem yazıevi`;
+    }
   }
 
   // -------------------------------------------------------------
@@ -257,122 +319,327 @@
   }
 
   // -------------------------------------------------------------
-  // Rendering
+  // Grouping by Letter
+  // -------------------------------------------------------------
+
+  function groupResultsByLetter(results) {
+    const groups = new Map();
+    for (const item of results) {
+      const letter = getInitialLetter(item.name);
+      if (!groups.has(letter)) {
+        groups.set(letter, []);
+      }
+      groups.get(letter).push(item);
+    }
+    return groups;
+  }
+
+  // -------------------------------------------------------------
+  // Rendering Showcase (Vitrin) & List Views
   // -------------------------------------------------------------
 
   function renderResults() {
     if (!directoryList || !resultSummary) return;
 
-    // Summary Text
     const count = currentResults.length;
-    let summaryText = "";
-
     let catLabel = "KAYIT";
     if (activeCategory === "designer") catLabel = "YAZI TASARIMCISI";
     else if (activeCategory === "foundry") catLabel = "YAZIEVİ";
 
     if (activeQuery) {
-      summaryText = `<strong>${escapeHtml(activeQuery)}</strong> ARAMASI İÇİN <strong>${count}</strong> ${catLabel} BULUNDU`;
+      resultSummary.innerHTML = `<strong>${escapeHtml(activeQuery)}</strong> ARAMASI İÇİN <strong>${count}</strong> ${catLabel} BULUNDU`;
     } else {
       if (activeCategory === "all") {
-        summaryText = `TOPLAM <strong>${count}</strong> KAYIT LİSTELENİYOR`;
+        resultSummary.innerHTML = `TOPLAM <strong>${count}</strong> KAYIT LİSTELENİYOR`;
       } else {
-        summaryText = `<strong>${count}</strong> ${catLabel} LİSTELENİYOR`;
+        resultSummary.innerHTML = `<strong>${count}</strong> ${catLabel} LİSTELENİYOR`;
       }
     }
-    resultSummary.innerHTML = summaryText;
 
     // Empty State
     if (count === 0) {
       directoryList.innerHTML = "";
+      if (letterIndexRail) letterIndexRail.innerHTML = "";
+      if (mobileLetterStrip) mobileLetterStrip.innerHTML = "";
       statusContainer.innerHTML = `
         <div class="app-status">
-          <div class="empty-title">Kayıt Bulunamadı</div>
+          <h2 class="empty-title">Kayıt Bulunamadı</h2>
           <p class="empty-desc">
-            "${escapeHtml(activeQuery)}" ifadesiyle veya seçili filtreyle eşleşen herhangi bir tasarımcı veya yazıevi bulunamadı.
+            "${escapeHtml(activeQuery)}" ifadesiyle veya seçili filtreyle eşleşen herhangi bir kayıt bulunamadı.
           </p>
           <button type="button" class="reset-filter-btn" id="empty-reset-btn">Aramayı Temizle</button>
         </div>
       `;
       const resetBtn = document.getElementById("empty-reset-btn");
-      if (resetBtn) {
-        resetBtn.addEventListener("click", resetFilters);
-      }
+      if (resetBtn) resetBtn.addEventListener("click", resetFilters);
       return;
     }
 
-    // Clear Status Container
     statusContainer.innerHTML = "";
 
-    // Generate Card Elements
-    const cardsHtml = currentResults
-      .map((item) => {
-        const monogram = getMonogram(item.name);
-        const nameHighlighted = highlightMatches(item.name, activeQuery);
-        const subHighlighted = item.studio && item.studio !== item.name
-          ? highlightMatches(item.studio, activeQuery)
-          : (item.designer && item.designer !== item.name ? highlightMatches(item.designer, activeQuery) : "");
-        const descHighlighted = item.description ? highlightMatches(item.description, activeQuery) : "";
+    const isGroupedByLetter = activeSort === "name-asc" || activeSort === "name-desc";
+    let letterGroups = null;
 
-        const badgesHtml = (item.categories || [])
-          .map((cat) => {
-            if (cat === "designer") {
-              return `<span class="badge badge-designer">Yazı Tasarımcısı</span>`;
-            }
-            if (cat === "foundry") {
-              return `<span class="badge badge-foundry">Yazıevi</span>`;
-            }
-            return "";
-          })
-          .join("");
+    if (isGroupedByLetter) {
+      letterGroups = groupResultsByLetter(currentResults);
+      renderLetterRails(Array.from(letterGroups.keys()));
+    } else {
+      if (letterIndexRail) letterIndexRail.innerHTML = "";
+      if (mobileLetterStrip) mobileLetterStrip.innerHTML = "";
+    }
 
-        const platformBadge = item.platform
-          ? `<span class="badge badge-platform">${escapeHtml(item.platform)}</span>`
-          : "";
+    if (activeView === "grid") {
+      renderGridView(isGroupedByLetter, letterGroups);
+    } else {
+      renderListView(isGroupedByLetter, letterGroups);
+    }
 
-        const imageHtml = item.image
-          ? `<div class="card-media">
-               <img src="${escapeHtml(item.image)}" alt="${escapeHtml(item.name)} görseli" loading="lazy" onerror="this.parentElement.classList.add('no-img');">
-               <span class="media-fallback" aria-hidden="true">${escapeHtml(monogram)}</span>
-             </div>`
-          : `<div class="card-media no-img">
-               <span class="media-fallback" aria-hidden="true">${escapeHtml(monogram)}</span>
-             </div>`;
+    if (isGroupedByLetter) {
+      initLetterObserver();
+    }
+  }
 
-        return `
-          <article class="index-card" data-id="${escapeHtml(item.id)}" role="listitem">
-            <div class="card-top">
-              <div class="card-badges">${badgesHtml}</div>
-              <div class="card-platform">${platformBadge}</div>
-            </div>
+  // -------------------------------------------------------------
+  // Showcase / Grid Rendering
+  // -------------------------------------------------------------
 
-            <div class="card-middle">
-              <div class="card-info">
-                <h2 class="entry-title">
-                  <a href="${escapeHtml(item.link)}" target="_blank" rel="noopener noreferrer">
-                    ${nameHighlighted}
-                  </a>
-                </h2>
-                ${subHighlighted ? `<div class="entry-subtitle">${subHighlighted}</div>` : ""}
-                ${descHighlighted ? `<p class="entry-description">${descHighlighted}</p>` : ""}
-              </div>
-              ${imageHtml}
-            </div>
+  function renderVitrinItemHtml(item) {
+    const monogram = getMonogram(item.name);
+    const highlightedName = highlightMatches(item.name, activeQuery);
+    const subText = item.studio && item.studio !== item.name
+      ? highlightMatches(item.studio, activeQuery)
+      : (item.designer && item.designer !== item.name ? highlightMatches(item.designer, activeQuery) : "");
 
-            <div class="card-bottom">
-              <a class="entry-link-btn" href="${escapeHtml(item.link)}" target="_blank" rel="noopener noreferrer">
-                <span>Ziyaret Et</span>
-                <span class="arrow-icon" aria-hidden="true">↗</span>
-              </a>
-              <span class="entry-domain">${escapeHtml(item.domain || "")}</span>
-            </div>
-          </article>
-        `;
+    const badgesHtml = (item.categories || [])
+      .map((cat) => {
+        if (cat === "designer") return `<span class="badge badge-designer">Yazı Tasarımcısı</span>`;
+        if (cat === "foundry") return `<span class="badge badge-foundry">Yazıevi</span>`;
+        return "";
       })
       .join("");
 
-    directoryList.innerHTML = cardsHtml;
+    const platformBadge = item.platform
+      ? `<span class="vitrin-platform">${escapeHtml(item.platform)}</span>`
+      : "";
+
+    const imageHtml = item.image
+      ? `<div class="vitrin-media">
+           <img src="${escapeHtml(item.image)}" alt="${escapeHtml(item.name)} önizleme görseli" loading="lazy" decoding="async" onerror="this.parentElement.classList.add('no-img');">
+           <span class="vitrin-fallback" aria-hidden="true">${escapeHtml(monogram)}</span>
+         </div>`
+      : `<div class="vitrin-media no-img">
+           <span class="vitrin-fallback" aria-hidden="true">${escapeHtml(monogram)}</span>
+         </div>`;
+
+    return `
+      <article class="vitrin-item" data-id="${escapeHtml(item.id)}" role="listitem">
+        ${imageHtml}
+
+        <div class="vitrin-meta">
+          <div class="vitrin-badges">${badgesHtml}</div>
+          ${platformBadge}
+        </div>
+
+        <h3 class="vitrin-title">
+          <a href="${escapeHtml(item.link)}" target="_blank" rel="noopener noreferrer" class="vitrin-card-link">
+            ${highlightedName}
+          </a>
+        </h3>
+
+        ${subText ? `<div class="vitrin-sub">${subText}</div>` : ""}
+
+        <div class="vitrin-domain">
+          <span>${escapeHtml(item.domain || "")}</span>
+          <span class="arrow-icon" aria-hidden="true">↗</span>
+        </div>
+      </article>
+    `;
   }
+
+  function renderGridView(isGroupedByLetter, letterGroups) {
+    if (!isGroupedByLetter) {
+      directoryList.innerHTML = currentResults.map(renderVitrinItemHtml).join("");
+      return;
+    }
+
+    let html = "";
+    for (const [letter, groupItems] of letterGroups.entries()) {
+      html += `
+        <div class="letter-separator-card" id="letter-group-${escapeHtml(letter)}" data-letter="${escapeHtml(letter)}" role="separator" aria-label="${escapeHtml(letter)} harfi, ${groupItems.length} kayıt">
+          <h2 class="sep-letter">${escapeHtml(letter)}</h2>
+          <span class="sep-count">${groupItems.length} kayıt</span>
+        </div>
+      `;
+      html += groupItems.map(renderVitrinItemHtml).join("");
+    }
+    directoryList.innerHTML = html;
+  }
+
+  // -------------------------------------------------------------
+  // List View Rendering
+  // -------------------------------------------------------------
+
+  function renderListRowHtml(item) {
+    const monogram = getMonogram(item.name);
+    const highlightedName = highlightMatches(item.name, activeQuery);
+    const subText = item.studio && item.studio !== item.name
+      ? highlightMatches(item.studio, activeQuery)
+      : (item.designer && item.designer !== item.name ? highlightMatches(item.designer, activeQuery) : "");
+
+    const badgesHtml = (item.categories || [])
+      .map((cat) => {
+        if (cat === "designer") return `<span class="badge badge-designer">Yazı Tasarımcısı</span>`;
+        if (cat === "foundry") return `<span class="badge badge-foundry">Yazıevi</span>`;
+        return "";
+      })
+      .join("");
+
+    const imageHtml = item.image
+      ? `<div class="list-row-media">
+           <img src="${escapeHtml(item.image)}" alt="${escapeHtml(item.name)} görseli" loading="lazy" decoding="async" onerror="this.parentElement.classList.add('no-img');">
+           <span class="media-fallback" aria-hidden="true">${escapeHtml(monogram)}</span>
+         </div>`
+      : `<div class="list-row-media no-img">
+           <span class="media-fallback" aria-hidden="true">${escapeHtml(monogram)}</span>
+         </div>`;
+
+    return `
+      <article class="dizin-list-row" data-id="${escapeHtml(item.id)}" role="listitem">
+        <a href="${escapeHtml(item.link)}" target="_blank" rel="noopener noreferrer" class="list-row-link">
+          ${imageHtml}
+          <div class="list-row-name-group">
+            <span class="list-row-title">${highlightedName}</span>
+            ${subText ? `<span class="list-row-sub">${subText}</span>` : ""}
+          </div>
+          <div class="list-row-badges">${badgesHtml}</div>
+          <div class="list-row-platform">${escapeHtml(item.platform || "")}</div>
+          <div class="list-row-domain">
+            <span>${escapeHtml(item.domain || "")}</span>
+            <span class="arrow-icon" aria-hidden="true">↗</span>
+          </div>
+        </a>
+      </article>
+    `;
+  }
+
+  function renderListView(isGroupedByLetter, letterGroups) {
+    if (!isGroupedByLetter) {
+      directoryList.innerHTML = currentResults.map(renderListRowHtml).join("");
+      return;
+    }
+
+    let html = "";
+    for (const [letter, groupItems] of letterGroups.entries()) {
+      html += `
+        <div class="list-letter-header" id="letter-group-${escapeHtml(letter)}" data-letter="${escapeHtml(letter)}" role="separator">
+          <h2 class="list-sep-letter">${escapeHtml(letter)}</h2>
+          <span class="list-sep-count">${groupItems.length} kayıt</span>
+        </div>
+      `;
+      html += groupItems.map(renderListRowHtml).join("");
+    }
+    directoryList.innerHTML = html;
+  }
+
+  // -------------------------------------------------------------
+  // Letter Rails & Observer
+  // -------------------------------------------------------------
+
+  function renderLetterRails(letters) {
+    if (!letters.length) {
+      if (letterIndexRail) letterIndexRail.innerHTML = "";
+      if (mobileLetterStrip) mobileLetterStrip.innerHTML = "";
+      return;
+    }
+
+    const railButtonsHtml = letters
+      .map(
+        (ltr) => `
+        <button type="button" class="rail-letter-btn" data-letter="${escapeHtml(ltr)}" aria-label="${escapeHtml(ltr)} harfine atla">
+          ${escapeHtml(ltr)}
+        </button>
+      `
+      )
+      .join("");
+
+    const stripButtonsHtml = letters
+      .map(
+        (ltr) => `
+        <button type="button" class="strip-letter-btn" data-letter="${escapeHtml(ltr)}" aria-label="${escapeHtml(ltr)} harfine atla">
+          ${escapeHtml(ltr)}
+        </button>
+      `
+      )
+      .join("");
+
+    if (letterIndexRail) letterIndexRail.innerHTML = railButtonsHtml;
+    if (mobileLetterStrip) mobileLetterStrip.innerHTML = stripButtonsHtml;
+
+    updateActiveLetterIndicator(activeLetterInView || letters[0]);
+  }
+
+  function scrollToLetter(letter) {
+    const target = document.getElementById(`letter-group-${letter}`);
+    if (target) {
+      target.scrollIntoView({ behavior: "smooth", block: "start" });
+      updateActiveLetterIndicator(letter);
+    }
+  }
+
+  function updateActiveLetterIndicator(letter) {
+    activeLetterInView = letter;
+    if (letterIndexRail) {
+      const btns = letterIndexRail.querySelectorAll(".rail-letter-btn");
+      btns.forEach((btn) => {
+        btn.classList.toggle("active", btn.getAttribute("data-letter") === letter);
+      });
+    }
+    if (mobileLetterStrip) {
+      const btns = mobileLetterStrip.querySelectorAll(".strip-letter-btn");
+      btns.forEach((btn) => {
+        const isMatch = btn.getAttribute("data-letter") === letter;
+        btn.classList.toggle("active", isMatch);
+        if (isMatch) {
+          btn.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+        }
+      });
+    }
+  }
+
+  let letterObserver = null;
+  function initLetterObserver() {
+    if (letterObserver) {
+      letterObserver.disconnect();
+    }
+
+    const separators = document.querySelectorAll(".letter-separator-card, .list-letter-header");
+    if (!separators.length) return;
+
+    letterObserver = new IntersectionObserver(
+      (entries) => {
+        const visible = entries.filter((e) => e.isIntersecting);
+        if (visible.length) {
+          // Sort by top position
+          visible.sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+          const topVisible = visible[0].target;
+          const letter = topVisible.getAttribute("data-letter");
+          if (letter) {
+            updateActiveLetterIndicator(letter);
+          }
+        }
+      },
+      {
+        rootMargin: "-80px 0px -70% 0px",
+        threshold: 0.1
+      }
+    );
+
+    separators.forEach((el) => letterObserver.observe(el));
+  }
+
+  // -------------------------------------------------------------
+  // Reset Filters
+  // -------------------------------------------------------------
 
   function resetFilters() {
     activeQuery = "";
@@ -383,15 +650,14 @@
       searchInput.value = "";
       if (searchClearBtn) searchClearBtn.style.display = "none";
     }
-    if (categorySelect) categorySelect.value = "all";
     if (sortSelect) sortSelect.value = "name-asc";
 
-    syncCategoryPills("all");
+    syncCategorySegmented("all");
     applyFiltersAndSort();
   }
 
   // -------------------------------------------------------------
-  // View Switcher (Grid vs List)
+  // View Switcher (Vitrin vs Liste)
   // -------------------------------------------------------------
 
   function setViewMode(mode) {
@@ -407,7 +673,7 @@
       }
     }
 
-    if (viewCardBtn) viewCardBtn.classList.toggle("active", activeView === "grid");
+    if (viewGridBtn) viewGridBtn.classList.toggle("active", activeView === "grid");
     if (viewListBtn) viewListBtn.classList.toggle("active", activeView === "list");
 
     try {
@@ -415,6 +681,8 @@
     } catch (e) {
       /* ignore */
     }
+
+    renderResults();
   }
 
   function initViewMode() {
@@ -426,12 +694,8 @@
     }
     setViewMode(saved);
 
-    if (viewCardBtn) {
-      viewCardBtn.addEventListener("click", () => setViewMode("grid"));
-    }
-    if (viewListBtn) {
-      viewListBtn.addEventListener("click", () => setViewMode("list"));
-    }
+    if (viewGridBtn) viewGridBtn.addEventListener("click", () => setViewMode("grid"));
+    if (viewListBtn) viewListBtn.addEventListener("click", () => setViewMode("list"));
   }
 
   // -------------------------------------------------------------
@@ -451,8 +715,7 @@
     }
     if (cat && ["all", "designer", "foundry"].includes(cat)) {
       activeCategory = cat;
-      if (categorySelect) categorySelect.value = cat;
-      syncCategoryPills(cat);
+      syncCategorySegmented(cat);
     }
     if (sort && ["name-asc", "name-desc", "default"].includes(sort)) {
       activeSort = sort;
@@ -475,14 +738,35 @@
     }
   }
 
-  function syncCategoryPills(category) {
-    if (!categoryPills) return;
-    const buttons = categoryPills.querySelectorAll(".topic-btn");
+  function syncCategorySegmented(category) {
+    if (!categorySegmented) return;
+    const buttons = categorySegmented.querySelectorAll(".segment-btn");
     buttons.forEach((btn) => {
       const match = btn.getAttribute("data-category") === category;
       btn.classList.toggle("active", match);
       btn.setAttribute("aria-selected", match ? "true" : "false");
     });
+  }
+
+  // -------------------------------------------------------------
+  // Sticky Toolbar Scroll Detection
+  // -------------------------------------------------------------
+
+  function initStickyToolbarObserver() {
+    if (!toolbarWrapper) return;
+    let lastKnownScroll = 0;
+    window.addEventListener(
+      "scroll",
+      () => {
+        lastKnownScroll = window.scrollY;
+        if (lastKnownScroll > 40) {
+          toolbarWrapper.classList.add("is-stuck");
+        } else {
+          toolbarWrapper.classList.remove("is-stuck");
+        }
+      },
+      { passive: true }
+    );
   }
 
   // -------------------------------------------------------------
@@ -514,11 +798,16 @@
       });
     }
 
-    // Category select dropdown
-    if (categorySelect) {
-      categorySelect.addEventListener("change", (e) => {
-        activeCategory = e.target.value;
-        syncCategoryPills(activeCategory);
+    // Segmented category control
+    if (categorySegmented) {
+      categorySegmented.addEventListener("click", (e) => {
+        const btn = e.target.closest(".segment-btn");
+        if (!btn) return;
+        const cat = btn.getAttribute("data-category");
+        if (!cat) return;
+
+        activeCategory = cat;
+        syncCategorySegmented(cat);
         applyFiltersAndSort();
       });
     }
@@ -531,18 +820,22 @@
       });
     }
 
-    // Category quick pills
-    if (categoryPills) {
-      categoryPills.addEventListener("click", (e) => {
-        const btn = e.target.closest(".topic-btn");
+    // Letter rail delegation (Desktop & Mobile)
+    if (letterIndexRail) {
+      letterIndexRail.addEventListener("click", (e) => {
+        const btn = e.target.closest(".rail-letter-btn");
         if (!btn) return;
-        const cat = btn.getAttribute("data-category");
-        if (!cat) return;
+        const letter = btn.getAttribute("data-letter");
+        if (letter) scrollToLetter(letter);
+      });
+    }
 
-        activeCategory = cat;
-        if (categorySelect) categorySelect.value = cat;
-        syncCategoryPills(cat);
-        applyFiltersAndSort();
+    if (mobileLetterStrip) {
+      mobileLetterStrip.addEventListener("click", (e) => {
+        const btn = e.target.closest(".strip-letter-btn");
+        if (!btn) return;
+        const letter = btn.getAttribute("data-letter");
+        if (letter) scrollToLetter(letter);
       });
     }
   }
@@ -554,6 +847,7 @@
   document.addEventListener("DOMContentLoaded", () => {
     initTheme();
     initViewMode();
+    initStickyToolbarObserver();
     initEventListeners();
     loadData();
   });

@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Yazı Tasarımcıları ve Yazıevleri — Türkiye — Türkçe Tipografi Topluluğu</title>
-  <meta name="description" content="Türkiye'den yazı tasarımcılarını, bağımsız yazıevlerini ve özgün yazı tasarımı üretimlerini bir araya getiren açık ve yaşayan bir dijital dizin.">
+  <meta name="description" content="Türkiye'den yazı tasarımcılarını, bağımsız yazıevlerini ve özgün yazı tasarımı üretimlerini bir araya getiren açık ve yaşayan bir dijital katalog ve vitrin.">
   <link rel="icon" type="image/png" href="logo.png">
   <link rel="canonical" href="https://tipografitoplulugu.github.io/turkish-type-index/">
 
@@ -12,13 +12,13 @@
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://tipografitoplulugu.github.io/turkish-type-index/">
   <meta property="og:title" content="Yazı Tasarımcıları ve Yazıevleri — Türkiye — Türkçe Tipografi Topluluğu">
-  <meta property="og:description" content="Türkiye'den yazı tasarımcılarını, bağımsız yazıevlerini ve özgün yazı tasarımı üretimlerini bir araya getiren açık bir dizin.">
+  <meta property="og:description" content="Türkiye'den yazı tasarımcılarını, bağımsız yazıevlerini ve özgün yazı tasarımı üretimlerini bir araya getiren açık bir katalog ve vitrin.">
   <meta property="og:image" content="https://tipografitoplulugu.github.io/turkish-type-index/logo.png">
 
   <!-- Twitter Meta -->
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="Yazı Tasarımcıları ve Yazıevleri — Türkiye">
-  <meta name="twitter:description" content="Türkiye'den yazı tasarımcılarını, bağımsız yazıevlerini ve özgün yazı tasarımı üretimlerini bir araya getiren açık bir dizin.">
+  <meta name="twitter:description" content="Türkiye'den yazı tasarımcılarını, bağımsız yazıevlerini ve özgün yazı tasarımı üretimlerini bir araya getiren açık bir katalog ve vitrin.">
   <meta name="twitter:image" content="https://tipografitoplulugu.github.io/turkish-type-index/logo.png">
 
   <!-- Preconnect Fonts -->
@@ -29,7 +29,7 @@
   <!-- Instant Theme Setup to prevent FOUC -->
   <script>
     (() => {
-      const savedTheme = localStorage.getItem('tipografi-index-theme') || localStorage.getItem('tipografi-archive-theme');
+      const savedTheme = localStorage.getItem('tipografi-archive-theme') || localStorage.getItem('tipografi-index-theme');
       const urlParams = new URLSearchParams(window.location.search);
       const queryTheme = urlParams.get('theme');
       const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
@@ -38,7 +38,7 @@
     })();
   </script>
 </head>
-<body>
+<body class="page-dizin">
   <div class="archive-container">
     <!-- Brand Header -->
     <header class="archive-brand-header">
@@ -52,9 +52,7 @@
       </div>
 
       <nav class="brand-links" aria-label="Yayın ve topluluk bağlantıları">
-        <a href="mailto:tipografitoplulugu@gmail.com">Yazı Tasarımcısı Ekle</a>
-        <span aria-hidden="true">·</span>
-        <a href="https://tipografitoplulugu.github.io/bulten-arsivi/" target="_blank" rel="noopener noreferrer">Bülten Arşivi</a>
+        <a href="https://tipografitoplulugu.github.io/bulten-arsivi/" target="_self" aria-label="Kardeş proje: Tipografi Bülteni Arşivi">Bülten Arşivi</a>
         <span aria-hidden="true">·</span>
         <a href="https://tipografi.substack.com/" target="_blank" rel="noopener noreferrer">Substack</a>
         <span aria-hidden="true">·</span>
@@ -68,127 +66,118 @@
 
     <hr class="hero-rule">
 
-    <!-- Hero Section -->
-    <main>
-      <header class="hero-header">
-        <span class="hero-eyebrow">DİJİTAL DİZİN &amp; ARŞİV</span>
-        <h1>Yazı Tasarımcıları ve Yazıevleri — Türkiye</h1>
-        <p class="hero-copy">
-          Türkiye'den yazı tasarımcılarını, bağımsız yazıevlerini ve özgün yazı tasarımı üretimlerini bir araya getiren açık bir dizin.
-        </p>
+    <main id="main-content">
+      <!-- Two-Column Compact Hero / Künye -->
+      <header class="dizin-hero">
+        <div class="dizin-hero-main">
+          <span class="hero-eyebrow">DİJİTAL DİZİN &amp; VİTRİN</span>
+          <h1 class="dizin-h1">
+            <span class="title-line1">Yazı Tasarımcıları ve Yazıevleri</span>
+            <span class="title-line2">— Türkiye</span>
+          </h1>
+          <p class="dizin-hero-copy">
+            Türkiye'den yazı tasarımcılarını, bağımsız yazıevlerini ve özgün yazı tasarımı üretimlerini bir araya getiren açık bir dizin.
+          </p>
+        </div>
+
+        <div class="dizin-hero-aside">
+          <a href="mailto:tipografitoplulugu@gmail.com" class="hero-cta-btn" title="Dizine yeni bir yazı tasarımcısı veya yazıevi önerin">
+            <span>Yazı Tasarımcısı Ekle</span>
+            <span class="cta-arrow" aria-hidden="true">↗</span>
+          </a>
+          <div class="hero-updated-at" id="hero-updated-at">Son güncelleme: 16 Kasım 2026</div>
+        </div>
       </header>
 
-      <!-- Stats Grid -->
-      <div class="stat-grid" id="stats-grid" aria-label="Dizin istatistikleri">
-        <div class="stat-item">
-          <div class="stat-label">YAZI TASARIMCISI</div>
-          <div class="stat-value" id="stat-designers">—</div>
-        </div>
-        <div class="stat-item">
-          <div class="stat-label">YAZIEVİ</div>
-          <div class="stat-value" id="stat-foundries">—</div>
-        </div>
-        <div class="stat-item">
-          <div class="stat-label">TOPLAM KAYIT</div>
-          <div class="stat-value" id="stat-total">—</div>
-        </div>
-      </div>
-
-      <hr class="hero-rule">
-
-      <!-- Search & Filter Controls -->
-      <section class="controls-section" aria-labelledby="search-heading">
-        <form class="search-form" id="search-form" role="search" onsubmit="event.preventDefault();">
-          <!-- Text Search -->
-          <div class="form-group form-group--search">
-            <label class="section-eyebrow" id="search-heading" for="search-input">DİZİNDE ARA</label>
-            <div class="search-input-wrapper">
-              <input type="text" id="search-input" class="search-input" placeholder="İsim, stüdyo veya yazıevi ara (örn. Biliktü, Artegra, Onur Yazıcıgil)" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
-              <button type="button" id="search-clear-btn" class="search-clear-btn" aria-label="Aramayı temizle">&times;</button>
+      <!-- Sticky Toolbar -->
+      <section class="dizin-toolbar-wrapper" id="dizin-toolbar-section">
+        <div class="dizin-toolbar" id="dizin-toolbar" aria-label="Arama ve filtreleme araçları">
+          <div class="toolbar-inner">
+            <!-- Search -->
+            <div class="toolbar-search">
+              <svg class="search-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+              <input type="text" id="search-input" class="toolbar-search-input" placeholder="İsim, stüdyo veya yazıevi ara (örn. Biliktü, Artegra, Onur Yazıcıgil)" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" aria-label="Dizinde ara">
+              <button type="button" id="search-clear-btn" class="toolbar-search-clear" aria-label="Aramayı temizle">&times;</button>
             </div>
-          </div>
 
-          <!-- Category Select -->
-          <div class="form-group form-group--category">
-            <label class="section-eyebrow" for="category-select">KATEGORİ</label>
-            <div class="select-wrapper">
-              <select id="category-select" class="year-select" aria-label="Kategori filtreleme">
-                <option value="all">Tümü</option>
-                <option value="designer">Yazı Tasarımcıları</option>
-                <option value="foundry">Yazıevleri</option>
-              </select>
-              <div class="select-chevron">
-                <svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>
-              </div>
+            <!-- Segmented Category Control -->
+            <div class="segmented-control" role="tablist" aria-label="Kategori filtreleri" id="category-segmented">
+              <button type="button" class="segment-btn active" data-category="all" role="tab" aria-selected="true" id="seg-all">
+                <span>Tümü</span>
+                <span class="seg-count" id="count-all">44</span>
+              </button>
+              <button type="button" class="segment-btn" data-category="designer" role="tab" aria-selected="false" id="seg-designer">
+                <span>Yazı Tasarımcıları</span>
+                <span class="seg-count" id="count-designers">42</span>
+              </button>
+              <button type="button" class="segment-btn" data-category="foundry" role="tab" aria-selected="false" id="seg-foundry">
+                <span>Yazıevleri</span>
+                <span class="seg-count" id="count-foundries">14</span>
+              </button>
             </div>
-          </div>
 
-          <!-- Sort Select -->
-          <div class="form-group form-group--sort">
-            <label class="section-eyebrow" for="sort-select">SIRALAMA</label>
-            <div class="select-wrapper">
-              <select id="sort-select" class="year-select" aria-label="Sıralama ölçütü">
-                <option value="name-asc">Alfabetik (A → Z)</option>
-                <option value="name-desc">Alfabetik (Z → A)</option>
+            <!-- Sort Dropdown -->
+            <div class="toolbar-sort">
+              <select id="sort-select" class="toolbar-sort-select" aria-label="Sıralama ölçütü">
+                <option value="name-asc">A → Z</option>
+                <option value="name-desc">Z → A</option>
                 <option value="default">Dizin Sırası</option>
               </select>
-              <div class="select-chevron">
-                <svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>
+              <div class="sort-chevron" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M7 10l5 5 5-5z"/></svg>
               </div>
             </div>
-          </div>
-        </form>
 
-        <!-- Quick Filter Pills & View Mode Bar -->
-        <div class="filter-bar">
-          <div class="filter-pills" id="category-pills" role="tablist" aria-label="Hızlı kategori filtreleri">
-            <button type="button" class="topic-btn active" data-category="all" role="tab" aria-selected="true" id="pill-all">
-              Tümü <span class="pill-count" id="count-all"></span>
-            </button>
-            <button type="button" class="topic-btn" data-category="designer" role="tab" aria-selected="false" id="pill-designer">
-              Yazı Tasarımcıları <span class="pill-count" id="count-designers"></span>
-            </button>
-            <button type="button" class="topic-btn" data-category="foundry" role="tab" aria-selected="false" id="pill-foundry">
-              Yazıevleri <span class="pill-count" id="count-foundries"></span>
-            </button>
+            <!-- View Switcher -->
+            <div class="toolbar-view" role="group" aria-label="Görünüm seçimi">
+              <button type="button" class="view-btn active" id="view-grid-btn" aria-label="Vitrin görünümü" title="Vitrin görünümü">
+                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <rect x="3" y="3" width="7" height="7"></rect>
+                  <rect x="14" y="3" width="7" height="7"></rect>
+                  <rect x="14" y="14" width="7" height="7"></rect>
+                  <rect x="3" y="14" width="7" height="7"></rect>
+                </svg>
+                <span>Vitrin</span>
+              </button>
+              <button type="button" class="view-btn" id="view-list-btn" aria-label="Liste görünümü" title="Liste görünümü">
+                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <line x1="8" y1="6" x2="21" y2="6"></line>
+                  <line x1="8" y1="12" x2="21" y2="12"></line>
+                  <line x1="8" y1="18" x2="21" y2="18"></line>
+                  <line x1="3" y1="6" x2="3.01" y2="6"></line>
+                  <line x1="3" y1="12" x2="3.01" y2="12"></line>
+                  <line x1="3" y1="18" x2="3.01" y2="18"></line>
+                </svg>
+                <span>Liste</span>
+              </button>
+            </div>
           </div>
 
-          <div class="view-switcher" role="group" aria-label="Görünüm seçimi">
-            <button type="button" class="view-btn active" id="view-card-btn" aria-label="Kart görünümü" title="Kart görünümü">
-              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="3" y="3" width="7" height="7"></rect>
-                <rect x="14" y="3" width="7" height="7"></rect>
-                <rect x="14" y="14" width="7" height="7"></rect>
-                <rect x="3" y="14" width="7" height="7"></rect>
-              </svg>
-              <span>Kartlar</span>
-            </button>
-            <button type="button" class="view-btn" id="view-list-btn" aria-label="Liste görünümü" title="Liste görünümü">
-              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <line x1="8" y1="6" x2="21" y2="6"></line>
-                <line x1="8" y1="12" x2="21" y2="12"></line>
-                <line x1="8" y1="18" x2="21" y2="18"></line>
-                <line x1="3" y1="6" x2="3.01" y2="6"></line>
-                <line x1="3" y1="12" x2="3.01" y2="12"></line>
-                <line x1="3" y1="18" x2="3.01" y2="18"></line>
-              </svg>
-              <span>Liste</span>
-            </button>
-          </div>
+          <!-- Mobile / Tablet Horizontal Letter Strip -->
+          <div class="mobile-letter-strip" id="mobile-letter-strip" aria-label="Hızlı harf seçimi"></div>
+        </div>
+
+        <!-- Sub Bar: Summary & Overlap Notice -->
+        <div class="toolbar-sub-bar" aria-live="polite">
+          <div class="result-summary" id="result-summary">Yükleniyor...</div>
+          <div class="overlap-notice" id="overlap-notice">12 kayıt hem yazı tasarımcısı hem yazıevi</div>
         </div>
       </section>
 
-      <!-- Results Area -->
-      <section id="results-area" class="results-area" aria-label="Dizin kayıtları">
-        <div id="status-container"></div>
-        <div id="results-content">
-          <div class="result-summary-bar">
-            <div class="result-summary" id="result-summary">Yükleniyor...</div>
-          </div>
+      <!-- Directory Body Area with Sticky Rail on Desktop -->
+      <div class="dizin-body-wrapper">
+        <!-- Sticky Letter Index Rail (Desktop >= 1100px) -->
+        <nav class="letter-index-rail" id="letter-index-rail" aria-label="Alfabetik harf indeksi"></nav>
 
+        <!-- Main Directory Area -->
+        <div class="dizin-main-area">
+          <div id="status-container"></div>
           <div class="directory-container view-grid" id="directory-list" role="list"></div>
         </div>
-      </section>
+      </div>
     </main>
 
     <hr class="hero-rule">
@@ -200,6 +189,8 @@
           <div class="footer-name">Türkçe Tipografi Topluluğu</div>
           <div class="footer-credit">
             <a href="https://github.com/tipografitoplulugu/turkish-type-index" target="_blank" rel="noopener noreferrer">GitHub</a>
+            <span aria-hidden="true">·</span>
+            <a href="https://tipografitoplulugu.github.io/bulten-arsivi/">Kardeş proje: Tipografi Bülteni Arşivi</a>
           </div>
         </div>
 
