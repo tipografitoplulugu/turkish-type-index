@@ -9,6 +9,34 @@ Bu proje, [Türkçe Tipografi Topluluğu](https://tipografitoplulugu.github.io/b
 
 ---
 
+## Kayıt Ölçütleri ve Editoryal Tanımlar
+
+Dizinde kavram kargaşasını önlemek adına "Yazıevi", "Yazı Tasarımcısı" ve "Marka" tanımları kesin editoryal ölçütlere bağlanmıştır:
+
+1. **Yazıevi (`foundry`):**
+   Yazı tipi üretimini ve yayınını birlikte yürüten, kurumsal kimliği tek bir kişinin adından bağımsız olan ve **en az iki kişiden** oluşan yapı. Üç koşulun üçü birden aranır:
+   - (1) İki veya daha fazla kişi/ortak,
+   - (2) Kişi adından bağımsız kurumsal kimlik,
+   - (3) Ana faaliyetin yazı tipi üretimi ve yayını olması.
+   *Dizindeki örnek:* **Element Type** (İbrahim Kaçtıoğlu ve Doğukan Karapınar).
+
+2. **Yazı Tasarımcısı (`designer`):**
+   Yazı tipi tasarlayan bağımsız kişi ya da tasarım stüdyoları; yazıevi ölçütlerini karşılamayan herkes bu kategoridedir. Bir kayıt aynı anda iki kategoriye birden giremez.
+
+3. **Marka (`brand`):**
+   Bir tasarımcının kendi çalışmalarını yayımlarken kullandığı ticari ad. Marka kaydın bir niteliğidir (alanıdır); bir kategori değildir ve kaydın türünü değiştirmez. Marka adı "Yazıevi" veya "Foundry" sözcüklerini içerse bile (ör. *Biliktü Yazıevi*, *I Dotless Yazıevi*, *Informal Type Foundry*) kayıt `designer` kalır ve marka adı kartta "Marka" satırı olarak gösterilir.
+   *Dizindeki örnek:* **Ceyhun Birinci** (Markası: *Artegra Type*).
+
+### Editörler İçin İki Soruluk Karar Rehberi
+
+1. **Kayıtta ad-soyad dışında bir ticari ad kullanılıyor mu?**
+   - *Evet:* O ad `brand` (Marka) alanına yazılır.
+2. **Üç yazıevi koşulunun (2+ kişi, bağımsız kurumsal kimlik, tipografi odağı) üçü de sağlanıyor mu?**
+   - *Evet:* Kayıt türü `foundry` seçilir ve ekip üyeleri `members` listesine girilir.
+   - *Hayır:* Kayıt türü `designer` seçilir.
+
+---
+
 ## Görsel Kimlik ve Tasarım Yaklaşımı
 
 Site, **Tipografi Bülteni Arşivi** ile ortak bir marka katmanını paylaşırken, ürün katmanında belirgin bir "katalog ve vitrin" mimarisine sahiptir:
@@ -21,21 +49,21 @@ Site, **Tipografi Bülteni Arşivi** ile ortak bir marka katmanını paylaşırk
 
 - **Ürün Katmanı (Dizine Özgü — Katalog ve Vitrin Karakteri):**
   - **Geniş Sayfa Düzeni:** Arşivin 1120px dar okuma sütunu yerine **1320px** genişliğinde ferah vitrin düzeni.
-  - **Kompakt Üst Bölüm (Künye):** Arşivdeki dev hero ve 3 sütunlu sayaç şeridi yerine; sol tarafta iki satırlık Instrument Serif başlık ve tek paragraf açıklama, sağ tarafta vurgulu "Yazı Tasarımcısı Ekle" aksiyonu ve dinamik "Son güncelleme" bilgisi.
-  - **Yapışkan Araç Çubuğu:** Canlı arama, dinamik sayaçlı segmentli kategori kontrolü (`Tümü 44 / Yazı Tasarımcıları 42 / Yazıevleri 14`), sıralama ve "Vitrin | Liste" seçicisi tek satırda üstte sabitlenir.
-  - **Kutusuz Vitrin Izgarası:** 3 sütunlu yerleşimde (1100px+), beyaz kart kutuları yerine kâğıt zemin üzerinde duran 4:3 en-boy oranlı görsel vitrini (`object-fit: cover; object-position: top;`), Instrument Serif ad ve doğrudan hücre bağlantısı.
-  - **Harf Ayraçları ve Yapışkan Harf İndeksi:** Alfabetik sıralamada her harf grubu ızgarada dev harfli ayraç kartıyla başlar; sol tarafta dikey yapışkan harf indeksi (`IntersectionObserver` ile aktif harf vurgulu) gezinmeyi hızlandırır.
-  - **Yoğun Dizin Listesi:** Liste modunda her satır ~64px yüksekliğinde, tipografik hiyerarşiyi koruyan kompakt bir dizin satırına dönüşür.
-  - **Ölçülü Lime Kullanımı:** Vurgu rengi (`#D5FD42`) yalnızca birincil düğmede, harf indeksindeki aktif işarette, arama vurgularında ve yazıevi rozetinde kullanılır.
+  - **Kompakt Üst Bölüm (Künye):** İki satırlık dengeli Instrument Serif başlık, açıklama ve "Yazıevi ile marka arasındaki fark" tanım notu; sağ tarafta "Yazı Tasarımcısı Ekle" aksiyonu ve dinamik "Son güncelleme" bilgisi.
+  - **Yapışkan Araç Çubuğu:** Canlı arama, dinamik sayaçlı segmentli kategori kontrolü (`Tümü 44 / Yazı Tasarımcıları 43 / Yazıevleri 1`), sıralama ve "Vitrin | Liste" seçicisi.
+  - **Kutusuz Vitrin Izgarası:** 3 sütunlu yerleşimde (1100px+), kâğıt zemin üzerinde duran 4:3 görsel vitrini (`object-fit: cover; object-position: top;`), Instrument Serif ad, tekil rozet ve hiyerarşik kimlik satırı (Ekip / Marka / Yazıevi).
+  - **Harf Ayraçları ve Yapışkan Harf İndeksi:** Alfabetik sıralamada her harf grubu ızgarada Instrument Serif ayraç kartıyla başlar; sağ tarafta dikey yapışkan harf indeksi klavye ve kaydırma senkronizasyonuyla gezinmeyi hızlandırır.
+  - **Yoğun Dizin Listesi:** Liste modunda her satır ~64px yüksekliğinde, iki satırlı esnek yapısıyla her ekranda sıfır taşmayla çalışan editoryal liste.
+  - **Ölçülü Lime Kullanımı:** Vurgu rengi (`#D5FD42`) yalnızca birincil CTA düğmesinde, harf indeksindeki aktif göstergede, arama vurgularında ve yazıevi rozetinde kullanılır.
 
 ---
 
 ## Özellikler
 
 1. **Canlı Arama & Türkçe Karakter Duyarlılığı:**
-   - İsim, stüdyo, yazıevi veya platform üzerinden anlık arama.
+   - İsim, marka, ekip üyeleri, bağlı yazıevi, platform veya açıklama üzerinden anlık arama.
    - Türkçe karakter normalizasyonu (`ı/i`, `ö/o`, `ü/u`, `ç/c`, `ğ/g`, `ş/s`) sayesinde eksik veya farklı klavye girdilerinde dahi kusursuz eşleşme.
-   - Arama terimlerinin metin içinde anlık vurgulanması (`<mark class="search-hit">`).
+   - Eşleşen terimlerin metin içinde anlık vurgulanması (`<mark class="search-hit">`).
 
 2. **Kategori Filtreleme & Dinamik Sayaçlar:**
    - *Yazı Tasarımcıları (Type Designers)* ve *Yazıevleri (Type Foundries)* filtreleri.
@@ -48,49 +76,60 @@ Site, **Tipografi Bülteni Arşivi** ile ortak bir marka katmanını paylaşırk
 4. **URL Senkronizasyonu:**
    - Arama sorguları ve kategori filtreleri URL parametreleriyle (`?q=...&category=...`) otomatik senkronize edilir; filtreli görünümler doğrudan paylaşılabilir.
 
-5. **Performans & Güvenilirlik:**
-   - Sıfır ağır bağımlılık, saf HTML5, modern CSS ve vanilya JavaScript.
-   - Görsel önizlemeleri yerel depolanır, eksik görsellerde tipografik monogram yedekleme devreye girer.
-   - Dış bağlantılar güvenli biçimde (`target="_blank" rel="noopener noreferrer"`) yeni sekmede açılır.
+5. **Performans & Erişilebilirlik:**
+   - Sıfır ağır kütüphane bağımlılığı; saf HTML5, modern CSS ve vanilya JavaScript.
+   - WCAG 2.1 AA uyumlu renk kontrastları, tam klavye erişilebilirliği (roving tabindex, atlama bağlantısı) ve ekran okuyucu uyumlu ARIA hiyerarşisi.
 
 ---
 
-## Yeni Yazı Tasarımcısı veya Yazıevi Ekleme
+## Yeni Kayıt Ekleme ve Doğrulama Araçları
 
-Dropmark'a ihtiyaç duymadan yeni kayıt eklemenin **3 çok kolay yolu** bulunmaktadır:
-
-### 1. Terminal Sihirbazı ile (En Hızlı — Önerilen)
-Terminalde sadece şu komutu çalıştırın:
+### 1. Terminal Sihirbazı ile (`add.py` — Önerilen)
+Terminalde doğrudan çalıştırın:
 
 ```bash
 python3 add.py
 ```
 
-Sihirbaz size adım adım tasarımcı adını, web sitesini, kategorisini sorar; varsa görseli otomatik indirip kaydeder, `data/index.json` dosyasını ve istatistik sayaçlarını anında günceller. Ardından GitHub Desktop'tan **Push origin** demeniz yeterlidir.
+Sihirbaz adım adım türü (Yazı Tasarımcısı / Yazıevi), adı, markayı, bağlı yazıevini veya ekip üyelerini sorar; görseli otomatik indirip kaydeder ve `data/index.json` dosyasını günceller.
 
-### 2. Web Formu ile (`ekle.html`)
-Terminal kullanmak istemiyorsanız, proje klasöründeki [ekle.html](file:///Users/muraterturk/Downloads/turkish-type-index/ekle.html) dosyasını tarayıcınızda açın:
-- Formu doldurun.
-- Canlı kart önizlemesini anında görün.
-- **"Güncel data/index.json Dosyasını İndir"** butonuna basıp indirilen dosyayı `data/` klasörüne atın.
+### 2. Şema ve Veri Tutarlılığı Denetimi (`add.py --check`)
+Veri tabanının tüm kurallara uygunluğunu denetlemek için:
 
-### 3. Doğrudan `data/index.json` Dosyasını Düzenleyerek
-Dilerseniz doğrudan `data/index.json` içerisindeki `items` listesinin sonuna yeni bir kayıt objesi ekleyebilirsiniz:
+```bash
+python3 add.py --check
+```
+
+Bu komut:
+- `categories` tek elemanlılığını,
+- Yazıevlerinde en az 2 ekip üyesi bulunmasını,
+- Tasarımcılarda `members` alanının null olmasını,
+- İsimlerde parantez bulunmamasını,
+- Eski `studio` / `designer` alanlarının olmadığını,
+- Sayaçların doğruluğunu satır satır denetler.
+
+### 3. Web Formu ile (`ekle.html`)
+Terminal kullanmak istemiyorsanız proje klasöründeki [ekle.html](file:///Users/muraterturk/Downloads/turkish-type-index/ekle.html) dosyasını tarayıcınızda açıp formu doldurabilir, canlı kart ve JSON önizlemesini inceleyerek güncel `data/index.json` dosyasını indirebilirsiniz.
+
+### 4. JSON Veri Şeması
+`data/index.json` dosyasındaki her kayıt şu şemaya uyar:
 
 ```json
 {
-  "id": "45-yeni-tasarimci",
-  "index": 45,
-  "name": "Tasarımcı Adı",
-  "designer": "Tasarımcı Adı",
-  "studio": "Yazıevi Adı (varsa)",
-  "categories": ["designer", "foundry"],
-  "category_labels": ["Yazı Tasarımcısı", "Yazıevi"],
-  "link": "https://ornek-yazi-tasarimci.com",
-  "domain": "ornek-yazi-tasarimci.com",
-  "platform": "Web Sitesi",
-  "description": "Kısa açıklama metni (varsa)",
-  "image": null
+  "id": "37-ceyhun-birinci",
+  "index": 37,
+  "name": "Ceyhun Birinci",
+  "categories": ["designer"],
+  "category_labels": ["Yazı Tasarımcısı"],
+  "link": "https://www.behance.net/Artegra",
+  "domain": "behance.net",
+  "platform": "Behance",
+  "description": "Artegra is a type foundry run by Turkish type designer Ceyhun Birinci...",
+  "image": "assets/thumbnails/item_37.png",
+  "dropmark_id": 30452987,
+  "brand": "Artegra Type",
+  "members": null,
+  "affiliation": null
 }
 ```
 
@@ -98,34 +137,11 @@ Dilerseniz doğrudan `data/index.json` içerisindeki `items` listesinin sonuna y
 
 ## Yerel Geliştirme ve Önizleme
 
-Herhangi bir sunucu veya statik sunucu aracıyla doğrudan çalıştırılabilir:
-
 ```bash
-# Python ile yerel sunucu başlatma
-python3 -m http.server 8000
+python3 -m http.server 8089
 ```
 
-Ardından tarayıcınızdan `http://localhost:8000` adresine gidin.
-
----
-
-## GitHub Pages Yayın Kurulumu
-
-Proje, GitHub Pages için statik olarak tamamen hazırdır:
-
-1. Repository ayarlarından (**Settings** > **Pages**) gidin.
-2. **Build and deployment** > **Source** bölümünü `Deploy from a branch` olarak seçin.
-3. Branch olarak `main` ve klasör olarak `/ (root)` seçin.
-4. Kaydettikten sonra site birkaç saniye içinde `https://tipografitoplulugu.github.io/turkish-type-index/` adresinde canlıya geçer.
-
----
-
-## Katkıda Bulunma
-
-Dizinde eksik olan veya güncellenmesi gereken bir Türk yazı tasarımcısı veya bağımsız yazıevi olduğunu düşünüyorsanız:
-
-- Bir GitHub Issue veya Pull Request açarak `data/index.json` dosyasına katkıda bulunabilir,
-- Veya [Türkçe Tipografi Topluluğu](https://tipografitoplulugu.github.io/bulten-arsivi/) üzerinden iletişime geçebilirsiniz.
+Ardından tarayıcınızdan `http://localhost:8089` adresine gidin.
 
 ---
 

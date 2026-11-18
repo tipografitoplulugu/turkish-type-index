@@ -45,7 +45,6 @@
   const directoryList = document.getElementById("directory-list");
   const statusContainer = document.getElementById("status-container");
   const resultSummary = document.getElementById("result-summary");
-  const overlapNotice = document.getElementById("overlap-notice");
   const viewGridBtn = document.getElementById("view-grid-btn");
   const viewListBtn = document.getElementById("view-list-btn");
   const letterIndexRail = document.getElementById("letter-index-rail");
@@ -342,22 +341,10 @@
     const total = allItems.length;
     const designers = allItems.filter((it) => it.categories && it.categories.includes("designer")).length;
     const foundries = allItems.filter((it) => it.categories && it.categories.includes("foundry")).length;
-    const both = allItems.filter(
-      (it) => it.categories && it.categories.includes("designer") && it.categories.includes("foundry")
-    ).length;
 
     if (countAll) countAll.textContent = total;
     if (countDesigners) countDesigners.textContent = designers;
     if (countFoundries) countFoundries.textContent = foundries;
-
-    if (overlapNotice) {
-      if (both > 0) {
-        overlapNotice.textContent = `${both} kayıt hem yazı tasarımcısı hem yazıevi`;
-        overlapNotice.hidden = false;
-      } else {
-        overlapNotice.hidden = true;
-      }
-    }
   }
 
   // -------------------------------------------------------------
@@ -379,10 +366,15 @@
     // 2. Text Search
     if (activeQuery) {
       filtered = filtered.filter((item) => {
+        const membersMatch = Array.isArray(item.members)
+          ? item.members.some((m) => textContainsQuery(m, activeQuery))
+          : false;
+
         return (
           textContainsQuery(item.name, activeQuery) ||
-          textContainsQuery(item.designer, activeQuery) ||
-          textContainsQuery(item.studio, activeQuery) ||
+          textContainsQuery(item.brand, activeQuery) ||
+          membersMatch ||
+          textContainsQuery(item.affiliation, activeQuery) ||
           textContainsQuery(item.description, activeQuery) ||
           textContainsQuery(item.domain, activeQuery) ||
           textContainsQuery(item.platform, activeQuery)
@@ -492,20 +484,47 @@
   // Showcase / Grid Rendering
   // -------------------------------------------------------------
 
+  function renderBadgeHtml(item) {
+    if (item.categories && item.categories.includes("foundry")) {
+      return `<span class="badge badge-foundry">Yazıevi</span>`;
+    }
+    return `<span class="badge badge-designer">Yazı Tasarımcısı</span>`;
+  }
+
+  function renderIdentityLineHtml(item) {
+    if (item.categories && item.categories.includes("foundry") && Array.isArray(item.members) && item.members.length > 0) {
+      const highlightedMembers = item.members.map((m) => highlightMatches(m, activeQuery)).join(" · ");
+      return `
+        <div class="identity-line">
+          <span class="identity-label">Ekip</span>
+          <span class="identity-val">${highlightedMembers}</span>
+        </div>
+      `;
+    }
+    if (item.brand) {
+      return `
+        <div class="identity-line">
+          <span class="identity-label">Marka</span>
+          <span class="identity-val">${highlightMatches(item.brand, activeQuery)}</span>
+        </div>
+      `;
+    }
+    if (item.affiliation) {
+      return `
+        <div class="identity-line">
+          <span class="identity-label">Yazıevi</span>
+          <span class="identity-val">${highlightMatches(item.affiliation, activeQuery)}</span>
+        </div>
+      `;
+    }
+    return "";
+  }
+
   function renderVitrinItemHtml(item) {
     const monogram = getMonogram(item.name);
     const highlightedName = highlightMatches(item.name, activeQuery);
-    const subText = item.studio && item.studio !== item.name
-      ? highlightMatches(item.studio, activeQuery)
-      : (item.designer && item.designer !== item.name ? highlightMatches(item.designer, activeQuery) : "");
-
-    const badgesHtml = (item.categories || [])
-      .map((cat) => {
-        if (cat === "designer") return `<span class="badge badge-designer">Yazı Tasarımcısı</span>`;
-        if (cat === "foundry") return `<span class="badge badge-foundry">Yazıevi</span>`;
-        return "";
-      })
-      .join("");
+    const badgeHtml = renderBadgeHtml(item);
+    const identityLineHtml = renderIdentityLineHtml(item);
 
     const platformBadge = item.platform
       ? `<span class="vitrin-platform">${escapeHtml(item.platform)}</span>`
@@ -525,7 +544,7 @@
         ${imageHtml}
 
         <div class="vitrin-meta">
-          <div class="vitrin-badges">${badgesHtml}</div>
+          <div class="vitrin-badges">${badgeHtml}</div>
           ${platformBadge}
         </div>
 
@@ -535,7 +554,7 @@
           </a>
         </h3>
 
-        ${subText ? `<div class="vitrin-sub">${subText}</div>` : ""}
+        ${identityLineHtml}
 
         <div class="vitrin-domain">
           <span>${escapeHtml(item.domain || "")}</span>
@@ -579,17 +598,8 @@
   function renderListRowHtml(item) {
     const monogram = getMonogram(item.name);
     const highlightedName = highlightMatches(item.name, activeQuery);
-    const subText = item.studio && item.studio !== item.name
-      ? highlightMatches(item.studio, activeQuery)
-      : (item.designer && item.designer !== item.name ? highlightMatches(item.designer, activeQuery) : "");
-
-    const badgesHtml = (item.categories || [])
-      .map((cat) => {
-        if (cat === "designer") return `<span class="badge badge-designer">Yazı Tasarımcısı</span>`;
-        if (cat === "foundry") return `<span class="badge badge-foundry">Yazıevi</span>`;
-        return "";
-      })
-      .join("");
+    const badgeHtml = renderBadgeHtml(item);
+    const identityLineHtml = renderIdentityLineHtml(item);
 
     const imageHtml = item.image
       ? `<div class="list-row-media">
@@ -607,10 +617,10 @@
           <div class="list-row-content">
             <div class="list-row-line1">
               <span class="list-row-title">${highlightedName}</span>
-              <div class="list-row-badges">${badgesHtml}</div>
+              <div class="list-row-badges">${badgeHtml}</div>
             </div>
             <div class="list-row-line2">
-              ${subText ? `<span class="list-row-sub">${subText}</span>` : ""}
+              ${identityLineHtml}
               ${item.domain ? `<span class="list-row-domain"><span>${escapeHtml(item.domain)}</span><span class="arrow-icon" aria-hidden="true">↗</span></span>` : ""}
               ${item.platform ? `<span class="list-row-platform">${escapeHtml(item.platform)}</span>` : ""}
             </div>

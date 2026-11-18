@@ -129,7 +129,7 @@
       font-size: .78rem;
       line-height: 1.5;
       overflow-x: auto;
-      max-height: 220px;
+      max-height: 250px;
       white-space: pre;
     }
     .notification {
@@ -140,6 +140,18 @@
       font-family: "DM Mono", monospace;
       font-size: .82rem;
       margin-top: 1rem;
+      display: none;
+    }
+    .admin-error-tip {
+      color: var(--danger);
+      background: var(--danger-bg);
+      border: 1px solid var(--danger-border);
+      border-radius: 8px;
+      padding: .65rem .85rem;
+      font-family: "Inter", sans-serif;
+      font-size: .84rem;
+      line-height: 1.5;
+      margin-top: .5rem;
       display: none;
     }
     @media (max-width: 820px) {
@@ -185,22 +197,45 @@
         <div class="admin-form-card">
           <form id="add-form" onsubmit="event.preventDefault();">
             <div class="admin-form-group">
-              <label for="f-name">İsim veya Stüdyo Adı *</label>
-              <input type="text" id="f-name" class="admin-input" placeholder="Örn: Alican Pektaş veya Vignette Studio" required>
+              <label for="f-category">Kayıt Türü *</label>
+              <select id="f-category" class="admin-select">
+                <option value="designer" selected>Yazı Tasarımcısı (kişi veya stüdyo)</option>
+                <option value="foundry">Yazıevi (en az iki kişilik kurumsal yapı)</option>
+              </select>
+            </div>
+
+            <div class="admin-form-group">
+              <label for="f-name">İsim veya Yazıevi Adı *</label>
+              <input type="text" id="f-name" class="admin-input" placeholder="Örn: Ceyhun Birinci veya Element Type" required>
+            </div>
+
+            <!-- Yazı Tasarımcısı Özel Alanları -->
+            <div id="designer-fields">
+              <div class="admin-form-group">
+                <label for="f-brand">Marka Adı (varsa)</label>
+                <input type="text" id="f-brand" class="admin-input" placeholder="Örn: Artegra Type, Biliktü Yazıevi">
+              </div>
+
+              <div class="admin-form-group">
+                <label for="f-affiliation">Bağlı Olduğu Yazıevi (varsa)</label>
+                <input type="text" id="f-affiliation" class="admin-input" placeholder="Örn: Element Type">
+              </div>
+            </div>
+
+            <!-- Yazıevi Özel Alanları -->
+            <div id="foundry-fields" style="display: none;">
+              <div class="admin-form-group">
+                <label for="f-members">Üyeler (virgülle ayırın, en az 2 kişi) *</label>
+                <input type="text" id="f-members" class="admin-input" placeholder="Örn: İbrahim Kaçtıoğlu, Doğukan Karapınar">
+                <div id="members-error" class="admin-error-tip">
+                  ⚠ Tek kişilik bir çalışma markası yazıevi sayılmaz. Tür olarak Yazı Tasarımcısı seçip markayı marka alanına yazın.
+                </div>
+              </div>
             </div>
 
             <div class="admin-form-group">
               <label for="f-link">Web Sitesi veya Portfolyo Bağlantısı *</label>
               <input type="url" id="f-link" class="admin-input" placeholder="https://..." required>
-            </div>
-
-            <div class="admin-form-group">
-              <label for="f-category">Kategori *</label>
-              <select id="f-category" class="admin-select">
-                <option value="designer">Yazı Tasarımcısı</option>
-                <option value="foundry">Yazıevi</option>
-                <option value="both">Her İkisi (Tasarımcı &amp; Yazıevi)</option>
-              </select>
             </div>
 
             <div class="admin-form-group">
@@ -245,7 +280,22 @@
       } catch (e) {
         console.warn('data/index.json yerel yüklenemedi:', e);
       }
+      handleTypeChange();
       updatePreview();
+    }
+
+    function handleTypeChange() {
+      const type = document.getElementById('f-category').value;
+      const designerFields = document.getElementById('designer-fields');
+      const foundryFields = document.getElementById('foundry-fields');
+
+      if (type === 'foundry') {
+        designerFields.style.display = 'none';
+        foundryFields.style.display = 'block';
+      } else {
+        designerFields.style.display = 'block';
+        foundryFields.style.display = 'none';
+      }
     }
 
     function getMonogram(name) {
@@ -290,14 +340,33 @@
       const catVal = document.getElementById('f-category').value;
       const desc = document.getElementById('f-desc').value.trim();
 
-      let categories = ["designer"];
-      let category_labels = ["Yazı Tasarımcısı"];
-      if (catVal === "foundry") {
-        categories = ["foundry"];
-        category_labels = ["Yazıevi"];
-      } else if (catVal === "both") {
-        categories = ["designer", "foundry"];
-        category_labels = ["Yazı Tasarımcısı", "Yazıevi"];
+      const isFoundry = (catVal === "foundry");
+      let brand = null;
+      let members = null;
+      let affiliation = null;
+
+      const membersErrorEl = document.getElementById('members-error');
+
+      if (isFoundry) {
+        const rawMembers = document.getElementById('f-members').value;
+        const membersList = rawMembers.split(',').map(m => m.trim()).filter(Boolean);
+        if (membersList.length >= 2) {
+          members = membersList;
+          if (membersErrorEl) membersErrorEl.style.display = 'none';
+        } else {
+          members = membersList.length > 0 ? membersList : ["Kurucu 1", "Kurucu 2"];
+          if (membersErrorEl && rawMembers.trim()) {
+            membersErrorEl.style.display = 'block';
+          } else if (membersErrorEl) {
+            membersErrorEl.style.display = 'none';
+          }
+        }
+      } else {
+        if (membersErrorEl) membersErrorEl.style.display = 'none';
+        const brandVal = document.getElementById('f-brand').value.trim();
+        const affVal = document.getElementById('f-affiliation').value.trim();
+        brand = brandVal || null;
+        affiliation = affVal || null;
       }
 
       const totalExisting = existingData && existingData.items ? existingData.items.length : 44;
@@ -308,16 +377,17 @@
         id: `${String(nextIndex).padStart(2, '0')}-${slug}`,
         index: nextIndex,
         name: name,
-        designer: name,
-        studio: catVal === "both" || catVal === "foundry" ? name : null,
-        categories: categories,
-        category_labels: category_labels,
+        categories: isFoundry ? ["foundry"] : ["designer"],
+        category_labels: isFoundry ? ["Yazıevi"] : ["Yazı Tasarımcısı"],
         link: link.startsWith('http') ? link : (link ? 'https://' + link : ''),
         domain: getDomain(link),
         platform: detectPlatform(link),
         description: desc,
         image: null,
-        dropmark_id: null
+        dropmark_id: null,
+        brand: brand,
+        members: members,
+        affiliation: affiliation
       };
     }
 
@@ -325,33 +395,51 @@
       const entry = buildCurrentEntry();
       const monogram = getMonogram(entry.name);
 
-      const badgesHtml = entry.categories.map(c => {
-        return c === 'designer' 
-          ? `<span class="badge badge-designer">Yazı Tasarımcısı</span>`
-          : `<span class="badge badge-foundry">Yazıevi</span>`;
-      }).join('');
+      const isFoundry = entry.categories && entry.categories.includes("foundry");
+      const badgeHtml = isFoundry
+        ? `<span class="badge badge-foundry">Yazıevi</span>`
+        : `<span class="badge badge-designer">Yazı Tasarımcısı</span>`;
+
+      let identityLineHtml = '';
+      if (isFoundry && Array.isArray(entry.members) && entry.members.length > 0) {
+        identityLineHtml = `
+          <div class="identity-line">
+            <span class="identity-label">Ekip</span>
+            <span class="identity-val">${entry.members.join(' · ')}</span>
+          </div>
+        `;
+      } else if (entry.brand) {
+        identityLineHtml = `
+          <div class="identity-line">
+            <span class="identity-label">Marka</span>
+            <span class="identity-val">${entry.brand}</span>
+          </div>
+        `;
+      } else if (entry.affiliation) {
+        identityLineHtml = `
+          <div class="identity-line">
+            <span class="identity-label">Yazıevi</span>
+            <span class="identity-val">${entry.affiliation}</span>
+          </div>
+        `;
+      }
 
       document.getElementById('card-preview').innerHTML = `
-        <article class="index-card">
-          <div class="card-top">
-            <div class="card-badges">${badgesHtml}</div>
-            <div class="card-platform"><span class="badge badge-platform">${entry.platform}</span></div>
+        <article class="vitrin-item" style="border: 1px solid var(--line); border-radius: 12px; padding: 1.25rem; background: var(--surface);">
+          <div class="vitrin-meta">
+            <div class="vitrin-badges">${badgeHtml}</div>
+            <span class="vitrin-platform">${entry.platform}</span>
           </div>
-          <div class="card-middle">
-            <div class="card-info">
-              <h2 class="entry-title">${entry.name}</h2>
-              ${entry.description ? `<p class="entry-description">${entry.description}</p>` : ''}
-            </div>
-            <div class="card-media no-img">
-              <span class="media-fallback" style="display:block;">${monogram}</span>
-            </div>
+          <div class="vitrin-media no-img" style="aspect-ratio: 4/3; margin: .5rem 0;">
+            <span class="vitrin-fallback" style="display:flex;">${monogram}</span>
           </div>
-          <div class="card-bottom">
-            <a class="entry-link-btn" href="${entry.link}" target="_blank" rel="noopener noreferrer">
-              <span>Ziyaret Et</span>
-              <span class="arrow-icon">↗</span>
-            </a>
-            <span class="entry-domain">${entry.domain}</span>
+          <h3 class="vitrin-title" style="margin: .5rem 0 .25rem;">
+            <a class="vitrin-card-link" href="${entry.link}" target="_blank" rel="noopener noreferrer">${entry.name}</a>
+          </h3>
+          ${identityLineHtml}
+          <div class="vitrin-domain" style="margin-top: .75rem;">
+            <span>${entry.domain}</span>
+            <span class="arrow-icon">↗</span>
           </div>
         </article>
       `;
@@ -360,9 +448,17 @@
     }
 
     // Event listeners
-    ['f-name', 'f-link', 'f-category', 'f-desc'].forEach(id => {
-      document.getElementById(id).addEventListener('input', updatePreview);
-      document.getElementById(id).addEventListener('change', updatePreview);
+    document.getElementById('f-category').addEventListener('change', () => {
+      handleTypeChange();
+      updatePreview();
+    });
+
+    ['f-name', 'f-brand', 'f-affiliation', 'f-members', 'f-link', 'f-desc'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.addEventListener('input', updatePreview);
+        el.addEventListener('change', updatePreview);
+      }
     });
 
     // Copy single JSON
