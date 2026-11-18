@@ -39,6 +39,9 @@
   </script>
 </head>
 <body class="page-dizin">
+  <!-- Skip Link for Accessibility -->
+  <a href="#directory-list" class="skip-link">Dizine geç</a>
+
   <div class="archive-container">
     <!-- Brand Header -->
     <header class="archive-brand-header">
@@ -52,7 +55,7 @@
       </div>
 
       <nav class="brand-links" aria-label="Yayın ve topluluk bağlantıları">
-        <a href="https://tipografitoplulugu.github.io/bulten-arsivi/" target="_self" aria-label="Kardeş proje: Tipografi Bülteni Arşivi">Bülten Arşivi</a>
+        <a href="https://tipografitoplulugu.github.io/bulten-arsivi/" target="_self">Bülten Arşivi</a>
         <span aria-hidden="true">·</span>
         <a href="https://tipografi.substack.com/" target="_blank" rel="noopener noreferrer">Substack</a>
         <span aria-hidden="true">·</span>
@@ -99,7 +102,7 @@
                 <circle cx="11" cy="11" r="8"></circle>
                 <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
               </svg>
-              <input type="text" id="search-input" class="toolbar-search-input" placeholder="İsim, stüdyo veya yazıevi ara (örn. Biliktü, Artegra, Onur Yazıcıgil)" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" aria-label="Dizinde ara">
+              <input type="text" id="search-input" class="toolbar-search-input" placeholder="İsim, marka veya yazıevi ara" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" aria-label="İsim, marka veya yazıevi ara">
               <button type="button" id="search-clear-btn" class="toolbar-search-clear" aria-label="Aramayı temizle">&times;</button>
             </div>
 
@@ -107,15 +110,15 @@
             <div class="segmented-control" role="tablist" aria-label="Kategori filtreleri" id="category-segmented">
               <button type="button" class="segment-btn active" data-category="all" role="tab" aria-selected="true" id="seg-all">
                 <span>Tümü</span>
-                <span class="seg-count" id="count-all">44</span>
+                <span class="seg-count" id="count-all"></span>
               </button>
               <button type="button" class="segment-btn" data-category="designer" role="tab" aria-selected="false" id="seg-designer">
-                <span>Yazı Tasarımcıları</span>
-                <span class="seg-count" id="count-designers">42</span>
+                <span><span class="seg-prefix">Yazı </span>Tasarımcıları</span>
+                <span class="seg-count" id="count-designers"></span>
               </button>
               <button type="button" class="segment-btn" data-category="foundry" role="tab" aria-selected="false" id="seg-foundry">
                 <span>Yazıevleri</span>
-                <span class="seg-count" id="count-foundries">14</span>
+                <span class="seg-count" id="count-foundries"></span>
               </button>
             </div>
 
@@ -155,17 +158,17 @@
               </button>
             </div>
           </div>
-
-          <!-- Mobile / Tablet Horizontal Letter Strip -->
-          <div class="mobile-letter-strip" id="mobile-letter-strip" aria-label="Hızlı harf seçimi"></div>
         </div>
 
         <!-- Sub Bar: Summary & Overlap Notice -->
         <div class="toolbar-sub-bar" aria-live="polite">
           <div class="result-summary" id="result-summary">Yükleniyor...</div>
-          <div class="overlap-notice" id="overlap-notice">12 kayıt hem yazı tasarımcısı hem yazıevi</div>
+          <div class="overlap-notice" id="overlap-notice" hidden></div>
         </div>
       </section>
+
+      <!-- Mobile / Tablet Horizontal Letter Strip (Outside toolbar section so it can stick on <=1100px) -->
+      <nav class="mobile-letter-strip" id="mobile-letter-strip" aria-label="Hızlı harf seçimi"></nav>
 
       <!-- Directory Body Area with Sticky Rail on Desktop -->
       <div class="dizin-body-wrapper">
@@ -175,7 +178,7 @@
         <!-- Main Directory Area -->
         <div class="dizin-main-area">
           <div id="status-container"></div>
-          <div class="directory-container view-grid" id="directory-list" role="list"></div>
+          <div class="directory-container view-grid" id="directory-list" tabindex="-1"></div>
         </div>
       </div>
     </main>

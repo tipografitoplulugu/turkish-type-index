@@ -17,7 +17,10 @@
   const SUN_SVG = `<circle cx="12" cy="12" r="3.5"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/>`;
   const MOON_SVG = `<path d="M20.1 15.2A8.4 8.4 0 0 1 8.8 3.9 8.5 8.5 0 1 0 20.1 15.2Z"/>`;
 
-  // State
+  // App State: 'loading' | 'ready' | 'error'
+  let appState = "loading";
+
+  // Data & Filter State
   let allItems = [];
   let currentResults = [];
   let activeQuery = "";
@@ -25,6 +28,12 @@
   let activeSort = "name-asc"; // 'name-asc' | 'name-desc' | 'default'
   let activeView = "grid"; // 'grid' | 'list'
   let activeLetterInView = "";
+
+  // Scroll & Offset State
+  let cachedLetterOffsets = [];
+  let isClickScrolling = false;
+  let clickScrollTimer = null;
+  let scrollTicking = false;
 
   // DOM Elements
   const themeToggleBtn = document.getElementById("theme-toggle");
@@ -48,6 +57,12 @@
   const countAll = document.getElementById("count-all");
   const countDesigners = document.getElementById("count-designers");
   const countFoundries = document.getElementById("count-foundries");
+
+  // Reduced Motion Helper
+  const reducedMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+  function getScrollBehavior() {
+    return reducedMotionQuery.matches ? "auto" : "smooth";
+  }
 
   // -------------------------------------------------------------
   // Theme Management (Synchronized across both archive & index)
@@ -223,10 +238,59 @@
   }
 
   // -------------------------------------------------------------
-  // Data Loading & Dynamic Counts
+  // Dynamic Sticky Offset Calculation (ResizeObserver)
+  // -------------------------------------------------------------
+
+  function updateStickyOffset() {
+    let offset = 0;
+    const width = window.innerWidth;
+    if (width > 1100) {
+      if (toolbarWrapper) {
+        offset = toolbarWrapper.getBoundingClientRect().height;
+      }
+    } else {
+      if (mobileLetterStrip && mobileLetterStrip.offsetParent !== null && mobileLetterStrip.children.length > 0) {
+        offset = mobileLetterStrip.getBoundingClientRect().height;
+      }
+    }
+    document.documentElement.style.setProperty("--sticky-offset", `${Math.round(offset)}px`);
+    updateCachedLetterOffsets();
+  }
+
+  function initStickyOffsetObserver() {
+    updateStickyOffset();
+
+    if ("ResizeObserver" in window) {
+      const ro = new ResizeObserver(() => {
+        updateStickyOffset();
+      });
+      if (toolbarWrapper) ro.observe(toolbarWrapper);
+      if (mobileLetterStrip) ro.observe(mobileLetterStrip);
+    }
+
+    window.addEventListener("resize", updateStickyOffset, { passive: true });
+
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(updateStickyOffset);
+    }
+  }
+
+  // -------------------------------------------------------------
+  // Data Loading & State Management
   // -------------------------------------------------------------
 
   async function loadData() {
+    appState = "loading";
+    if (directoryList) {
+      directoryList.setAttribute("aria-busy", "true");
+    }
+    if (resultSummary) {
+      resultSummary.textContent = "Yükleniyor...";
+    }
+    if (statusContainer) {
+      statusContainer.innerHTML = "";
+    }
+
     try {
       const response = await fetch(DATA_URL);
       if (!response.ok) {
@@ -235,7 +299,11 @@
       const data = await response.json();
       allItems = Array.isArray(data.items) ? data.items : [];
 
-      // Format updated_at in Turkish
+      appState = "ready";
+      if (directoryList) {
+        directoryList.setAttribute("aria-busy", "false");
+      }
+
       if (heroUpdatedAt && data.updated_at) {
         const trDate = formatTurkishDate(data.updated_at);
         heroUpdatedAt.textContent = `Son güncelleme: ${trDate}`;
@@ -245,14 +313,27 @@
       readUrlParams();
       applyFiltersAndSort();
     } catch (error) {
+      appState = "error";
+      if (directoryList) {
+        directoryList.setAttribute("aria-busy", "false");
+        directoryList.innerHTML = "";
+      }
+      if (resultSummary) {
+        resultSummary.textContent = "Bağlantı hatası";
+      }
       console.error("Dizin yükleme hatası:", error);
       if (statusContainer) {
         statusContainer.innerHTML = `
           <div class="app-status">
             <h2 class="empty-title">Dizin Yüklenemedi</h2>
-            <p class="empty-desc">Veriler yüklenirken bir sorun oluştu (${escapeHtml(error.message)}). Lütfen sayfayı yenilemeyi deneyin.</p>
+            <p class="empty-desc">Veriler yüklenirken bir sorun oluştu (${escapeHtml(error.message)}). Lütfen internet bağlantınızı kontrol edip tekrar deneyin.</p>
+            <button type="button" class="reset-filter-btn" id="retry-fetch-btn">Yeniden Dene</button>
           </div>
         `;
+        const retryBtn = document.getElementById("retry-fetch-btn");
+        if (retryBtn) {
+          retryBtn.addEventListener("click", () => loadData());
+        }
       }
     }
   }
@@ -270,7 +351,12 @@
     if (countFoundries) countFoundries.textContent = foundries;
 
     if (overlapNotice) {
-      overlapNotice.textContent = `${both} kayıt hem yazı tasarımcısı hem yazıevi`;
+      if (both > 0) {
+        overlapNotice.textContent = `${both} kayıt hem yazı tasarımcısı hem yazıevi`;
+        overlapNotice.hidden = false;
+      } else {
+        overlapNotice.hidden = true;
+      }
     }
   }
 
@@ -356,11 +442,13 @@
       }
     }
 
-    // Empty State
-    if (count === 0) {
+    // Empty State (only when appState is ready and count is 0)
+    if (appState === "ready" && count === 0) {
       directoryList.innerHTML = "";
       if (letterIndexRail) letterIndexRail.innerHTML = "";
       if (mobileLetterStrip) mobileLetterStrip.innerHTML = "";
+      updateStickyOffset();
+
       statusContainer.innerHTML = `
         <div class="app-status">
           <h2 class="empty-title">Kayıt Bulunamadı</h2>
@@ -377,7 +465,8 @@
 
     statusContainer.innerHTML = "";
 
-    const isGroupedByLetter = activeSort === "name-asc" || activeSort === "name-desc";
+    // Harf gruplama kuralı: Sadece name-asc veya name-desc VE sonuç sayısı 12'den fazla ise
+    const isGroupedByLetter = (activeSort === "name-asc" || activeSort === "name-desc") && currentResults.length > 12;
     let letterGroups = null;
 
     if (isGroupedByLetter) {
@@ -386,6 +475,7 @@
     } else {
       if (letterIndexRail) letterIndexRail.innerHTML = "";
       if (mobileLetterStrip) mobileLetterStrip.innerHTML = "";
+      updateStickyOffset();
     }
 
     if (activeView === "grid") {
@@ -394,9 +484,8 @@
       renderListView(isGroupedByLetter, letterGroups);
     }
 
-    if (isGroupedByLetter) {
-      initLetterObserver();
-    }
+    // Harf konumlarını önbelleğe al
+    updateCachedLetterOffsets();
   }
 
   // -------------------------------------------------------------
@@ -432,7 +521,7 @@
          </div>`;
 
     return `
-      <article class="vitrin-item" data-id="${escapeHtml(item.id)}" role="listitem">
+      <li class="vitrin-item" data-id="${escapeHtml(item.id)}">
         ${imageHtml}
 
         <div class="vitrin-meta">
@@ -452,25 +541,33 @@
           <span>${escapeHtml(item.domain || "")}</span>
           <span class="arrow-icon" aria-hidden="true">↗</span>
         </div>
-      </article>
+      </li>
     `;
   }
 
   function renderGridView(isGroupedByLetter, letterGroups) {
     if (!isGroupedByLetter) {
-      directoryList.innerHTML = currentResults.map(renderVitrinItemHtml).join("");
+      directoryList.innerHTML = `
+        <ul class="letter-group-list" role="list">
+          ${currentResults.map(renderVitrinItemHtml).join("")}
+        </ul>
+      `;
       return;
     }
 
     let html = "";
     for (const [letter, groupItems] of letterGroups.entries()) {
       html += `
-        <div class="letter-separator-card" id="letter-group-${escapeHtml(letter)}" data-letter="${escapeHtml(letter)}" role="separator" aria-label="${escapeHtml(letter)} harfi, ${groupItems.length} kayıt">
-          <h2 class="sep-letter">${escapeHtml(letter)}</h2>
-          <span class="sep-count">${groupItems.length} kayıt</span>
+        <div class="letter-group">
+          <div class="letter-separator-card" id="letter-group-${escapeHtml(letter)}" data-letter="${escapeHtml(letter)}">
+            <h2 class="sep-letter">${escapeHtml(letter)}</h2>
+            <span class="sep-count">${groupItems.length} kayıt</span>
+          </div>
+          <ul class="letter-group-list" role="list">
+            ${groupItems.map(renderVitrinItemHtml).join("")}
+          </ul>
         </div>
       `;
-      html += groupItems.map(renderVitrinItemHtml).join("");
     }
     directoryList.innerHTML = html;
   }
@@ -504,58 +601,70 @@
          </div>`;
 
     return `
-      <article class="dizin-list-row" data-id="${escapeHtml(item.id)}" role="listitem">
+      <li class="dizin-list-row" data-id="${escapeHtml(item.id)}">
         <a href="${escapeHtml(item.link)}" target="_blank" rel="noopener noreferrer" class="list-row-link">
           ${imageHtml}
-          <div class="list-row-name-group">
-            <span class="list-row-title">${highlightedName}</span>
-            ${subText ? `<span class="list-row-sub">${subText}</span>` : ""}
-          </div>
-          <div class="list-row-badges">${badgesHtml}</div>
-          <div class="list-row-platform">${escapeHtml(item.platform || "")}</div>
-          <div class="list-row-domain">
-            <span>${escapeHtml(item.domain || "")}</span>
-            <span class="arrow-icon" aria-hidden="true">↗</span>
+          <div class="list-row-content">
+            <div class="list-row-line1">
+              <span class="list-row-title">${highlightedName}</span>
+              <div class="list-row-badges">${badgesHtml}</div>
+            </div>
+            <div class="list-row-line2">
+              ${subText ? `<span class="list-row-sub">${subText}</span>` : ""}
+              ${item.domain ? `<span class="list-row-domain"><span>${escapeHtml(item.domain)}</span><span class="arrow-icon" aria-hidden="true">↗</span></span>` : ""}
+              ${item.platform ? `<span class="list-row-platform">${escapeHtml(item.platform)}</span>` : ""}
+            </div>
           </div>
         </a>
-      </article>
+      </li>
     `;
   }
 
   function renderListView(isGroupedByLetter, letterGroups) {
     if (!isGroupedByLetter) {
-      directoryList.innerHTML = currentResults.map(renderListRowHtml).join("");
+      directoryList.innerHTML = `
+        <ul class="letter-group-list" role="list">
+          ${currentResults.map(renderListRowHtml).join("")}
+        </ul>
+      `;
       return;
     }
 
     let html = "";
     for (const [letter, groupItems] of letterGroups.entries()) {
       html += `
-        <div class="list-letter-header" id="letter-group-${escapeHtml(letter)}" data-letter="${escapeHtml(letter)}" role="separator">
-          <h2 class="list-sep-letter">${escapeHtml(letter)}</h2>
-          <span class="list-sep-count">${groupItems.length} kayıt</span>
+        <div class="letter-group">
+          <div class="list-letter-header" id="letter-group-${escapeHtml(letter)}" data-letter="${escapeHtml(letter)}">
+            <h2 class="list-sep-letter">${escapeHtml(letter)}</h2>
+            <span class="list-sep-count">${groupItems.length} kayıt</span>
+          </div>
+          <ul class="letter-group-list" role="list">
+            ${groupItems.map(renderListRowHtml).join("")}
+          </ul>
         </div>
       `;
-      html += groupItems.map(renderListRowHtml).join("");
     }
     directoryList.innerHTML = html;
   }
 
   // -------------------------------------------------------------
-  // Letter Rails & Observer
+  // Letter Rails & Active Letter Computation
   // -------------------------------------------------------------
 
   function renderLetterRails(letters) {
     if (!letters.length) {
       if (letterIndexRail) letterIndexRail.innerHTML = "";
       if (mobileLetterStrip) mobileLetterStrip.innerHTML = "";
+      updateStickyOffset();
       return;
     }
+
+    const currentLetter = activeLetterInView && letters.includes(activeLetterInView) ? activeLetterInView : letters[0];
 
     const railButtonsHtml = letters
       .map(
         (ltr) => `
-        <button type="button" class="rail-letter-btn" data-letter="${escapeHtml(ltr)}" aria-label="${escapeHtml(ltr)} harfine atla">
+        <button type="button" class="rail-letter-btn${ltr === currentLetter ? " active" : ""}" data-letter="${escapeHtml(ltr)}" tabindex="${ltr === currentLetter ? "0" : "-1"}" aria-selected="${ltr === currentLetter ? "true" : "false"}" aria-label="${escapeHtml(ltr)} harfine atla">
           ${escapeHtml(ltr)}
         </button>
       `
@@ -565,7 +674,7 @@
     const stripButtonsHtml = letters
       .map(
         (ltr) => `
-        <button type="button" class="strip-letter-btn" data-letter="${escapeHtml(ltr)}" aria-label="${escapeHtml(ltr)} harfine atla">
+        <button type="button" class="strip-letter-btn${ltr === currentLetter ? " active" : ""}" data-letter="${escapeHtml(ltr)}" tabindex="${ltr === currentLetter ? "0" : "-1"}" aria-selected="${ltr === currentLetter ? "true" : "false"}" aria-label="${escapeHtml(ltr)} harfine atla">
           ${escapeHtml(ltr)}
         </button>
       `
@@ -575,66 +684,178 @@
     if (letterIndexRail) letterIndexRail.innerHTML = railButtonsHtml;
     if (mobileLetterStrip) mobileLetterStrip.innerHTML = stripButtonsHtml;
 
-    updateActiveLetterIndicator(activeLetterInView || letters[0]);
+    updateActiveLetterIndicator(currentLetter);
+    updateStickyOffset();
+  }
+
+  function updateCachedLetterOffsets() {
+    cachedLetterOffsets = [];
+    const separators = document.querySelectorAll(".letter-separator-card, .list-letter-header");
+    separators.forEach((el) => {
+      const letter = el.getAttribute("data-letter");
+      if (letter) {
+        const rect = el.getBoundingClientRect();
+        const top = rect.top + window.scrollY;
+        cachedLetterOffsets.push({ letter, top, el });
+      }
+    });
   }
 
   function scrollToLetter(letter) {
     const target = document.getElementById(`letter-group-${letter}`);
-    if (target) {
-      target.scrollIntoView({ behavior: "smooth", block: "start" });
-      updateActiveLetterIndicator(letter);
+    if (!target) return;
+
+    // 1. Tıklanan harfi hemen etkin yap
+    updateActiveLetterIndicator(letter);
+
+    // 2. Scroll hesaplayıcısını kaydırma bitene kadar kilitle
+    isClickScrolling = true;
+    if (clickScrollTimer) clearTimeout(clickScrollTimer);
+
+    const unlockScroll = () => {
+      isClickScrolling = false;
+      window.removeEventListener("scrollend", onScrollEnd);
+    };
+
+    const onScrollEnd = () => {
+      unlockScroll();
+    };
+
+    if ("onscrollend" in window) {
+      window.addEventListener("scrollend", onScrollEnd, { once: true });
+    }
+    clickScrollTimer = setTimeout(unlockScroll, 700);
+
+    // 3. Hedefe kaydır
+    target.scrollIntoView({ behavior: getScrollBehavior(), block: "start" });
+
+    // 4. Hedef ayraca tabindex="-1" ver ve odağı preventScroll ile taşı (Item 8)
+    target.setAttribute("tabindex", "-1");
+    try {
+      target.focus({ preventScroll: true });
+    } catch (e) {
+      target.focus();
     }
   }
 
   function updateActiveLetterIndicator(letter) {
+    if (!letter) return;
     activeLetterInView = letter;
+
     if (letterIndexRail) {
       const btns = letterIndexRail.querySelectorAll(".rail-letter-btn");
       btns.forEach((btn) => {
-        btn.classList.toggle("active", btn.getAttribute("data-letter") === letter);
+        const isMatch = btn.getAttribute("data-letter") === letter;
+        btn.classList.toggle("active", isMatch);
+        btn.setAttribute("tabindex", isMatch ? "0" : "-1");
+        btn.setAttribute("aria-selected", isMatch ? "true" : "false");
       });
     }
+
     if (mobileLetterStrip) {
       const btns = mobileLetterStrip.querySelectorAll(".strip-letter-btn");
       btns.forEach((btn) => {
         const isMatch = btn.getAttribute("data-letter") === letter;
         btn.classList.toggle("active", isMatch);
+        btn.setAttribute("tabindex", isMatch ? "0" : "-1");
+        btn.setAttribute("aria-selected", isMatch ? "true" : "false");
         if (isMatch) {
-          btn.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+          // btn.scrollIntoView kaldırıldı, yerine horizontal scrollTo kullanıldı
+          const stripRect = mobileLetterStrip.getBoundingClientRect();
+          const btnRect = btn.getBoundingClientRect();
+          const currentScroll = mobileLetterStrip.scrollLeft;
+          const targetScroll = currentScroll + (btnRect.left - stripRect.left) - (mobileLetterStrip.clientWidth / 2) + (btn.clientWidth / 2);
+          mobileLetterStrip.scrollTo({
+            left: Math.max(0, targetScroll),
+            behavior: getScrollBehavior()
+          });
         }
       });
     }
   }
 
-  let letterObserver = null;
-  function initLetterObserver() {
-    if (letterObserver) {
-      letterObserver.disconnect();
+  function computeActiveLetterFromScroll() {
+    if (!cachedLetterOffsets.length) return;
+
+    // Sayfa sonuna gelindiğinde son harf etkin olsun
+    const scrollY = window.scrollY;
+    const innerHeight = window.innerHeight;
+    const scrollHeight = document.documentElement.scrollHeight;
+    if (scrollY + innerHeight >= scrollHeight - 5) {
+      const lastLetter = cachedLetterOffsets[cachedLetterOffsets.length - 1].letter;
+      updateActiveLetterIndicator(lastLetter);
+      return;
     }
 
-    const separators = document.querySelectorAll(".letter-separator-card, .list-letter-header");
-    if (!separators.length) return;
+    // --sticky-offset + 24px çizgisini en son geçmiş ayraç etkin olsun
+    const stickyOffset = parseInt(getComputedStyle(document.documentElement).getPropertyValue("--sticky-offset") || "0", 10) || 0;
+    const threshold = scrollY + stickyOffset + 24;
 
-    letterObserver = new IntersectionObserver(
-      (entries) => {
-        const visible = entries.filter((e) => e.isIntersecting);
-        if (visible.length) {
-          // Sort by top position
-          visible.sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
-          const topVisible = visible[0].target;
-          const letter = topVisible.getAttribute("data-letter");
-          if (letter) {
-            updateActiveLetterIndicator(letter);
-          }
-        }
-      },
-      {
-        rootMargin: "-80px 0px -70% 0px",
-        threshold: 0.1
+    let currentActive = cachedLetterOffsets[0].letter;
+    for (let i = 0; i < cachedLetterOffsets.length; i++) {
+      if (cachedLetterOffsets[i].top <= threshold) {
+        currentActive = cachedLetterOffsets[i].letter;
+      } else {
+        break;
       }
-    );
+    }
 
-    separators.forEach((el) => letterObserver.observe(el));
+    updateActiveLetterIndicator(currentActive);
+  }
+
+  function onWindowScroll() {
+    if (toolbarWrapper) {
+      if (window.scrollY > 40) {
+        toolbarWrapper.classList.add("is-stuck");
+      } else {
+        toolbarWrapper.classList.remove("is-stuck");
+      }
+    }
+
+    if (isClickScrolling) return;
+
+    if (!scrollTicking) {
+      window.requestAnimationFrame(() => {
+        computeActiveLetterFromScroll();
+        scrollTicking = false;
+      });
+      scrollTicking = true;
+    }
+  }
+
+  // Roving Tabindex Keyboard Navigation
+  function handleLetterNavigationKeydown(e, container, isHorizontal) {
+    const btns = Array.from(container.querySelectorAll("button[data-letter]"));
+    if (!btns.length) return;
+
+    const currentIndex = btns.findIndex((b) => b === document.activeElement || b.classList.contains("active"));
+    let nextIndex = -1;
+
+    const prevKey = isHorizontal ? "ArrowLeft" : "ArrowUp";
+    const nextKey = isHorizontal ? "ArrowRight" : "ArrowDown";
+
+    if (e.key === prevKey) {
+      e.preventDefault();
+      nextIndex = currentIndex > 0 ? currentIndex - 1 : btns.length - 1;
+    } else if (e.key === nextKey) {
+      e.preventDefault();
+      nextIndex = currentIndex < btns.length - 1 ? currentIndex + 1 : 0;
+    } else if (e.key === "Home") {
+      e.preventDefault();
+      nextIndex = 0;
+    } else if (e.key === "End") {
+      e.preventDefault();
+      nextIndex = btns.length - 1;
+    }
+
+    if (nextIndex >= 0 && nextIndex < btns.length) {
+      const targetBtn = btns[nextIndex];
+      const letter = targetBtn.getAttribute("data-letter");
+      targetBtn.focus();
+      if (letter) {
+        scrollToLetter(letter);
+      }
+    }
   }
 
   // -------------------------------------------------------------
@@ -673,8 +894,14 @@
       }
     }
 
-    if (viewGridBtn) viewGridBtn.classList.toggle("active", activeView === "grid");
-    if (viewListBtn) viewListBtn.classList.toggle("active", activeView === "list");
+    if (viewGridBtn) {
+      viewGridBtn.classList.toggle("active", activeView === "grid");
+      viewGridBtn.setAttribute("aria-pressed", activeView === "grid" ? "true" : "false");
+    }
+    if (viewListBtn) {
+      viewListBtn.classList.toggle("active", activeView === "list");
+      viewListBtn.setAttribute("aria-pressed", activeView === "list" ? "true" : "false");
+    }
 
     try {
       localStorage.setItem(VIEW_STORAGE_KEY, activeView);
@@ -682,7 +909,10 @@
       /* ignore */
     }
 
-    renderResults();
+    // Yalnızca veri hazır olduğunda render tetiklenir (Item 3)
+    if (appState === "ready") {
+      renderResults();
+    }
   }
 
   function initViewMode() {
@@ -749,27 +979,6 @@
   }
 
   // -------------------------------------------------------------
-  // Sticky Toolbar Scroll Detection
-  // -------------------------------------------------------------
-
-  function initStickyToolbarObserver() {
-    if (!toolbarWrapper) return;
-    let lastKnownScroll = 0;
-    window.addEventListener(
-      "scroll",
-      () => {
-        lastKnownScroll = window.scrollY;
-        if (lastKnownScroll > 40) {
-          toolbarWrapper.classList.add("is-stuck");
-        } else {
-          toolbarWrapper.classList.remove("is-stuck");
-        }
-      },
-      { passive: true }
-    );
-  }
-
-  // -------------------------------------------------------------
   // Event Listeners
   // -------------------------------------------------------------
 
@@ -820,7 +1029,7 @@
       });
     }
 
-    // Letter rail delegation (Desktop & Mobile)
+    // Letter rail delegation (Desktop)
     if (letterIndexRail) {
       letterIndexRail.addEventListener("click", (e) => {
         const btn = e.target.closest(".rail-letter-btn");
@@ -828,14 +1037,23 @@
         const letter = btn.getAttribute("data-letter");
         if (letter) scrollToLetter(letter);
       });
+
+      letterIndexRail.addEventListener("keydown", (e) => {
+        handleLetterNavigationKeydown(e, letterIndexRail, false);
+      });
     }
 
+    // Mobile Letter Strip delegation
     if (mobileLetterStrip) {
       mobileLetterStrip.addEventListener("click", (e) => {
         const btn = e.target.closest(".strip-letter-btn");
         if (!btn) return;
         const letter = btn.getAttribute("data-letter");
         if (letter) scrollToLetter(letter);
+      });
+
+      mobileLetterStrip.addEventListener("keydown", (e) => {
+        handleLetterNavigationKeydown(e, mobileLetterStrip, true);
       });
     }
   }
@@ -847,7 +1065,8 @@
   document.addEventListener("DOMContentLoaded", () => {
     initTheme();
     initViewMode();
-    initStickyToolbarObserver();
+    initStickyOffsetObserver();
+    window.addEventListener("scroll", onWindowScroll, { passive: true });
     initEventListeners();
     loadData();
   });
