@@ -1,9 +1,9 @@
 {
   "title": "Yazı Tasarımcıları ve Yazıevleri — Türkiye",
-  "subtitle": "Türkiye'den yazı tasarımcılarını, bağımsız yazıevlerini ve özgün yazı tasarımı üretimlerini bir araya getiren açık bir dizin.",
+  "subtitle": "Türkiye'den yazı tasarımcılarını, bağımsız yazıevlerini ve özgün yazı tasarımı üreticilerini bir araya getiren açık bir dizin.",
   "updated_at": "2026-11-18",
-  "total_count": 44,
-  "designers_count": 42,
+  "total_count": 43,
+  "designers_count": 41,
   "foundries_count": 2,
   "items": [
     {
@@ -36,7 +36,7 @@
       "category_labels": [
         "Yazı Tasarımcısı"
       ],
-      "link": "https://vignettetype.com",
+      "link": "https://vignettetype.com/fonts",
       "domain": "vignettetype.com",
       "platform": "Web Sitesi",
       "description": "",
@@ -465,26 +465,6 @@
       "description": "",
       "image": "assets/thumbnails/item_23.jpg",
       "dropmark_id": 30453001,
-      "brand": null,
-      "members": null,
-      "affiliation": null
-    },
-    {
-      "id": "24-somestr-studio",
-      "index": 24,
-      "name": "Sömestr Studio",
-      "categories": [
-        "designer"
-      ],
-      "category_labels": [
-        "Yazı Tasarımcısı"
-      ],
-      "link": "https://somestrstudio.com/category/type/",
-      "domain": "somestrstudio.com",
-      "platform": "Web Sitesi",
-      "description": "",
-      "image": "assets/thumbnails/item_24.jpg",
-      "dropmark_id": 30453000,
       "brand": null,
       "members": null,
       "affiliation": null

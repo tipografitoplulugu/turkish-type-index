@@ -2,7 +2,7 @@
 
 **Türkiye menşeli yazı tasarımcıları ve bağımsız yazıevleri için yaşayan, açık ve editoryal bir dijital dizin.**
 
-Bu proje, [Türkçe Tipografi Topluluğu](https://tipografitoplulugu.github.io/bulten-arsivi/) tarafından Türkiye'den yazı tasarımcılarını, bağımsız yazıevlerini (type foundries) ve özgün yazı tasarımı üretimlerini belgelemek, görünür kılmak ve tipografi araştırmacılarına derli toplu bir başvuru kaynağı sunmak amacıyla hazırlanmıştır.
+Bu proje, [Türkçe Tipografi Topluluğu](https://tipografitoplulugu.github.io/bulten-arsivi/) tarafından Türkiye'den yazı tasarımcılarını, bağımsız yazıevlerini (type foundries) ve özgün yazı tasarımı üreticilerini belgelemek, görünür kılmak ve tipografi araştırmacılarına derli toplu bir başvuru kaynağı sunmak amacıyla hazırlanmıştır.
 
 - **Canlı Site:** [https://tipografitoplulugu.github.io/turkish-type-index/](https://tipografitoplulugu.github.io/turkish-type-index/)
 - **Kardeş Proje:** [Tipografi Bülteni Arşivi](https://tipografitoplulugu.github.io/bulten-arsivi/)
