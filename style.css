@@ -913,7 +913,6 @@ mark.search-hit {
   gap: .65rem;
   scroll-margin-top: calc(var(--sticky-offset, 0px) + 16px);
 }
-}
 
 .vitrin-media {
   position: relative;
