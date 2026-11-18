@@ -536,6 +536,12 @@
          </div>`;
 
     const letterAttr = letterGroup ? ` id="letter-group-${escapeHtml(letterGroup)}" data-letter="${escapeHtml(letterGroup)}"` : "";
+    const domainHtml = item.domain
+      ? `<div class="vitrin-domain">
+           <span>${escapeHtml(item.domain)}</span>
+           <span class="arrow-icon" aria-hidden="true">↗</span>
+         </div>`
+      : "";
 
     return `
       <li class="vitrin-item" data-id="${escapeHtml(item.id)}"${letterAttr}>
@@ -543,6 +549,7 @@
 
         <div class="vitrin-meta">
           <div class="vitrin-badges">${badgeHtml}</div>
+          ${domainHtml}
         </div>
 
         <h3 class="vitrin-title">
@@ -552,11 +559,6 @@
         </h3>
 
         ${identityLineHtml}
-
-        <div class="vitrin-domain">
-          <span>${escapeHtml(item.domain || "")}</span>
-          <span class="arrow-icon" aria-hidden="true">↗</span>
-        </div>
       </li>
     `;
   }

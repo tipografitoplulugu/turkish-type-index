@@ -1075,17 +1075,16 @@ mark.search-hit {
 
 .vitrin-domain {
   font-family: "DM Mono", monospace;
-  font-size: .78rem;
+  font-size: .74rem;
   color: var(--muted);
   display: flex;
   align-items: center;
   gap: .3rem;
-  margin-top: auto;
-  padding-top: .2rem;
+  white-space: nowrap;
 }
 
 .vitrin-domain .arrow-icon {
-  font-size: .9rem;
+  font-size: .85rem;
   line-height: 1;
   transition: transform 140ms ease;
 }

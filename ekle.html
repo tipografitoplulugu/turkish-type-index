@@ -428,6 +428,10 @@
         <article class="vitrin-item" style="border: 1px solid var(--line); border-radius: 12px; padding: 1.25rem; background: var(--surface);">
           <div class="vitrin-meta">
             <div class="vitrin-badges">${badgeHtml}</div>
+            <div class="vitrin-domain">
+              <span>${entry.domain}</span>
+              <span class="arrow-icon">↗</span>
+            </div>
           </div>
           <div class="vitrin-media no-img" style="aspect-ratio: 4/3; margin: .5rem 0;">
             <span class="vitrin-fallback" style="display:flex;">${monogram}</span>
@@ -436,10 +440,6 @@
             <a class="vitrin-card-link" href="${entry.link}" target="_blank" rel="noopener noreferrer">${entry.name}</a>
           </h3>
           ${identityLineHtml}
-          <div class="vitrin-domain" style="margin-top: .75rem;">
-            <span>${entry.domain}</span>
-            <span class="arrow-icon">↗</span>
-          </div>
         </article>
       `;
 
