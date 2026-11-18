@@ -1012,13 +1012,6 @@ mark.search-hit {
   border: 1px solid transparent;
 }
 
-.vitrin-platform {
-  color: var(--muted);
-  text-transform: uppercase;
-  font-size: .7rem;
-  white-space: nowrap;
-}
-
 /* Title & Card-covering Link */
 .vitrin-title {
   font-family: "Instrument Serif", Georgia, serif;

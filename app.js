@@ -526,10 +526,6 @@
     const badgeHtml = renderBadgeHtml(item);
     const identityLineHtml = renderIdentityLineHtml(item);
 
-    const platformBadge = item.platform
-      ? `<span class="vitrin-platform">${escapeHtml(item.platform)}</span>`
-      : "";
-
     const imageHtml = item.image
       ? `<div class="vitrin-media">
            <img src="${escapeHtml(item.image)}" alt="${escapeHtml(item.name)} önizleme görseli" loading="lazy" decoding="async" onerror="this.parentElement.classList.add('no-img');">
@@ -547,7 +543,6 @@
 
         <div class="vitrin-meta">
           <div class="vitrin-badges">${badgeHtml}</div>
-          ${platformBadge}
         </div>
 
         <h3 class="vitrin-title">
