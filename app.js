@@ -520,7 +520,7 @@
     return "";
   }
 
-  function renderVitrinItemHtml(item) {
+  function renderVitrinItemHtml(item, letterGroup) {
     const monogram = getMonogram(item.name);
     const highlightedName = highlightMatches(item.name, activeQuery);
     const badgeHtml = renderBadgeHtml(item);
@@ -539,8 +539,10 @@
            <span class="vitrin-fallback" aria-hidden="true">${escapeHtml(monogram)}</span>
          </div>`;
 
+    const letterAttr = letterGroup ? ` id="letter-group-${escapeHtml(letterGroup)}" data-letter="${escapeHtml(letterGroup)}"` : "";
+
     return `
-      <li class="vitrin-item" data-id="${escapeHtml(item.id)}">
+      <li class="vitrin-item" data-id="${escapeHtml(item.id)}"${letterAttr}>
         ${imageHtml}
 
         <div class="vitrin-meta">
@@ -568,7 +570,7 @@
     if (!isGroupedByLetter) {
       directoryList.innerHTML = `
         <ul class="letter-group-list" role="list">
-          ${currentResults.map(renderVitrinItemHtml).join("")}
+          ${currentResults.map((item) => renderVitrinItemHtml(item)).join("")}
         </ul>
       `;
       return;
@@ -578,12 +580,8 @@
     for (const [letter, groupItems] of letterGroups.entries()) {
       html += `
         <div class="letter-group">
-          <div class="letter-separator-card" id="letter-group-${escapeHtml(letter)}" data-letter="${escapeHtml(letter)}">
-            <h2 class="sep-letter">${escapeHtml(letter)}</h2>
-            <span class="sep-count">${groupItems.length} kayıt</span>
-          </div>
           <ul class="letter-group-list" role="list">
-            ${groupItems.map(renderVitrinItemHtml).join("")}
+            ${groupItems.map((item, idx) => renderVitrinItemHtml(item, idx === 0 ? letter : null)).join("")}
           </ul>
         </div>
       `;
@@ -699,7 +697,7 @@
 
   function updateCachedLetterOffsets() {
     cachedLetterOffsets = [];
-    const separators = document.querySelectorAll(".letter-separator-card, .list-letter-header");
+    const separators = document.querySelectorAll(".vitrin-item[data-letter], .list-letter-header");
     separators.forEach((el) => {
       const letter = el.getAttribute("data-letter");
       if (letter) {

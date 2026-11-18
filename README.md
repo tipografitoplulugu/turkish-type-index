@@ -52,7 +52,7 @@ Site, **Tipografi Bülteni Arşivi** ile ortak bir marka katmanını paylaşırk
   - **Kompakt Üst Bölüm (Künye):** İki satırlık dengeli Instrument Serif başlık ve açıklama; sağ tarafta "Yazı Tasarımcısı Ekle" aksiyonu ve dinamik "Son güncelleme" bilgisi.
   - **Yapışkan Araç Çubuğu:** Canlı arama, dinamik sayaçlı segmentli kategori kontrolü (`Tümü 44 / Yazı Tasarımcıları 43 / Yazıevleri 1`), sıralama ve "Vitrin | Liste" seçicisi.
   - **Kutusuz Vitrin Izgarası:** 3 sütunlu yerleşimde (1100px+), kâğıt zemin üzerinde duran 4:3 görsel vitrini (`object-fit: cover; object-position: top;`), Instrument Serif ad, tekil rozet ve hiyerarşik kimlik satırı (Ekip / Marka / Yazıevi).
-  - **Harf Ayraçları ve Yapışkan Harf İndeksi:** Alfabetik sıralamada her harf grubu ızgarada Instrument Serif ayraç kartıyla başlar; sağ tarafta dikey yapışkan harf indeksi klavye ve kaydırma senkronizasyonuyla gezinmeyi hızlandırır.
+  - **Yapışkan Harf İndeksi ve Hızlı Gezinme:** Alfabetik sıralamada sağ taraftaki dikey yapışkan harf indeksi klavye ve kaydırma senkronizasyonuyla doğrudan ilgili harf grubuna atlamayı sağlar.
   - **Yoğun Dizin Listesi:** Liste modunda her satır ~64px yüksekliğinde, iki satırlı esnek yapısıyla her ekranda sıfır taşmayla çalışan editoryal liste.
   - **Ölçülü Lime Kullanımı:** Vurgu rengi (`#D5FD42`) yalnızca birincil CTA düğmesinde, harf indeksindeki aktif göstergede, arama vurgularında ve yazıevi rozetinde kullanılır.
 
