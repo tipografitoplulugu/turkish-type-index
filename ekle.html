@@ -369,8 +369,10 @@
         affiliation = affVal || null;
       }
 
-      const totalExisting = existingData && existingData.items ? existingData.items.length : 44;
-      const nextIndex = totalExisting + 1;
+      const maxIndex = existingData && existingData.items && existingData.items.length > 0
+        ? Math.max(...existingData.items.map(it => it.index || 0))
+        : 44;
+      const nextIndex = maxIndex + 1;
       const slug = slugify(name);
 
       return {

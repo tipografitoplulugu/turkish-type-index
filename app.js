@@ -101,13 +101,7 @@
   }
 
   function initTheme() {
-    let saved = null;
-    try {
-      saved = localStorage.getItem(THEME_STORAGE_KEY_ARCHIVE) || localStorage.getItem(THEME_STORAGE_KEY_INDEX);
-    } catch (e) {
-      /* ignore */
-    }
-    const theme = saved || getSystemTheme();
+    const theme = getActiveTheme();
     updateThemeUI(theme);
 
     if (themeToggleBtn) {
@@ -520,7 +514,7 @@
     return "";
   }
 
-  function renderVitrinItemHtml(item, letterGroup) {
+  function renderVitrinItemHtml(item) {
     const monogram = getMonogram(item.name);
     const highlightedName = highlightMatches(item.name, activeQuery);
     const badgeHtml = renderBadgeHtml(item);
@@ -535,7 +529,6 @@
            <span class="vitrin-fallback" aria-hidden="true">${escapeHtml(monogram)}</span>
          </div>`;
 
-    const letterAttr = letterGroup ? ` id="letter-group-${escapeHtml(letterGroup)}" data-letter="${escapeHtml(letterGroup)}"` : "";
     const domainHtml = item.domain
       ? `<div class="vitrin-domain">
            <span>${escapeHtml(item.domain)}</span>
@@ -544,7 +537,7 @@
       : "";
 
     return `
-      <li class="vitrin-item" data-id="${escapeHtml(item.id)}"${letterAttr}>
+      <li class="vitrin-item" data-id="${escapeHtml(item.id)}">
         ${imageHtml}
 
         <div class="vitrin-meta">
@@ -567,7 +560,7 @@
     if (!isGroupedByLetter) {
       directoryList.innerHTML = `
         <ul class="letter-group-list" role="list">
-          ${currentResults.map((item) => renderVitrinItemHtml(item)).join("")}
+          ${currentResults.map(renderVitrinItemHtml).join("")}
         </ul>
       `;
       return;
@@ -578,7 +571,11 @@
       html += `
         <div class="letter-group">
           <ul class="letter-group-list" role="list">
-            ${groupItems.map((item, idx) => renderVitrinItemHtml(item, idx === 0 ? letter : null)).join("")}
+            <li class="letter-separator-card" id="letter-group-${escapeHtml(letter)}" data-letter="${escapeHtml(letter)}">
+              <span class="sep-letter">${escapeHtml(letter)}</span>
+              <span class="sep-count">${groupItems.length} kayıt</span>
+            </li>
+            ${groupItems.map(renderVitrinItemHtml).join("")}
           </ul>
         </div>
       `;
@@ -694,7 +691,7 @@
 
   function updateCachedLetterOffsets() {
     cachedLetterOffsets = [];
-    const separators = document.querySelectorAll(".vitrin-item[data-letter], .list-letter-header");
+    const separators = document.querySelectorAll(".letter-separator-card, .list-letter-header");
     separators.forEach((el) => {
       const letter = el.getAttribute("data-letter");
       if (letter) {

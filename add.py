@@ -124,7 +124,35 @@ def run_check():
     if (designers_count + foundries_count) != total_count:
         errors.append(f"designers_count ({designers_count}) + foundries_count ({foundries_count}) != total_count ({total_count})")
 
-    # 2. Her kayıt için kural denetimleri
+    # 2. Tekillik (id ve index) denetimi
+    seen_ids = set()
+    duplicate_ids = set()
+    seen_indices = set()
+    duplicate_indices = set()
+
+    for idx, item in enumerate(items, start=1):
+        item_id = item.get("id")
+        if item_id:
+            if item_id in seen_ids:
+                duplicate_ids.add(item_id)
+            seen_ids.add(item_id)
+        else:
+            errors.append(f"[{idx}. kayıt] 'id' alanı eksik.")
+
+        item_index = item.get("index")
+        if item_index is not None:
+            if item_index in seen_indices:
+                duplicate_indices.add(item_index)
+            seen_indices.add(item_index)
+        else:
+            errors.append(f"[{item_id or idx}. kayıt] 'index' alanı eksik.")
+
+    if duplicate_ids:
+        errors.append(f"Yinelenen id değerleri bulundu: {sorted(list(duplicate_ids))}")
+    if duplicate_indices:
+        errors.append(f"Yinelenen index değerleri bulundu: {sorted(list(duplicate_indices))}")
+
+    # 3. Her kayıt için kural denetimleri
     for idx, item in enumerate(items, start=1):
         item_id = item.get("id", f"sira-{idx}")
         name = item.get("name", "")
@@ -190,7 +218,8 @@ def main():
         data = json.load(f)
 
     items = data.get("items", [])
-    next_index = len(items) + 1
+    max_index = max((it.get("index", 0) for it in items), default=0)
+    next_index = max_index + 1
 
     # 1. Tür Seçimi
     print("1. Kayıt Türü:")
