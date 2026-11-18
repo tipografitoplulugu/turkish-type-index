@@ -3,8 +3,8 @@
   "subtitle": "Türkiye'den yazı tasarımcılarını, bağımsız yazıevlerini ve özgün yazı tasarımı üretimlerini bir araya getiren açık bir dizin.",
   "updated_at": "2026-11-18",
   "total_count": 44,
-  "designers_count": 43,
-  "foundries_count": 1,
+  "designers_count": 42,
+  "foundries_count": 2,
   "items": [
     {
       "id": "01-tamer-koseli",
@@ -219,9 +219,9 @@
       "category_labels": [
         "Yazı Tasarımcısı"
       ],
-      "link": "https://fonts.google.com/specimen/Rakkas",
-      "domain": "fonts.google.com",
-      "platform": "Google Fonts",
+      "link": "https://2023.designmatters.io/lineup/zeynep-akay/",
+      "domain": "2023.designmatters.io",
+      "platform": "Web Sitesi",
       "description": "",
       "image": "assets/thumbnails/item_11.jpg",
       "dropmark_id": 33581728,
@@ -714,10 +714,10 @@
       "index": 36,
       "name": "Esin Type",
       "categories": [
-        "designer"
+        "foundry"
       ],
       "category_labels": [
-        "Yazı Tasarımcısı"
+        "Yazıevi"
       ],
       "link": "https://esintype.com/",
       "domain": "esintype.com",
@@ -726,7 +726,10 @@
       "image": "assets/thumbnails/item_36.jpg",
       "dropmark_id": 30452988,
       "brand": null,
-      "members": null,
+      "members": [
+        "Ali Rıza Esin",
+        "Ege Esin"
+      ],
       "affiliation": null
     },
     {

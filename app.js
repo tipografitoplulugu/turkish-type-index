@@ -622,7 +622,6 @@
             <div class="list-row-line2">
               ${identityLineHtml}
               ${item.domain ? `<span class="list-row-domain"><span>${escapeHtml(item.domain)}</span><span class="arrow-icon" aria-hidden="true">↗</span></span>` : ""}
-              ${item.platform ? `<span class="list-row-platform">${escapeHtml(item.platform)}</span>` : ""}
             </div>
           </div>
         </a>
