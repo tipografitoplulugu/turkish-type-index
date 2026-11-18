@@ -49,7 +49,7 @@ Site, **Tipografi Bülteni Arşivi** ile ortak bir marka katmanını paylaşırk
 
 - **Ürün Katmanı (Dizine Özgü — Katalog ve Vitrin Karakteri):**
   - **Geniş Sayfa Düzeni:** Arşivin 1120px dar okuma sütunu yerine **1320px** genişliğinde ferah vitrin düzeni.
-  - **Kompakt Üst Bölüm (Künye):** İki satırlık dengeli Instrument Serif başlık, açıklama ve "Yazıevi ile marka arasındaki fark" tanım notu; sağ tarafta "Yazı Tasarımcısı Ekle" aksiyonu ve dinamik "Son güncelleme" bilgisi.
+  - **Kompakt Üst Bölüm (Künye):** İki satırlık dengeli Instrument Serif başlık ve açıklama; sağ tarafta "Yazı Tasarımcısı Ekle" aksiyonu ve dinamik "Son güncelleme" bilgisi.
   - **Yapışkan Araç Çubuğu:** Canlı arama, dinamik sayaçlı segmentli kategori kontrolü (`Tümü 44 / Yazı Tasarımcıları 43 / Yazıevleri 1`), sıralama ve "Vitrin | Liste" seçicisi.
   - **Kutusuz Vitrin Izgarası:** 3 sütunlu yerleşimde (1100px+), kâğıt zemin üzerinde duran 4:3 görsel vitrini (`object-fit: cover; object-position: top;`), Instrument Serif ad, tekil rozet ve hiyerarşik kimlik satırı (Ekip / Marka / Yazıevi).
   - **Harf Ayraçları ve Yapışkan Harf İndeksi:** Alfabetik sıralamada her harf grubu ızgarada Instrument Serif ayraç kartıyla başlar; sağ tarafta dikey yapışkan harf indeksi klavye ve kaydırma senkronizasyonuyla gezinmeyi hızlandırır.

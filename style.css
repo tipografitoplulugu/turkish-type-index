@@ -450,43 +450,6 @@ mark.search-hit {
   line-height: 1.65;
 }
 
-/* Editorial Definition Note */
-.dizin-note {
-  margin-top: .75rem;
-  border-top: 1px dashed var(--line);
-  padding-top: .6rem;
-}
-
-.dizin-note-summary {
-  font-family: "DM Mono", monospace;
-  font-size: 0.78rem;
-  color: var(--muted);
-  cursor: pointer;
-  user-select: none;
-  display: inline-flex;
-  align-items: center;
-  gap: .4rem;
-  transition: color 140ms ease;
-}
-
-.dizin-note-summary:hover {
-  color: var(--ink);
-}
-
-.dizin-note-summary:focus-visible {
-  outline: 2px solid var(--focus);
-  outline-offset: 2px;
-}
-
-.dizin-note-content {
-  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  font-size: 0.92rem;
-  line-height: 1.65;
-  color: var(--muted);
-  max-width: 62ch;
-  margin: .6rem 0 0;
-}
-
 .hero-cta-btn {
   display: inline-flex;
   align-items: center;
