@@ -245,6 +245,17 @@ def generate_jsonld(data):
             "item": schema_item
         })
 
+    publisher_org = {
+        "@type": "Organization",
+        "@id": "https://tipografitoplulugu.github.io/#organization",
+        "name": "Türkçe Tipografi Topluluğu",
+        "url": "https://tipografitoplulugu.github.io/bulten-arsivi/",
+        "logo": {
+            "@type": "ImageObject",
+            "url": base_url + "logo.png"
+        }
+    }
+
     graph = [
         {
             "@type": "WebSite",
@@ -253,16 +264,7 @@ def generate_jsonld(data):
             "name": data.get("title", "Yazı Tasarımcıları ve Yazıevleri"),
             "description": data.get("subtitle", ""),
             "inLanguage": "tr",
-            "publisher": {
-                "@type": "Organization",
-                "@id": "https://tipografitoplulugu.github.io/#organization",
-                "name": "Türkçe Tipografi Topluluğu",
-                "url": "https://tipografitoplulugu.github.io/bulten-arsivi/",
-                "logo": {
-                    "@type": "ImageObject",
-                    "url": base_url + "logo.png"
-                }
-            }
+            "publisher": publisher_org
         },
         {
             "@type": "CollectionPage",
@@ -270,7 +272,9 @@ def generate_jsonld(data):
             "url": base_url,
             "name": f"{data.get('title', 'Yazı Tasarımcıları ve Yazıevleri')} — Türkçe Tipografi Topluluğu",
             "description": data.get("subtitle", ""),
+            "inLanguage": "tr",
             "isPartOf": {"@id": base_url + "#website"},
+            "publisher": publisher_org,
             "about": {"@type": "Thing", "name": "Tipografi ve Yazı Tasarımı"},
             "mainEntity": {
                 "@type": "ItemList",
@@ -585,6 +589,14 @@ def run_check():
                 if not collection_page:
                     errors.append("index.html JSON-LD içinde CollectionPage düğümü bulunamadı.")
                 else:
+                    for req_field in ["name", "description", "url", "inLanguage", "publisher"]:
+                        if req_field not in collection_page:
+                            errors.append(f"index.html JSON-LD CollectionPage içinde '{req_field}' alanı eksik.")
+                    if collection_page.get("inLanguage") != "tr":
+                        errors.append(f"index.html JSON-LD CollectionPage inLanguage 'tr' olmalıdır. Mevcut: {collection_page.get('inLanguage')}")
+                    pub = collection_page.get("publisher", {})
+                    if pub.get("@type") != "Organization" or pub.get("name") != "Türkçe Tipografi Topluluğu":
+                        errors.append(f"index.html JSON-LD CollectionPage publisher 'Türkçe Tipografi Topluluğu' Organizasyonu olmalıdır.")
                     item_list = collection_page.get("mainEntity", {})
                     num_items = item_list.get("numberOfItems")
                     elements = item_list.get("itemListElement", [])
