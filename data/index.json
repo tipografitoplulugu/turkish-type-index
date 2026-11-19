@@ -418,7 +418,7 @@
       "category_labels": [
         "Yazı Tasarımcısı"
       ],
-      "link": "http://plantype.co",
+      "link": "https://plantype.co",
       "domain": "plantype.co",
       "platform": "Web Sitesi",
       "image": "assets/thumbnails/item_22.jpg",
@@ -820,7 +820,7 @@
       "category_labels": [
         "Yazı Tasarımcısı"
       ],
-      "link": "https://www.myfonts.com/foundry/Ahmet_Altun/?sort=new",
+      "link": "https://www.myfonts.com/foundry/Ahmet_Altun/",
       "domain": "myfonts.com",
       "platform": "MyFonts",
       "image": "assets/thumbnails/item_44.jpg",
@@ -863,9 +863,9 @@
       "platform": "Web Sitesi",
       "image": "assets/thumbnails/item_46.jpg",
       "dropmark_id": null,
-      "brand": "Element Type",
+      "brand": null,
       "members": null,
-      "affiliation": null
+      "affiliation": "Element Type"
     }
   ]
 }
