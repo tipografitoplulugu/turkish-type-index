@@ -1,6 +1,6 @@
 # Yazı Tasarımcıları ve Yazıevleri — Türkiye
 
-**Türkçe Tipografi Topluluğu** tarafından hazırlanan, Türkiye menşeli yazı tasarımcılarını, yazıevlerini ve özgün yazı tasarımı üreticilerini bir araya getiren açık dijital dizin.
+**Türkçe Tipografi Topluluğu** tarafından hazırlanan, Türkiye’den yazı tasarımcılarını ve yazıevlerini bir araya getiren açık dizin.
 
 - **Canlı Dizin:** [https://tipografitoplulugu.github.io/turkish-type-index/](https://tipografitoplulugu.github.io/turkish-type-index/)
 - **İletişim & Katkı:** [tipografitoplulugu@gmail.com](mailto:tipografitoplulugu@gmail.com)
