@@ -1591,11 +1591,22 @@ mark.search-hit {
   }
 }
 
-/* 640px: 1 Column Grid */
+/* 640px: 1 Column Grid & Full-width Mobile Toolbar Controls */
 @media (max-width: 640px) {
   .directory-container.view-grid {
     grid-template-columns: 1fr;
     row-gap: 1.5rem;
+  }
+
+  .toolbar-view {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .toolbar-view .view-btn {
+    flex: 1 1 0;
+    min-width: 0;
+    justify-content: center;
   }
 }
 
