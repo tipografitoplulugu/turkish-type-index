@@ -10,6 +10,7 @@ Kullanım:
     python3 add.py --optimize-thumbnails # Mevcut küçük resimleri (thumbnails) sıkıştır ve boyutlandır
 """
 
+import html
 import io
 import json
 import os
@@ -285,6 +286,85 @@ def generate_jsonld(data):
     }
 
 
+MONTHS_TR = {
+    1: "Ocak", 2: "Şubat", 3: "Mart", 4: "Nisan", 5: "Mayıs", 6: "Haziran",
+    7: "Temmuz", 8: "Ağustos", 9: "Eylül", 10: "Ekim", 11: "Kasım", 12: "Aralık"
+}
+
+
+def format_turkish_date(date_str):
+    if not date_str:
+        return ""
+    try:
+        parts = date_str.strip().split("-")
+        year = int(parts[0])
+        month = int(parts[1])
+        day = int(parts[2])
+        return f"{day} {MONTHS_TR.get(month, '')} {year}"
+    except Exception:
+        return date_str
+
+
+def generate_noscript_block(data):
+    items = data.get("items", [])
+    lines = [
+        '            <!-- NOSCRIPT:START -->',
+        '            <div class="noscript-content" style="margin-bottom: 2rem; padding: 1.25rem 1.5rem; border: 1px solid var(--line); border-radius: 12px; background: var(--surface);">',
+        '              <p style="margin: 0 0 .5rem; font-weight: 600; font-size: 1.05rem; color: var(--ink);">Bu dizin JavaScript gerektirir.</p>',
+        '              <p style="margin: 0 0 1.25rem; font-size: .88rem; color: var(--muted); line-height: 1.6;">Arama, filtreleme ve interaktif vitrin/liste görünümü için lütfen tarayıcınızda JavaScript\'i etkinleştirin. Aşağıda dizindeki tüm yazı tasarımcıları ve yazıevlerinin bağlantı listesi yer almaktadır:</p>',
+        '              <ul class="noscript-list" style="margin: 0; padding-left: 1.25rem; line-height: 1.85; font-size: .95rem;">'
+    ]
+    for it in sorted(items, key=lambda x: x.get("name", "").lower()):
+        name = html.escape(it.get("name", ""))
+        link = html.escape(it.get("link", ""))
+        label = html.escape((it.get("category_labels") or [""])[0])
+        suffix = f' — <span style="color: var(--muted); font-size: .85rem;">{label}</span>' if label else ""
+        lines.append(f'                <li><a href="{link}" target="_blank" rel="noopener noreferrer">{name}</a>{suffix}</li>')
+    lines.append('              </ul>')
+    lines.append('            </div>')
+    lines.append('            <!-- NOSCRIPT:END -->')
+    return "\n".join(lines)
+
+
+def update_index_html_noscript(html_content, data):
+    noscript_block = generate_noscript_block(data)
+    pattern = re.compile(r'([ \t]*)<!-- NOSCRIPT:START -->.*?<!-- NOSCRIPT:END -->', re.DOTALL)
+    if pattern.search(html_content):
+        return pattern.sub(lambda _: noscript_block, html_content)
+    else:
+        target = '<div class="directory-container view-grid" id="directory-list"'
+        wrapped = f'<noscript>\n{noscript_block}\n          </noscript>\n          '
+        if target in html_content:
+            return html_content.replace(target, wrapped + target)
+        return html_content
+
+
+def update_index_html_updated_at(html_content, data):
+    updated_at_raw = data.get("updated_at", "")
+    if not updated_at_raw:
+        return html_content
+    date_formatted = format_turkish_date(updated_at_raw)
+    pattern = re.compile(r'(<div class="hero-updated-at" id="hero-updated-at">)(.*?)(</div>)')
+    if pattern.search(html_content):
+        return pattern.sub(lambda m: f"{m.group(1)}Son güncelleme: {date_formatted}{m.group(3)}", html_content)
+    return html_content
+
+
+def update_sitemap_lastmod(data):
+    if not os.path.exists("sitemap.xml"):
+        return
+    updated_at_raw = data.get("updated_at", "")
+    if not updated_at_raw:
+        return
+    with open("sitemap.xml", "r", encoding="utf-8") as f:
+        sitemap_content = f.read()
+    pattern = re.compile(r'(<lastmod>)(.*?)(</lastmod>)')
+    if pattern.search(sitemap_content):
+        new_content = pattern.sub(lambda m: f"{m.group(1)}{updated_at_raw}{m.group(3)}", sitemap_content)
+        with open("sitemap.xml", "w", encoding="utf-8") as f:
+            f.write(new_content)
+
+
 def update_index_html_jsonld(data=None):
     """data/index.json verisini index.html içindeki Schema.org JSON-LD bloğuna senkronize eder."""
     if data is None:
@@ -321,8 +401,17 @@ def update_index_html_jsonld(data=None):
         else:
             new_html = html.replace('</head>', f'{block}</head>')
 
+    # Noscript listesi senkronizasyonu
+    new_html = update_index_html_noscript(new_html, data)
+
+    # Son güncelleme tarihi senkronizasyonu
+    new_html = update_index_html_updated_at(new_html, data)
+
     with open("index.html", "w", encoding="utf-8") as f:
         f.write(new_html)
+
+    # sitemap.xml lastmod senkronizasyonu
+    update_sitemap_lastmod(data)
 
 
 def run_check():

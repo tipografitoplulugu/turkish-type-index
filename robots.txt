@@ -1,0 +1,5 @@
+User-agent: *
+Disallow: /turkish-type-index/ekle.html
+Disallow: /ekle.html
+
+Sitemap: https://tipografitoplulugu.github.io/turkish-type-index/sitemap.xml

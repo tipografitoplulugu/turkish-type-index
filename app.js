@@ -182,22 +182,48 @@
 
   function highlightMatches(text, query) {
     if (!text) return "";
-    const escaped = escapeHtml(text);
-    if (!query) return escaped;
+    if (!query) return escapeHtml(text);
 
     const trimmed = query.trim();
-    if (!trimmed) return escaped;
+    if (!trimmed) return escapeHtml(text);
 
     const terms = trimmed.split(/\s+/).filter(Boolean);
-    if (!terms.length) return escaped;
+    if (!terms.length) return escapeHtml(text);
 
     const pattern = terms.map(buildTurkishHighlightPattern).join("|");
+    let reg;
     try {
-      const reg = new RegExp(`(${pattern})`, "gi");
-      return escaped.replace(reg, '<mark class="search-hit">$1</mark>');
+      reg = new RegExp(pattern, "gi");
     } catch (e) {
-      return escaped;
+      return escapeHtml(text);
     }
+
+    let result = "";
+    let lastIndex = 0;
+    let match;
+
+    while ((match = reg.exec(text)) !== null) {
+      const matchIndex = match.index;
+      const matchedText = match[0];
+
+      if (matchedText.length === 0) {
+        reg.lastIndex++;
+        continue;
+      }
+
+      if (matchIndex > lastIndex) {
+        result += escapeHtml(text.slice(lastIndex, matchIndex));
+      }
+
+      result += `<mark class="search-hit">${escapeHtml(matchedText)}</mark>`;
+      lastIndex = matchIndex + matchedText.length;
+    }
+
+    if (lastIndex < text.length) {
+      result += escapeHtml(text.slice(lastIndex));
+    }
+
+    return result;
   }
 
   function getMonogram(name) {
@@ -377,10 +403,15 @@
           ? item.members.some((m) => textContainsQuery(m, activeQuery))
           : false;
 
+        const categoryLabelsMatch = Array.isArray(item.category_labels)
+          ? item.category_labels.some((cat) => textContainsQuery(cat, activeQuery))
+          : false;
+
         return (
           textContainsQuery(item.name, activeQuery) ||
           textContainsQuery(item.brand, activeQuery) ||
           membersMatch ||
+          categoryLabelsMatch ||
           textContainsQuery(item.affiliation, activeQuery) ||
           textContainsQuery(item.domain, activeQuery) ||
           textContainsQuery(item.platform, activeQuery)
@@ -564,6 +595,7 @@
         <h3 class="vitrin-title">
           <a href="${escapeHtml(item.link)}" target="_blank" rel="noopener noreferrer" class="vitrin-card-link">
             ${highlightedName}
+            <span class="sr-only"> (yeni sekmede açılır)</span>
           </a>
         </h3>
 
@@ -628,7 +660,7 @@
           ${imageHtml}
           <div class="list-row-content">
             <div class="list-row-line1">
-              <span class="list-row-title">${highlightedName}</span>
+              <span class="list-row-title">${highlightedName}<span class="sr-only"> (yeni sekmede açılır)</span></span>
               <div class="list-row-badges">${badgeHtml}</div>
             </div>
             <div class="list-row-line2">
