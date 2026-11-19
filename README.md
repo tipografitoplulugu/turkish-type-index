@@ -12,10 +12,10 @@
 Dizine dahil edilecek kişi ve kurumların aşağıdaki temel ölçütleri karşılaması beklenir:
 
 1. **Coğrafi ve Kültürel Bağ:** Türkiye menşeli olmak veya Türkiye tipografi ekosistemiyle doğrudan bağı bulunmak.
-2. **Özgün Üretim:** Orijinal, erişilebilir ve yayınlanmış/satışta olan en az bir yazı tipi (typeface / font ailesi) çalışmasına sahip olmak.
-3. **Doğrudan ve Geçerli Bağlantı:** Tasarımcının veya yazıevinin tipografi portfolyosuna, font satış platformuna (MyFonts, Creative Market, Google Fonts, Type Network vb.) ya da kişisel/kurumsal web sitesine doğrudan yönlendiren güncel ve çalışan bir bağlantı (tercihen HTTPS).
+2. **Özgün Üretim:** Orijinal, erişilebilir ve yayınlanmış/satışta olan en az bir yazı tasarımına sahip olmak.
+3. **Doğrudan ve Geçerli Bağlantı:** Tasarımcının veya yazıevinin tipografi portfolyosuna, font satış platformuna (MyFonts, Creative Market, Google Fonts, Type Network vb.) ya da kişisel/kurumsal internet sitesine doğrudan yönlendiren güncel ve çalışan bir bağlantı (tercihen HTTPS).
 4. **Yazıevleri İçin Kurumsal Şart:** Yazıevi (*type foundry*) kategorisindeki kayıtların en az iki aktif tasarımcı/kurucu üye bilgisi içermesi zorunludur.
-5. **Açık Standartlar ve Telif:** Üretilen yazı tiplerinin telif ve lisanslama standartlarına uygun, özgün tasarımlar olması gerekmektedir.
+5. **Açık Standartlar ve Telif:** Üretilen yazıyüzlerinin telif ve lisanslama standartlarına uygun, özgün tasarımlar olması gerekmektedir.
 
 ---
 
