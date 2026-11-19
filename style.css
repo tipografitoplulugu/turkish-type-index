@@ -1534,10 +1534,14 @@ mark.search-hit {
 /* 900px: 2-line list view */
 @media (max-width: 900px) {
   .list-row-link {
-    align-items: center;
+    align-items: flex-start;
     gap: .75rem;
     padding: .65rem .5rem;
     min-height: auto;
+  }
+
+  .list-row-media {
+    margin-top: 3px;
   }
 
   .list-row-content {
@@ -1559,7 +1563,7 @@ mark.search-hit {
   }
 
   .list-row-line1 .list-row-title {
-    flex: 1 1 240px;
+    flex: 0 1 auto;
     min-width: 0;
     overflow-wrap: anywhere;
     word-break: break-word;
