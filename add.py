@@ -90,6 +90,114 @@ def download_or_copy_image(source, target_index):
     return None
 
 
+def generate_jsonld(data):
+    """Schema.org uyumlu JSON-LD grafiğini üretir."""
+    base_url = "https://tipografitoplulugu.github.io/turkish-type-index/"
+    items = data.get("items", [])
+    list_elements = []
+    for idx, item in enumerate(items, 1):
+        is_foundry = "foundry" in item.get("categories", [])
+        schema_item = {
+            "@type": "Organization" if is_foundry else "Person",
+            "name": item["name"],
+            "url": item.get("link", base_url)
+        }
+        if item.get("image"):
+            img = item["image"]
+            schema_item["image"] = base_url + img.lstrip("/") if not img.startswith("http") else img
+        if is_foundry:
+            if item.get("members"):
+                schema_item["member"] = [{"@type": "Person", "name": m} for m in item["members"]]
+        else:
+            schema_item["jobTitle"] = "Yazı Tasarımcısı"
+            if item.get("brand"):
+                schema_item["brand"] = {"@type": "Brand", "name": item["brand"]}
+            if item.get("affiliation"):
+                schema_item["worksFor"] = {"@type": "Organization", "name": item["affiliation"]}
+        list_elements.append({
+            "@type": "ListItem",
+            "position": idx,
+            "item": schema_item
+        })
+
+    graph = [
+        {
+            "@type": "WebSite",
+            "@id": base_url + "#website",
+            "url": base_url,
+            "name": data.get("title", "Yazı Tasarımcıları ve Yazıevleri — Türkiye"),
+            "description": data.get("subtitle", ""),
+            "inLanguage": "tr",
+            "publisher": {
+                "@type": "Organization",
+                "@id": "https://tipografitoplulugu.github.io/#organization",
+                "name": "Türkçe Tipografi Topluluğu",
+                "url": "https://tipografitoplulugu.github.io/bulten-arsivi/",
+                "logo": {
+                    "@type": "ImageObject",
+                    "url": base_url + "logo.png"
+                }
+            }
+        },
+        {
+            "@type": "CollectionPage",
+            "@id": base_url + "#webpage",
+            "url": base_url,
+            "name": "Yazı Tasarımcıları ve Yazıevleri — Türkiye — Türkçe Tipografi Topluluğu",
+            "description": data.get("subtitle", ""),
+            "isPartOf": {"@id": base_url + "#website"},
+            "about": {"@type": "Thing", "name": "Tipografi ve Yazı Tasarımı"},
+            "mainEntity": {
+                "@type": "ItemList",
+                "numberOfItems": len(list_elements),
+                "itemListElement": list_elements
+            }
+        }
+    ]
+
+    return {
+        "@context": "https://schema.org",
+        "@graph": graph
+    }
+
+
+def update_index_html_jsonld(data=None):
+    """data/index.json verisini index.html içindeki Schema.org JSON-LD bloğuna senkronize eder."""
+    if data is None:
+        if not os.path.exists(DATA_FILE):
+            print(f"HATA: {DATA_FILE} dosyası bulunamadı!")
+            sys.exit(1)
+        with open(DATA_FILE, "r", encoding="utf-8") as f:
+            data = json.load(f)
+
+    if not os.path.exists("index.html"):
+        return
+
+    jsonld_doc = generate_jsonld(data)
+    jsonld_str = json.dumps(jsonld_doc, ensure_ascii=False, indent=2)
+
+    with open("index.html", "r", encoding="utf-8") as f:
+        html = f.read()
+
+    pattern = re.compile(
+        r'(<script type="application/ld\+json" id="schema-jsonld">)(.*?)(</script>)',
+        re.DOTALL
+    )
+
+    if pattern.search(html):
+        new_html = pattern.sub(f'\\1\n{jsonld_str}\n  \\3', html)
+    else:
+        target = '  <!-- Preconnect Fonts -->'
+        block = f'  <!-- Schema.org Structured Data (JSON-LD) -->\n  <script type="application/ld+json" id="schema-jsonld">\n{jsonld_str}\n  </script>\n\n'
+        if target in html:
+            new_html = html.replace(target, block + target)
+        else:
+            new_html = html.replace('</head>', f'{block}</head>')
+
+    with open("index.html", "w", encoding="utf-8") as f:
+        f.write(new_html)
+
+
 def run_check():
     """data/index.json dosyasını şema ve tutarlılık kurallarına göre doğrular."""
     if not os.path.exists(DATA_FILE):
@@ -189,6 +297,31 @@ def run_check():
         if "designer" in item:
             errors.append(f"[{item_id}] Eski 'designer' anahtarı mevcut olmamalıdır.")
 
+    # 4. index.html Schema.org (JSON-LD) denetimi
+    if os.path.exists("index.html"):
+        try:
+            with open("index.html", "r", encoding="utf-8") as hf:
+                html_content = hf.read()
+            m = re.search(r'<script type="application/ld\+json" id="schema-jsonld">\s*(\{.*?\})\s*</script>', html_content, re.DOTALL)
+            if not m:
+                errors.append("index.html içinde <script type=\"application/ld+json\" id=\"schema-jsonld\"> bloğu bulunamadı.")
+            else:
+                schema_doc = json.loads(m.group(1))
+                if schema_doc.get("@context") != "https://schema.org":
+                    errors.append(f"index.html JSON-LD @context geçersiz: {schema_doc.get('@context')}")
+                graph = schema_doc.get("@graph", [])
+                collection_page = next((n for n in graph if n.get("@type") == "CollectionPage"), None)
+                if not collection_page:
+                    errors.append("index.html JSON-LD içinde CollectionPage düğümü bulunamadı.")
+                else:
+                    item_list = collection_page.get("mainEntity", {})
+                    num_items = item_list.get("numberOfItems")
+                    elements = item_list.get("itemListElement", [])
+                    if num_items != actual_total or len(elements) != actual_total:
+                        errors.append(f"index.html JSON-LD içindeki kayıt sayısı ({num_items}) ile index.json ({actual_total}) uyuşmuyor. 'python3 add.py --update-jsonld' çalıştırın.")
+        except Exception as e:
+            errors.append(f"index.html JSON-LD doğrulanırken hata oluştu: {e}")
+
     if errors:
         print(f"\n❌ DENETİM BAŞARISIZ: {len(errors)} hata bulundu:\n")
         for err in errors:
@@ -197,14 +330,20 @@ def run_check():
         sys.exit(1)
     else:
         print(f"\n✓ Tüm denetimler başarıyla geçti ({actual_total} kayıt doğrulandı: "
-              f"{actual_designers} Tasarımcı, {actual_foundries} Yazıevi).\n")
+              f"{actual_designers} Tasarımcı, {actual_foundries} Yazıevi).")
+        print(f"  • index.html Schema.org (JSON-LD) yapılandırılmış verisi doğrulandı ({actual_total} kayıt).\n")
         sys.exit(0)
 
 
 def main():
-    if len(sys.argv) > 1 and sys.argv[1] == "--check":
-        run_check()
-        return
+    if len(sys.argv) > 1:
+        if sys.argv[1] == "--check":
+            run_check()
+            return
+        elif sys.argv[1] in ["--update-jsonld", "--jsonld"]:
+            update_index_html_jsonld()
+            print("✓ index.html Schema.org (JSON-LD) başarıyla güncellendi.")
+            return
 
     print("\n" + "=" * 60)
     print("  Yazı Tasarımcıları ve Yazıevleri — Yeni Kayıt Ekleme")
@@ -320,6 +459,9 @@ def main():
     with open(DATA_FILE, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
         f.write("\n")
+
+    # index.html Schema.org (JSON-LD) güncelle
+    update_index_html_jsonld(data)
 
     print("\n" + "-" * 60)
     print(f"✓ Başarıyla eklendi: {name}")
