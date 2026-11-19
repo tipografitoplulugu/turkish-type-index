@@ -4,20 +4,34 @@ Yazı Tasarımcıları ve Yazıevleri — Türkiye
 Yeni Kayıt Ekleme Sihirbazı ve Veri Denetleyicisi (add.py)
 
 Kullanım:
-    python3 add.py          # Yeni kayıt ekleme sihirbazı
-    python3 add.py --check  # data/index.json şema ve tutarlılık denetimi
+    python3 add.py                      # Yeni kayıt ekleme sihirbazı
+    python3 add.py --check              # data/index.json şema ve tutarlılık denetimi
+    python3 add.py --update-jsonld      # index.html Schema.org JSON-LD bloğunu güncelle
+    python3 add.py --optimize-thumbnails # Mevcut küçük resimleri (thumbnails) sıkıştır ve boyutlandır
 """
 
+import io
 import json
 import os
 import re
+import shutil
+import subprocess
 import sys
 from datetime import datetime
 from urllib.parse import urlparse
 import urllib.request
 
+try:
+    from PIL import Image, ImageOps
+    HAS_PILLOW = True
+except ImportError:
+    HAS_PILLOW = False
+
 DATA_FILE = "data/index.json"
 THUMBNAILS_DIR = "assets/thumbnails"
+MAX_IMAGE_WIDTH = 1000
+MAX_IMAGE_HEIGHT = 1500
+IMAGE_JPEG_QUALITY = 82
 
 
 def get_clean_domain(url):
@@ -53,10 +67,103 @@ def slugify(text):
     return re.sub(r"[^a-z0-9]+", "-", text).strip("-")
 
 
+def optimize_and_save_image(raw_bytes, target_path_no_ext, preferred_ext="jpg"):
+    """
+    Görsel baytlarını Pillow ile okur, maksimum genişliğe göre oranlı küçültür,
+    EXIF oryantasyonunu düzeltir ve sıkıştırarak kaydeder.
+    Pillow mevcut değilse macOS sips komutuna başvurur veya doğrudan baytları yazar.
+    Dönen değer: kaydedilen dosya yolu (örn. 'assets/thumbnails/item_01.jpg')
+    """
+    if not raw_bytes:
+        return None
+
+    # 1. Pillow mevcutsa tam optimizasyon
+    if HAS_PILLOW:
+        try:
+            img = Image.open(io.BytesIO(raw_bytes))
+
+            # EXIF oryantasyonu düzelt (telefon fotoğraflarındaki ters/yan dönmeyi engeller)
+            try:
+                img = ImageOps.exif_transpose(img)
+            except Exception:
+                pass
+
+            # Genişlik sınırlandırması (oranı koruyarak küçült)
+            if img.width > MAX_IMAGE_WIDTH:
+                ratio = MAX_IMAGE_WIDTH / float(img.width)
+                new_height = max(1, int(round(img.height * ratio)))
+                resample_filter = getattr(Image, "Resampling", Image).LANCZOS
+                img = img.resize((MAX_IMAGE_WIDTH, new_height), resample_filter)
+
+            # Aşırı dikey görseller (tam sayfa ekran görüntüleri) için üst bölümü koruyarak sınırla
+            if img.height > MAX_IMAGE_HEIGHT:
+                img = img.crop((0, 0, img.width, MAX_IMAGE_HEIGHT))
+
+            # Şeffaflık kanalı kontrolü
+            has_alpha = False
+            if img.mode in ("RGBA", "LA"):
+                alpha = img.split()[-1]
+                has_alpha = alpha.getextrema()[0] < 255
+            elif img.mode == "P" and "transparency" in img.info:
+                has_alpha = True
+
+            orig_ext = (preferred_ext or "").lower().strip(".")
+            if has_alpha or orig_ext == "png":
+                out_ext = "png"
+                out_path = f"{target_path_no_ext}.png"
+                img.save(out_path, format="PNG", optimize=True)
+            else:
+                out_ext = "jpg"
+                out_path = f"{target_path_no_ext}.jpg"
+                if img.mode != "RGB":
+                    img = img.convert("RGB")
+                img.save(out_path, format="JPEG", quality=IMAGE_JPEG_QUALITY, optimize=True)
+
+            # Farklı uzantıda eski bir dosya varsa temizle
+            alt_ext = "png" if out_ext == "jpg" else "jpg"
+            alt_path = f"{target_path_no_ext}.{alt_ext}"
+            if os.path.exists(alt_path) and alt_path != out_path:
+                try:
+                    os.remove(alt_path)
+                except OSError:
+                    pass
+
+            return out_path
+        except Exception as e:
+            print(f"  ⚠ Pillow ile görsel optimize edilirken uyarı ({e}), alternatif yönteme geçiliyor.")
+
+    # 2. macOS sips aracı fallback'i
+    sips_bin = shutil.which("sips")
+    clean_ext = (preferred_ext or "jpg").lower().strip(".")
+    if clean_ext not in ["jpg", "jpeg", "png"]:
+        clean_ext = "jpg"
+    out_path = f"{target_path_no_ext}.{clean_ext}"
+
+    if sips_bin:
+        try:
+            with open(out_path, "wb") as f:
+                f.write(raw_bytes)
+            subprocess.run([sips_bin, "--resampleWidth", str(MAX_IMAGE_WIDTH), out_path],
+                           stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=False)
+            if clean_ext in ["jpg", "jpeg"]:
+                subprocess.run([sips_bin, "-s", "formatOptions", str(IMAGE_JPEG_QUALITY), out_path],
+                               stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=False)
+            return out_path
+        except Exception:
+            pass
+
+    # 3. Doğrudan yazma fallback'i
+    with open(out_path, "wb") as f:
+        f.write(raw_bytes)
+    return out_path
+
+
 def download_or_copy_image(source, target_index):
     os.makedirs(THUMBNAILS_DIR, exist_ok=True)
     if not source:
         return None
+
+    target_base = f"{THUMBNAILS_DIR}/item_{target_index:02d}"
 
     # URL mi yoksa yerel dosya yolu mu?
     if source.startswith("http://") or source.startswith("https://"):
@@ -67,23 +174,27 @@ def download_or_copy_image(source, target_index):
             with urllib.request.urlopen(req, timeout=10) as resp:
                 content = resp.read()
                 content_type = resp.headers.get_content_type()
-                ext = "png" if "png" in content_type else "jpg"
-                filename = f"{THUMBNAILS_DIR}/item_{target_index:02d}.{ext}"
-                with open(filename, "wb") as f:
-                    f.write(content)
-                print(f"  ✓ Görsel kaydedildi: {filename}")
-                return filename
+                preferred_ext = "png" if "png" in content_type else "jpg"
+                filename = optimize_and_save_image(content, target_base, preferred_ext=preferred_ext)
+                if filename:
+                    size_kb = os.path.getsize(filename) / 1024
+                    print(f"  ✓ Görsel optimize edilerek kaydedildi: {filename} ({size_kb:.1f} KB)")
+                    return filename
+                return None
         except Exception as e:
             print(f"  ⚠ Görsel indirilemedi ({e}), boş geçilecek.")
             return None
     elif os.path.isfile(source):
         try:
             ext = os.path.splitext(source)[1].lstrip(".").lower() or "jpg"
-            filename = f"{THUMBNAILS_DIR}/item_{target_index:02d}.{ext}"
-            with open(source, "rb") as src_f, open(filename, "wb") as dst_f:
-                dst_f.write(src_f.read())
-            print(f"  ✓ Yerel görsel kopyalandı: {filename}")
-            return filename
+            with open(source, "rb") as src_f:
+                content = src_f.read()
+            filename = optimize_and_save_image(content, target_base, preferred_ext=ext)
+            if filename:
+                size_kb = os.path.getsize(filename) / 1024
+                print(f"  ✓ Yerel görsel optimize edilerek kaydedildi: {filename} ({size_kb:.1f} KB)")
+                return filename
+            return None
         except Exception as e:
             print(f"  ⚠ Görsel kopyalanamadı ({e}), boş geçilecek.")
             return None
@@ -335,14 +446,70 @@ def run_check():
         sys.exit(0)
 
 
+def optimize_all_thumbnails():
+    """assets/thumbnails klasöründeki mevcut görselleri optimize eder ve index.json ile senkronize eder."""
+    if not os.path.exists(DATA_FILE):
+        print(f"HATA: {DATA_FILE} bulunamadı!")
+        sys.exit(1)
+
+    with open(DATA_FILE, "r", encoding="utf-8") as f:
+        data = json.load(f)
+
+    items = data.get("items", [])
+    total_saved_bytes = 0
+    updated_count = 0
+
+    print("\n" + "=" * 60)
+    print("  Görselleri Optimize Etme Aracı")
+    print("=" * 60 + "\n")
+
+    for item in items:
+        img_path = item.get("image")
+        if not img_path or not os.path.isfile(img_path):
+            continue
+
+        orig_size = os.path.getsize(img_path)
+        base_name, ext = os.path.splitext(img_path)
+        preferred_ext = ext.lstrip(".").lower()
+
+        with open(img_path, "rb") as f:
+            raw_bytes = f.read()
+
+        new_path = optimize_and_save_image(raw_bytes, base_name, preferred_ext=preferred_ext)
+        if new_path and os.path.isfile(new_path):
+            new_size = os.path.getsize(new_path)
+            diff = orig_size - new_size
+            total_saved_bytes += diff
+            updated_count += 1
+            if new_path != img_path:
+                item["image"] = new_path
+            print(f"  • {os.path.basename(img_path)}: {orig_size/1024:.1f} KB → {new_size/1024:.1f} KB")
+
+    with open(DATA_FILE, "w", encoding="utf-8") as f:
+        json.dump(data, f, ensure_ascii=False, indent=2)
+        f.write("\n")
+
+    update_index_html_jsonld(data)
+
+    print("\n" + "-" * 60)
+    print(f"✓ {updated_count} görsel optimize edildi.")
+    if total_saved_bytes > 0:
+        print(f"  Toplam tasarruf: {total_saved_bytes / 1024:.1f} KB ({total_saved_bytes / (1024 * 1024):.2f} MB)")
+    print("-" * 60 + "\n")
+
+
 def main():
     if len(sys.argv) > 1:
-        if sys.argv[1] == "--check":
+        arg = sys.argv[1]
+        if arg == "--check":
             run_check()
             return
-        elif sys.argv[1] in ["--update-jsonld", "--jsonld"]:
+        elif arg in ["--update-jsonld", "--jsonld"]:
             update_index_html_jsonld()
             print("✓ index.html Schema.org (JSON-LD) başarıyla güncellendi.")
+            return
+        elif arg in ["--optimize-thumbnails", "--optimize-images"]:
+            optimize_all_thumbnails()
             return
 
     print("\n" + "=" * 60)
