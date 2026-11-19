@@ -55,10 +55,11 @@
       font-size: .95rem;
       padding: .75rem 1rem;
       outline: none;
-      transition: border-color 140ms ease;
+      transition: border-color 140ms ease, box-shadow 140ms ease;
     }
     .admin-input:focus, .admin-textarea:focus, .admin-select:focus {
-      border: 2px solid var(--focus);
+      border-color: var(--focus);
+      box-shadow: 0 0 0 1px var(--focus);
     }
     .admin-input[aria-invalid="true"], .admin-select[aria-invalid="true"] {
       border-color: var(--danger);
