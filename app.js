@@ -1,5 +1,5 @@
 /**
- * Yazı Tasarımcıları ve Yazıevleri — Türkiye (app.js)
+ * Yazı Tasarımcıları ve Yazıevleri (app.js)
  * Türkçe Tipografi Topluluğu
  * 
  * İstemci taraflı canlı arama, kategori süzgeci, alfabetik sıralama,

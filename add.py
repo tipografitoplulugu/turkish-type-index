@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Yazı Tasarımcıları ve Yazıevleri — Türkiye
+Yazı Tasarımcıları ve Yazıevleri
 Yeni Kayıt Ekleme Sihirbazı ve Veri Denetleyicisi (add.py)
 
 Kullanım:
@@ -236,7 +236,7 @@ def generate_jsonld(data):
             "@type": "WebSite",
             "@id": base_url + "#website",
             "url": base_url,
-            "name": data.get("title", "Yazı Tasarımcıları ve Yazıevleri — Türkiye"),
+            "name": data.get("title", "Yazı Tasarımcıları ve Yazıevleri"),
             "description": data.get("subtitle", ""),
             "inLanguage": "tr",
             "publisher": {
@@ -254,7 +254,7 @@ def generate_jsonld(data):
             "@type": "CollectionPage",
             "@id": base_url + "#webpage",
             "url": base_url,
-            "name": "Yazı Tasarımcıları ve Yazıevleri — Türkiye — Türkçe Tipografi Topluluğu",
+            "name": f"{data.get('title', 'Yazı Tasarımcıları ve Yazıevleri')} — Türkçe Tipografi Topluluğu",
             "description": data.get("subtitle", ""),
             "isPartOf": {"@id": base_url + "#website"},
             "about": {"@type": "Thing", "name": "Tipografi ve Yazı Tasarımı"},

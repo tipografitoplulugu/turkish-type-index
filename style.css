@@ -440,15 +440,6 @@ mark.search-hit {
   letter-spacing: normal;
 }
 
-.dizin-h1 .title-line1 {
-  display: block;
-}
-
-.dizin-h1 .title-line2 {
-  display: inline-block;
-  color: var(--ink);
-}
-
 .dizin-hero-bottom {
   display: flex;
   align-items: last baseline;
@@ -1010,7 +1001,7 @@ mark.search-hit {
 /* Title & Card-covering Link */
 .vitrin-title {
   font-family: "Instrument Serif", Georgia, serif;
-  font-size: 1.75rem;
+  font-size: 1.95rem;
   line-height: 1.15;
   margin: .1rem 0 0;
   font-weight: 400;
@@ -1193,7 +1184,7 @@ mark.search-hit {
 
 .list-row-title {
   font-family: "Instrument Serif", Georgia, serif;
-  font-size: 1.38rem;
+  font-size: 1.55rem;
   line-height: 1.15;
   color: var(--ink);
   font-weight: 400;
