@@ -564,7 +564,7 @@
       "affiliation": null
     },
     {
-      "id": "31-murathan-biliktu-biliktu-yazievi",
+      "id": "31-murathan-biliktu-biliktu-foundry",
       "index": 31,
       "name": "Murathan Biliktü",
       "categories": [
@@ -578,7 +578,7 @@
       "platform": "Web Sitesi",
       "image": "assets/thumbnails/item_31.jpg",
       "dropmark_id": 30452993,
-      "brand": "Biliktü Yazıevi",
+      "brand": "Biliktu Foundry",
       "members": null,
       "affiliation": null
     },
@@ -602,7 +602,7 @@
       "affiliation": null
     },
     {
-      "id": "33-emre-yildiz-i-dotless-yazievi",
+      "id": "33-emre-yildiz-i-dotless-type-foundry",
       "index": 33,
       "name": "Emre Yıldız",
       "categories": [
@@ -616,7 +616,7 @@
       "platform": "Web Sitesi",
       "image": "assets/thumbnails/item_33.jpg",
       "dropmark_id": 30452991,
-      "brand": "I Dotless Yazıevi",
+      "brand": "I Dotless Type Foundry",
       "members": null,
       "affiliation": null
     },
