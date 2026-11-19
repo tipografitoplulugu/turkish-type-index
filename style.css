@@ -900,41 +900,6 @@ mark.search-hit {
   padding: 0;
 }
 
-/* Letter Separator Card (occupies 1 grid cell, always starts on column 1) */
-.letter-separator-card {
-  grid-column: 1;
-  aspect-ratio: 4 / 3;
-  width: 100%;
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  background: var(--surface-subtle);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: 1.5rem;
-  user-select: none;
-  scroll-margin-top: calc(var(--sticky-offset, 0px) + 16px);
-}
-
-.sep-letter {
-  font-family: "Instrument Serif", Georgia, serif;
-  font-size: 6.2rem;
-  line-height: .88;
-  margin: 0 0 .5rem;
-  font-weight: 400;
-  color: var(--ink);
-}
-
-.sep-count {
-  font-family: "DM Mono", monospace;
-  font-size: .78rem;
-  color: var(--muted);
-  text-transform: uppercase;
-  letter-spacing: .08em;
-}
-
 /* Vitrin Item (Individual Showcase Unit on Paper) */
 .vitrin-item {
   position: relative;
@@ -1148,33 +1113,6 @@ mark.search-hit {
   display: flex;
   flex-direction: column;
   gap: 0;
-}
-
-/* Full-width section header in list view */
-.list-letter-header {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  padding: 1.75rem 0 .65rem;
-  border-bottom: 2px solid var(--line-strong);
-  margin-bottom: .25rem;
-  scroll-margin-top: calc(var(--sticky-offset, 0px) + 16px);
-}
-
-.list-sep-letter {
-  font-family: "Instrument Serif", Georgia, serif;
-  font-size: 2.4rem;
-  margin: 0;
-  font-weight: 400;
-  color: var(--ink);
-}
-
-.list-sep-count {
-  font-family: "DM Mono", monospace;
-  font-size: .8rem;
-  color: var(--muted);
-  text-transform: uppercase;
-  letter-spacing: .06em;
 }
 
 /* Dizin List Row */
@@ -1690,37 +1628,11 @@ mark.search-hit {
   }
 }
 
-/* 640px: 1 Column Grid & Compact Separator Header */
+/* 640px: 1 Column Grid */
 @media (max-width: 640px) {
   .directory-container.view-grid {
     grid-template-columns: 1fr;
     row-gap: 1.5rem;
-  }
-
-  .letter-separator-card {
-    aspect-ratio: auto;
-    min-height: auto;
-    max-height: 56px;
-    padding: .5rem 0;
-    background: transparent;
-    border: none;
-    border-radius: 0;
-    border-bottom: 1px solid var(--line);
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: baseline;
-  }
-
-  .sep-letter {
-    font-size: 2.6rem;
-    line-height: 1;
-    margin: 0;
-  }
-
-  .sep-count {
-    font-size: .75rem;
-    margin: 0;
   }
 }
 

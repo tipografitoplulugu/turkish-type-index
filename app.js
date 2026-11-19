@@ -533,7 +533,7 @@
     return `<p class="${className}" title="${escapeHtml(item.description.trim())}">${highlightedDesc}</p>`;
   }
 
-  function renderVitrinItemHtml(item) {
+  function renderVitrinItemHtml(item, groupLetter = null) {
     const monogram = getMonogram(item.name);
     const highlightedName = highlightMatches(item.name, activeQuery);
     const badgeHtml = renderBadgeHtml(item);
@@ -556,8 +556,12 @@
          </div>`
       : "";
 
+    const letterAttrs = groupLetter
+      ? ` id="letter-group-${escapeHtml(groupLetter)}" data-letter="${escapeHtml(groupLetter)}"`
+      : "";
+
     return `
-      <li class="vitrin-item" data-id="${escapeHtml(item.id)}">
+      <li class="vitrin-item"${letterAttrs} data-id="${escapeHtml(item.id)}">
         ${imageHtml}
 
         <div class="vitrin-meta">
@@ -581,7 +585,7 @@
     if (!isGroupedByLetter) {
       directoryList.innerHTML = `
         <ul class="letter-group-list" role="list">
-          ${currentResults.map(renderVitrinItemHtml).join("")}
+          ${currentResults.map((item) => renderVitrinItemHtml(item)).join("")}
         </ul>
       `;
       return;
@@ -589,14 +593,14 @@
 
     let html = "";
     for (const [letter, groupItems] of letterGroups.entries()) {
+      const itemsHtml = groupItems
+        .map((item, idx) => (idx === 0 ? renderVitrinItemHtml(item, letter) : renderVitrinItemHtml(item)))
+        .join("");
+
       html += `
         <div class="letter-group">
           <ul class="letter-group-list" role="list">
-            <li class="letter-separator-card" id="letter-group-${escapeHtml(letter)}" data-letter="${escapeHtml(letter)}">
-              <span class="sep-letter">${escapeHtml(letter)}</span>
-              <span class="sep-count">${groupItems.length} kayıt</span>
-            </li>
-            ${groupItems.map(renderVitrinItemHtml).join("")}
+            ${itemsHtml}
           </ul>
         </div>
       `;
@@ -608,7 +612,7 @@
   // List View Rendering
   // -------------------------------------------------------------
 
-  function renderListRowHtml(item) {
+  function renderListRowHtml(item, groupLetter = null) {
     const monogram = getMonogram(item.name);
     const highlightedName = highlightMatches(item.name, activeQuery);
     const badgeHtml = renderBadgeHtml(item);
@@ -624,8 +628,12 @@
            <span class="media-fallback" aria-hidden="true">${escapeHtml(monogram)}</span>
          </div>`;
 
+    const letterAttrs = groupLetter
+      ? ` id="letter-group-${escapeHtml(groupLetter)}" data-letter="${escapeHtml(groupLetter)}"`
+      : "";
+
     return `
-      <li class="dizin-list-row" data-id="${escapeHtml(item.id)}">
+      <li class="dizin-list-row"${letterAttrs} data-id="${escapeHtml(item.id)}">
         <a href="${escapeHtml(item.link)}" target="_blank" rel="noopener noreferrer" class="list-row-link">
           ${imageHtml}
           <div class="list-row-content">
@@ -650,7 +658,7 @@
     if (!isGroupedByLetter) {
       directoryList.innerHTML = `
         <ul class="letter-group-list" role="list">
-          ${currentResults.map(renderListRowHtml).join("")}
+          ${currentResults.map((item) => renderListRowHtml(item)).join("")}
         </ul>
       `;
       return;
@@ -658,14 +666,14 @@
 
     let html = "";
     for (const [letter, groupItems] of letterGroups.entries()) {
+      const itemsHtml = groupItems
+        .map((item, idx) => (idx === 0 ? renderListRowHtml(item, letter) : renderListRowHtml(item)))
+        .join("");
+
       html += `
         <div class="letter-group">
-          <div class="list-letter-header" id="letter-group-${escapeHtml(letter)}" data-letter="${escapeHtml(letter)}">
-            <h2 class="list-sep-letter">${escapeHtml(letter)}</h2>
-            <span class="list-sep-count">${groupItems.length} kayıt</span>
-          </div>
           <ul class="letter-group-list" role="list">
-            ${groupItems.map(renderListRowHtml).join("")}
+            ${itemsHtml}
           </ul>
         </div>
       `;
@@ -716,7 +724,7 @@
 
   function updateCachedLetterOffsets() {
     cachedLetterOffsets = [];
-    const separators = document.querySelectorAll(".letter-separator-card, .list-letter-header");
+    const separators = document.querySelectorAll(".vitrin-item[data-letter], .dizin-list-row[data-letter]");
     separators.forEach((el) => {
       const letter = el.getAttribute("data-letter");
       if (letter) {
