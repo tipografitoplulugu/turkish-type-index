@@ -1063,22 +1063,6 @@ mark.search-hit {
   overflow-wrap: anywhere;
 }
 
-/* Vitrin Description */
-.vitrin-desc {
-  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  font-size: 0.84rem;
-  line-height: 1.45;
-  color: var(--muted);
-  margin: 0;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 3;
-  line-clamp: 3;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  overflow-wrap: anywhere;
-}
-
 .list-row-line2 .identity-line {
   margin-top: 0;
   display: inline-flex;
@@ -1199,33 +1183,12 @@ mark.search-hit {
   min-width: 0;
 }
 
-.list-row-main {
-  flex: 1 1 auto;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-}
-
 .list-row-line1 {
   display: flex;
   align-items: center;
   gap: 1rem;
+  flex: 1 1 auto;
   min-width: 0;
-}
-
-.list-row-desc {
-  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  font-size: 0.82rem;
-  line-height: 1.4;
-  color: var(--muted);
-  margin: .2rem 0 0;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-  line-clamp: 2;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  overflow-wrap: anywhere;
 }
 
 .list-row-title {

@@ -239,11 +239,6 @@
               <input type="url" id="f-link" class="admin-input" placeholder="https://..." required>
             </div>
 
-            <div class="admin-form-group">
-              <label for="f-desc">Kısa Açıklama (İsteğe bağlı)</label>
-              <textarea id="f-desc" class="admin-textarea" placeholder="Tasarımcı veya stüdyo hakkında kısa editoryal not..."></textarea>
-            </div>
-
             <div class="admin-btn-group">
               <button type="button" id="btn-download-json" class="admin-btn-primary">
                 <span>Güncel data/index.json Dosyasını İndir</span>
@@ -339,7 +334,6 @@
       const name = document.getElementById('f-name').value.trim() || "Örnek Tasarımcı";
       const link = document.getElementById('f-link').value.trim() || "https://example.com";
       const catVal = document.getElementById('f-category').value;
-      const desc = document.getElementById('f-desc').value.trim();
 
       const isFoundry = (catVal === "foundry");
       let brand = null;
@@ -385,7 +379,6 @@
         link: link.startsWith('http') ? link : (link ? 'https://' + link : ''),
         domain: getDomain(link),
         platform: detectPlatform(link),
-        description: desc,
         image: null,
         dropmark_id: null,
         brand: brand,
@@ -427,12 +420,6 @@
         `;
       }
 
-      let descHtml = '';
-      if (entry.description && entry.description.trim()) {
-        const safeDesc = entry.description.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-        descHtml = `<p class="vitrin-desc" style="font-size: 0.84rem; line-height: 1.45; color: var(--muted); margin: .4rem 0 0; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; line-clamp: 3; overflow: hidden; text-overflow: ellipsis;">${safeDesc}</p>`;
-      }
-
       document.getElementById('card-preview').innerHTML = `
         <article class="vitrin-item" style="border: 1px solid var(--line); border-radius: 12px; padding: 1.25rem; background: var(--surface);">
           <div class="vitrin-meta">
@@ -449,7 +436,6 @@
             <a class="vitrin-card-link" href="${entry.link}" target="_blank" rel="noopener noreferrer">${entry.name}</a>
           </h3>
           ${identityLineHtml}
-          ${descHtml}
         </article>
       `;
 
@@ -462,7 +448,7 @@
       updatePreview();
     });
 
-    ['f-name', 'f-brand', 'f-affiliation', 'f-members', 'f-link', 'f-desc'].forEach(id => {
+    ['f-name', 'f-brand', 'f-affiliation', 'f-members', 'f-link'].forEach(id => {
       const el = document.getElementById(id);
       if (el) {
         el.addEventListener('input', updatePreview);

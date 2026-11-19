@@ -216,8 +216,6 @@ def generate_jsonld(data):
         if item.get("image"):
             img = item["image"]
             schema_item["image"] = base_url + img.lstrip("/") if not img.startswith("http") else img
-        if item.get("description"):
-            schema_item["description"] = item["description"]
         if is_foundry:
             if item.get("members"):
                 schema_item["member"] = [{"@type": "Person", "name": m} for m in item["members"]]
@@ -585,11 +583,8 @@ def main():
             break
         print("  Lütfen bir bağlantı adresi girin.")
 
-    # 5. Açıklama (isteğe bağlı)
-    description = input("\n5. Kısa Açıklama (isteğe bağlı, geçmek için Enter): ").strip()
-
-    # 6. Görsel (isteğe bağlı)
-    image_source = input("\n6. Görsel URL'si veya Yerel Dosya Yolu (isteğe bağlı, geçmek için Enter): ").strip()
+    # 5. Görsel (isteğe bağlı)
+    image_source = input("\n5. Görsel URL'si veya Yerel Dosya Yolu (isteğe bağlı, geçmek için Enter): ").strip()
     image_path = download_or_copy_image(image_source, next_index)
 
     # Otomatik Alanlar
@@ -607,7 +602,6 @@ def main():
         "link": link,
         "domain": domain,
         "platform": platform,
-        "description": description,
         "image": image_path,
         "dropmark_id": None,
         "brand": brand,
