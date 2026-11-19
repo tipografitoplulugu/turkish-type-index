@@ -296,7 +296,8 @@ def format_turkish_date(date_str):
     if not date_str:
         return ""
     try:
-        parts = date_str.strip().split("-")
+        cleaned = date_str.strip().split("T")[0]
+        parts = cleaned.split("-")
         year = int(parts[0])
         month = int(parts[1])
         day = int(parts[2])

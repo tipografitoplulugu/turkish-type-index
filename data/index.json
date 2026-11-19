@@ -1,10 +1,10 @@
 {
   "title": "Yazı Tasarımcıları ve Yazıevleri",
   "subtitle": "Türkiye'den yazı tasarımcılarını, bağımsız yazıevlerini ve özgün yazı tasarımı üreticilerini bir araya getiren açık bir dizin.",
-  "updated_at": "2026-11-19",
-  "total_count": 45,
-  "designers_count": 43,
-  "foundries_count": 2,
+  "updated_at": "2026-11-19T23:19:06+03:00",
+  "total_count": 44,
+  "designers_count": 41,
+  "foundries_count": 3,
   "items": [
     {
       "id": "01-tamer-koseli",
@@ -26,22 +26,25 @@
       "affiliation": null
     },
     {
-      "id": "02-melih-ucan",
+      "id": "02-vignette-type",
       "index": 2,
-      "name": "Melih Uçan",
+      "name": "Vignette Type",
       "categories": [
-        "designer"
+        "foundry"
       ],
       "category_labels": [
-        "Yazı Tasarımcısı"
+        "Yazıevi"
       ],
       "link": "https://vignettetype.com/fonts",
       "domain": "vignettetype.com",
       "platform": "Web Sitesi",
       "image": "assets/thumbnails/item_02.jpg",
       "dropmark_id": 36935667,
-      "brand": "Vignette Studio",
-      "members": null,
+      "brand": null,
+      "members": [
+        "Melih Uçan",
+        "Reyhan Fidan"
+      ],
       "affiliation": null
     },
     {
@@ -826,25 +829,6 @@
       "image": "assets/thumbnails/item_44.jpg",
       "dropmark_id": 30452980,
       "brand": null,
-      "members": null,
-      "affiliation": null
-    },
-    {
-      "id": "45-reyhan-fidan",
-      "index": 45,
-      "name": "Reyhan Fidan",
-      "categories": [
-        "designer"
-      ],
-      "category_labels": [
-        "Yazı Tasarımcısı"
-      ],
-      "link": "https://vignettetype.com/fonts",
-      "domain": "vignettetype.com",
-      "platform": "Web Sitesi",
-      "image": "assets/thumbnails/item_45.jpg",
-      "dropmark_id": null,
-      "brand": "Vignette Studio",
       "members": null,
       "affiliation": null
     },
