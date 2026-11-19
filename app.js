@@ -144,12 +144,21 @@
       .trim();
   }
 
-  function textContainsQuery(text, query) {
-    if (!text || !query) return false;
-    const normText = normalizeForMatch(text);
-    const normQuery = normalizeForMatch(query);
-    if (!normQuery) return false;
-    return normText.includes(normQuery);
+  function itemMatchesSearch(item, query) {
+    const terms = normalizeForMatch(query).split(/\s+/).filter(Boolean);
+    if (!terms.length) return true;
+
+    const searchableText = normalizeForMatch([
+      item.name,
+      item.brand,
+      item.affiliation,
+      item.domain,
+      item.platform,
+      ...(Array.isArray(item.members) ? item.members : []),
+      ...(Array.isArray(item.category_labels) ? item.category_labels : []),
+    ].filter(Boolean).join(" "));
+
+    return terms.every((term) => searchableText.includes(term));
   }
 
   const TURKISH_HIGHLIGHT_MAP = {
@@ -360,7 +369,7 @@
       console.error("Dizin yükleme hatası:", error);
       if (statusContainer) {
         statusContainer.innerHTML = `
-          <div class="app-status">
+          <div class="app-status" role="alert">
             <h2 class="empty-title">Dizin Yüklenemedi</h2>
             <p class="empty-desc">Veriler yüklenirken bir sorun oluştu (${escapeHtml(error.message)}). Lütfen internet bağlantınızı kontrol edip tekrar deneyin.</p>
             <button type="button" class="reset-filter-btn" id="retry-fetch-btn">Yeniden Dene</button>
@@ -402,25 +411,7 @@
 
     // 2. Text Search
     if (activeQuery) {
-      filtered = filtered.filter((item) => {
-        const membersMatch = Array.isArray(item.members)
-          ? item.members.some((m) => textContainsQuery(m, activeQuery))
-          : false;
-
-        const categoryLabelsMatch = Array.isArray(item.category_labels)
-          ? item.category_labels.some((cat) => textContainsQuery(cat, activeQuery))
-          : false;
-
-        return (
-          textContainsQuery(item.name, activeQuery) ||
-          textContainsQuery(item.brand, activeQuery) ||
-          membersMatch ||
-          categoryLabelsMatch ||
-          textContainsQuery(item.affiliation, activeQuery) ||
-          textContainsQuery(item.domain, activeQuery) ||
-          textContainsQuery(item.platform, activeQuery)
-        );
-      });
+      filtered = filtered.filter((item) => itemMatchesSearch(item, activeQuery));
     }
 
     // 3. Sorting
@@ -466,7 +457,8 @@
     else if (activeCategory === "foundry") catLabel = "YAZIEVİ";
 
     if (activeQuery) {
-      resultSummary.innerHTML = `<strong>${escapeHtml(activeQuery)}</strong> ARAMASI İÇİN <strong>${count}</strong> ${catLabel} BULUNDU`;
+      const resultVerb = count === 0 ? "BULUNAMADI" : "BULUNDU";
+      resultSummary.innerHTML = `<strong>${escapeHtml(activeQuery)}</strong> ARAMASI İÇİN <strong>${count}</strong> ${catLabel} ${resultVerb}`;
     } else {
       if (activeCategory === "all") {
         resultSummary.innerHTML = `TOPLAM <strong>${count}</strong> KAYIT LİSTELENİYOR`;
@@ -482,13 +474,25 @@
       if (mobileLetterStrip) mobileLetterStrip.innerHTML = "";
       updateStickyOffset();
 
+      const emptyDescription = activeQuery && activeCategory !== "all"
+        ? `“${escapeHtml(activeQuery)}” araması ve seçili kategoriyle eşleşen herhangi bir kayıt bulunamadı.`
+        : activeQuery
+          ? `“${escapeHtml(activeQuery)}” aramasıyla eşleşen herhangi bir kayıt bulunamadı.`
+          : activeCategory !== "all"
+            ? "Seçili kategoride eşleşen herhangi bir kayıt bulunamadı."
+            : "Şu anda listelenecek kayıt bulunamadı.";
+      const resetLabel = activeQuery && activeCategory !== "all"
+        ? "Arama ve filtreleri temizle"
+        : activeQuery
+          ? "Aramayı temizle"
+          : activeCategory !== "all"
+            ? "Filtreyi temizle"
+            : "Tümünü sıfırla";
       statusContainer.innerHTML = `
-        <div class="app-status">
+        <div class="app-status" role="status">
           <h2 class="empty-title">Kayıt Bulunamadı</h2>
-          <p class="empty-desc">
-            "${escapeHtml(activeQuery)}" ifadesiyle veya seçili filtreyle eşleşen herhangi bir kayıt bulunamadı.
-          </p>
-          <button type="button" class="reset-filter-btn" id="empty-reset-btn">Aramayı Temizle</button>
+          <p class="empty-desc">${emptyDescription}</p>
+          <button type="button" class="reset-filter-btn" id="empty-reset-btn">${resetLabel}</button>
         </div>
       `;
       const resetBtn = document.getElementById("empty-reset-btn");
@@ -721,7 +725,7 @@
     const railButtonsHtml = letters
       .map(
         (ltr) => `
-        <button type="button" class="rail-letter-btn${ltr === currentLetter ? " active" : ""}" data-letter="${escapeHtml(ltr)}" tabindex="${ltr === currentLetter ? "0" : "-1"}" aria-selected="${ltr === currentLetter ? "true" : "false"}" aria-label="${escapeHtml(ltr)} harfine atla">
+        <button type="button" class="rail-letter-btn${ltr === currentLetter ? " active" : ""}" data-letter="${escapeHtml(ltr)}" tabindex="${ltr === currentLetter ? "0" : "-1"}" aria-current="${ltr === currentLetter ? "location" : "false"}" aria-label="${escapeHtml(ltr)} harfine atla">
           ${escapeHtml(ltr)}
         </button>
       `
@@ -731,7 +735,7 @@
     const stripButtonsHtml = letters
       .map(
         (ltr) => `
-        <button type="button" class="strip-letter-btn${ltr === currentLetter ? " active" : ""}" data-letter="${escapeHtml(ltr)}" tabindex="${ltr === currentLetter ? "0" : "-1"}" aria-selected="${ltr === currentLetter ? "true" : "false"}" aria-label="${escapeHtml(ltr)} harfine atla">
+        <button type="button" class="strip-letter-btn${ltr === currentLetter ? " active" : ""}" data-letter="${escapeHtml(ltr)}" tabindex="${ltr === currentLetter ? "0" : "-1"}" aria-current="${ltr === currentLetter ? "location" : "false"}" aria-label="${escapeHtml(ltr)} harfine atla">
           ${escapeHtml(ltr)}
         </button>
       `
@@ -926,6 +930,7 @@
 
     if (searchInput) {
       searchInput.value = "";
+      searchInput.focus();
       if (searchClearBtn) searchClearBtn.style.display = "none";
     }
     if (sortSelect) sortSelect.value = "name-asc";
