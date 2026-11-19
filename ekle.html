@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
   <title>Yeni Kayıt Ekle — Yazı Tasarımcıları ve Yazıevleri</title>
   <link rel="icon" type="image/png" href="logo.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -59,6 +60,10 @@
     .admin-input:focus, .admin-textarea:focus, .admin-select:focus {
       border: 2px solid var(--focus);
     }
+    .admin-input[aria-invalid="true"], .admin-select[aria-invalid="true"] {
+      border-color: var(--danger);
+      outline: 1px solid var(--danger);
+    }
     .admin-textarea {
       resize: vertical;
       min-height: 80px;
@@ -85,8 +90,15 @@
       justify-content: center;
       gap: .5rem;
     }
-    .admin-btn-primary:hover {
+    .admin-btn-primary:hover:not(:disabled) {
       background: var(--accent-hover);
+    }
+    .admin-btn-primary:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      background: var(--surface-subtle);
+      border-color: var(--line);
+      color: var(--muted);
     }
     .admin-btn-secondary {
       height: 42px;
@@ -208,6 +220,7 @@
             <div class="admin-form-group">
               <label for="f-name">İsim veya Yazıevi Adı *</label>
               <input type="text" id="f-name" class="admin-input" placeholder="Örn: Ceyhun Birinci veya Element Type" required>
+              <div id="name-error" class="admin-error-tip" role="status" aria-live="polite"></div>
             </div>
 
             <!-- Yazı Tasarımcısı Özel Alanları -->
@@ -228,7 +241,7 @@
               <div class="admin-form-group">
                 <label for="f-members">Üyeler (virgülle ayırın, en az 2 kişi) *</label>
                 <input type="text" id="f-members" class="admin-input" placeholder="Örn: İbrahim Kaçtıoğlu, Doğukan Karapınar">
-                <div id="members-error" class="admin-error-tip">
+                <div id="members-error" class="admin-error-tip" role="status" aria-live="polite">
                   ⚠ Tek kişilik bir çalışma markası yazıevi sayılmaz. Tür olarak Yazı Tasarımcısı seçip markayı marka alanına yazın.
                 </div>
               </div>
@@ -237,6 +250,11 @@
             <div class="admin-form-group">
               <label for="f-link">Web Sitesi veya Portfolyo Bağlantısı *</label>
               <input type="url" id="f-link" class="admin-input" placeholder="https://..." required>
+              <div id="link-error" class="admin-error-tip" role="status" aria-live="polite"></div>
+            </div>
+
+            <div id="data-load-error" class="admin-error-tip" role="status" aria-live="polite" style="display: none; margin-bottom: 1rem;">
+              data/index.json yüklenemedi. Sayfayı yerel sunucuyla açın (ör. python3 -m http.server); aksi halde mevcut kayıtlar silinebilir.
             </div>
 
             <div class="admin-btn-group">
@@ -248,7 +266,7 @@
               </button>
             </div>
 
-            <div id="notif" class="notification"></div>
+            <div id="notif" class="notification" role="status" aria-live="polite"></div>
           </form>
         </div>
 
@@ -269,13 +287,73 @@
   <script>
     let existingData = null;
 
+    function escapeHtml(str) {
+      if (str == null) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function isValidHttpUrl(string) {
+      if (!string || typeof string !== 'string') return false;
+      const s = string.trim();
+      try {
+        const url = new URL(s.startsWith('http://') || s.startsWith('https://') ? s : 'https://' + s);
+        return url.protocol === 'http:' || url.protocol === 'https:';
+      } catch (_) {
+        return false;
+      }
+    }
+
+    function normalizeUrlForCompare(url) {
+      if (!url) return '';
+      try {
+        const s = url.trim();
+        const u = new URL(s.startsWith('http://') || s.startsWith('https://') ? s : 'https://' + s);
+        const host = u.hostname.replace(/^www\./, '').toLowerCase();
+        const path = u.pathname.replace(/\/+$/, '').toLowerCase();
+        return host + path;
+      } catch (e) {
+        return url.trim().toLowerCase();
+      }
+    }
+
     async function init() {
       try {
         const res = await fetch('./data/index.json');
-        if (res.ok) existingData = await res.json();
+        if (res.ok) {
+          existingData = await res.json();
+        } else {
+          existingData = null;
+        }
       } catch (e) {
         console.warn('data/index.json yerel yüklenemedi:', e);
+        existingData = null;
       }
+
+      const btnDownload = document.getElementById('btn-download-json');
+      const loadErrorEl = document.getElementById('data-load-error');
+
+      if (!existingData) {
+        btnDownload.disabled = true;
+        btnDownload.setAttribute('aria-disabled', 'true');
+        btnDownload.title = "data/index.json yüklenemediği için tam dosya indirme devre dışı bırakıldı.";
+        if (loadErrorEl) {
+          loadErrorEl.textContent = "data/index.json yüklenemedi. Sayfayı yerel sunucuyla açın (ör. python3 -m http.server); aksi halde mevcut kayıtlar silinebilir.";
+          loadErrorEl.style.display = 'block';
+        }
+      } else {
+        btnDownload.disabled = false;
+        btnDownload.removeAttribute('aria-disabled');
+        btnDownload.title = "";
+        if (loadErrorEl) {
+          loadErrorEl.style.display = 'none';
+        }
+      }
+
       handleTypeChange();
       updatePreview();
     }
@@ -317,7 +395,7 @@
     function getDomain(url) {
       try {
         const u = new URL(url.startsWith('http') ? url : 'https://' + url);
-        return u.hostname.replace('www.', '');
+        return u.hostname.replace(/^www\./, '');
       } catch (e) {
         return url || '';
       }
@@ -330,43 +408,134 @@
       return t.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
     }
 
-    function buildCurrentEntry() {
-      const name = document.getElementById('f-name').value.trim() || "Örnek Tasarımcı";
-      const link = document.getElementById('f-link').value.trim() || "https://example.com";
+    function validateForm(showErrors = false) {
+      const rawName = document.getElementById('f-name').value.trim();
+      const rawLink = document.getElementById('f-link').value.trim();
       const catVal = document.getElementById('f-category').value;
-
       const isFoundry = (catVal === "foundry");
+
+      const nameInput = document.getElementById('f-name');
+      const nameErrorEl = document.getElementById('name-error');
+      const linkInput = document.getElementById('f-link');
+      const linkErrorEl = document.getElementById('link-error');
+      const membersInput = document.getElementById('f-members');
+      const membersErrorEl = document.getElementById('members-error');
+
+      const errors = {};
+
+      // 1. İsim doğrulaması
+      if (!rawName) {
+        errors.name = "İsim veya yazıevi adı boş olamaz.";
+      } else if (existingData && Array.isArray(existingData.items)) {
+        const dupName = existingData.items.find(it => (it.name || '').trim().toLocaleLowerCase('tr-TR') === rawName.toLocaleLowerCase('tr-TR'));
+        if (dupName) {
+          errors.name = `Bu isimde bir kayıt zaten mevcut: "${dupName.name}" (ID: ${dupName.id}).`;
+        }
+      }
+
+      // 2. Yazıevi üyeleri doğrulaması
+      if (isFoundry) {
+        const rawMembers = document.getElementById('f-members').value;
+        const membersList = rawMembers.split(',').map(m => m.trim()).filter(Boolean);
+        if (membersList.length < 2) {
+          errors.members = "Yazıevi için en az 2 üye girilmesi zorunludur. Tek kişilik çalışmalar için tür olarak Yazı Tasarımcısı seçip markayı marka alanına yazın.";
+        }
+      }
+
+      // 3. Bağlantı (URL) doğrulaması
+      if (!rawLink) {
+        errors.link = "Web sitesi veya portfolyo bağlantısı boş olamaz.";
+      } else if (!isValidHttpUrl(rawLink)) {
+        errors.link = "Geçerli bir http:// veya https:// bağlantı adresi girin.";
+      } else if (existingData && Array.isArray(existingData.items)) {
+        const normLink = normalizeUrlForCompare(rawLink);
+        if (normLink) {
+          const dupLink = existingData.items.find(it => normalizeUrlForCompare(it.link) === normLink);
+          if (dupLink) {
+            errors.link = `Bu bağlantı adresi zaten "${dupLink.name}" kaydında kullanılıyor (ID: ${dupLink.id}).`;
+          }
+        }
+      }
+
+      if (showErrors) {
+        if (errors.name) {
+          nameErrorEl.textContent = "⚠ " + errors.name;
+          nameErrorEl.style.display = 'block';
+          nameInput.setAttribute('aria-invalid', 'true');
+        } else {
+          nameErrorEl.style.display = 'none';
+          nameInput.removeAttribute('aria-invalid');
+        }
+
+        if (isFoundry) {
+          if (errors.members) {
+            membersErrorEl.textContent = "⚠ " + errors.members;
+            membersErrorEl.style.display = 'block';
+            membersInput.setAttribute('aria-invalid', 'true');
+          } else {
+            membersErrorEl.style.display = 'none';
+            membersInput.removeAttribute('aria-invalid');
+          }
+        } else {
+          membersErrorEl.style.display = 'none';
+          membersInput.removeAttribute('aria-invalid');
+        }
+
+        if (errors.link) {
+          linkErrorEl.textContent = "⚠ " + errors.link;
+          linkErrorEl.style.display = 'block';
+          linkInput.setAttribute('aria-invalid', 'true');
+        } else {
+          linkErrorEl.style.display = 'none';
+          linkInput.removeAttribute('aria-invalid');
+        }
+      }
+
+      return {
+        valid: Object.keys(errors).length === 0,
+        errors: errors
+      };
+    }
+
+    function buildCurrentEntry(forPreview = false) {
+      const rawName = document.getElementById('f-name').value.trim();
+      const rawLink = document.getElementById('f-link').value.trim();
+      const catVal = document.getElementById('f-category').value;
+      const isFoundry = (catVal === "foundry");
+
+      // Yer tutucular ("Örnek Tasarımcı", "https://example.com", "Kurucu 1/2") YALNIZCA önizlemede görünür!
+      // İndirilen veya kopyalanan JSON'a asla yazılmaz.
+      const name = forPreview ? (rawName || "Örnek Tasarımcı") : rawName;
+      let link = "";
+      if (forPreview) {
+        link = rawLink ? (rawLink.startsWith('http') ? rawLink : 'https://' + rawLink) : "https://example.com";
+      } else {
+        link = rawLink.startsWith('http') ? rawLink : (rawLink ? 'https://' + rawLink : '');
+      }
+
       let brand = null;
       let members = null;
       let affiliation = null;
 
-      const membersErrorEl = document.getElementById('members-error');
-
       if (isFoundry) {
         const rawMembers = document.getElementById('f-members').value;
         const membersList = rawMembers.split(',').map(m => m.trim()).filter(Boolean);
-        if (membersList.length >= 2) {
-          members = membersList;
-          if (membersErrorEl) membersErrorEl.style.display = 'none';
+        if (forPreview) {
+          members = membersList.length >= 2 ? membersList : (membersList.length > 0 ? membersList : ["Kurucu 1", "Kurucu 2"]);
         } else {
-          members = membersList.length > 0 ? membersList : ["Kurucu 1", "Kurucu 2"];
-          if (membersErrorEl && rawMembers.trim()) {
-            membersErrorEl.style.display = 'block';
-          } else if (membersErrorEl) {
-            membersErrorEl.style.display = 'none';
-          }
+          members = membersList;
         }
       } else {
-        if (membersErrorEl) membersErrorEl.style.display = 'none';
         const brandVal = document.getElementById('f-brand').value.trim();
         const affVal = document.getElementById('f-affiliation').value.trim();
         brand = brandVal || null;
         affiliation = affVal || null;
       }
 
+      // Sabit 44 fallback'i kaldırıldı; mevcut kayıtların maksimum index'i temel alınır.
       const maxIndex = existingData && existingData.items && existingData.items.length > 0
         ? Math.max(...existingData.items.map(it => it.index || 0))
-        : 44;
+        : 0;
       const nextIndex = maxIndex + 1;
       const slug = slugify(name);
 
@@ -376,7 +545,7 @@
         name: name,
         categories: isFoundry ? ["foundry"] : ["designer"],
         category_labels: isFoundry ? ["Yazıevi"] : ["Yazı Tasarımcısı"],
-        link: link.startsWith('http') ? link : (link ? 'https://' + link : ''),
+        link: link,
         domain: getDomain(link),
         platform: detectPlatform(link),
         image: null,
@@ -388,7 +557,7 @@
     }
 
     function updatePreview() {
-      const entry = buildCurrentEntry();
+      const entry = buildCurrentEntry(true);
       const monogram = getMonogram(entry.name);
 
       const isFoundry = entry.categories && entry.categories.includes("foundry");
@@ -398,24 +567,25 @@
 
       let identityLineHtml = '';
       if (isFoundry && Array.isArray(entry.members) && entry.members.length > 0) {
+        const escapedMembers = entry.members.map(m => escapeHtml(m)).join(' · ');
         identityLineHtml = `
           <div class="identity-line">
             <span class="identity-label">Ekip</span>
-            <span class="identity-val">${entry.members.join(' · ')}</span>
+            <span class="identity-val">${escapedMembers}</span>
           </div>
         `;
       } else if (entry.brand) {
         identityLineHtml = `
           <div class="identity-line">
             <span class="identity-label">Marka</span>
-            <span class="identity-val">${entry.brand}</span>
+            <span class="identity-val">${escapeHtml(entry.brand)}</span>
           </div>
         `;
       } else if (entry.affiliation) {
         identityLineHtml = `
           <div class="identity-line">
             <span class="identity-label">Yazıevi</span>
-            <span class="identity-val">${entry.affiliation}</span>
+            <span class="identity-val">${escapeHtml(entry.affiliation)}</span>
           </div>
         `;
       }
@@ -425,15 +595,15 @@
           <div class="vitrin-meta">
             <div class="vitrin-badges">${badgeHtml}</div>
             <div class="vitrin-domain">
-              <span>${entry.domain}</span>
+              <span>${escapeHtml(entry.domain)}</span>
               <span class="arrow-icon">↗</span>
             </div>
           </div>
           <div class="vitrin-media no-img" style="aspect-ratio: 4/3; margin: .5rem 0;">
-            <span class="vitrin-fallback" style="display:flex;">${monogram}</span>
+            <span class="vitrin-fallback" style="display:flex;">${escapeHtml(monogram)}</span>
           </div>
           <h3 class="vitrin-title" style="margin: .5rem 0 .25rem;">
-            <a class="vitrin-card-link" href="${entry.link}" target="_blank" rel="noopener noreferrer">${entry.name}</a>
+            <a class="vitrin-card-link" href="${escapeHtml(entry.link)}" target="_blank" rel="noopener noreferrer">${escapeHtml(entry.name)}</a>
           </h3>
           ${identityLineHtml}
         </article>
@@ -445,37 +615,57 @@
     // Event listeners
     document.getElementById('f-category').addEventListener('change', () => {
       handleTypeChange();
+      validateForm(false);
       updatePreview();
     });
 
     ['f-name', 'f-brand', 'f-affiliation', 'f-members', 'f-link'].forEach(id => {
       const el = document.getElementById(id);
       if (el) {
-        el.addEventListener('input', updatePreview);
-        el.addEventListener('change', updatePreview);
+        el.addEventListener('input', () => {
+          // Canlı yazarken aria-invalid veya hata kutusu varsa temizle/güncelle
+          if (el.getAttribute('aria-invalid') === 'true') {
+            validateForm(true);
+          }
+          updatePreview();
+        });
+        el.addEventListener('change', () => {
+          updatePreview();
+        });
       }
     });
 
     // Copy single JSON
     document.getElementById('btn-copy-entry').addEventListener('click', () => {
-      const entry = buildCurrentEntry();
+      const validation = validateForm(true);
+      if (!validation.valid) {
+        showNotif("⚠ Lütfen formdaki hataları düzelttikten sonra tekrar deneyin.", true);
+        return;
+      }
+
+      const entry = buildCurrentEntry(false);
       navigator.clipboard.writeText(JSON.stringify(entry, null, 2)).then(() => {
         showNotif("✓ Tekil JSON kaydı panoya kopyalandı!");
+      }).catch(() => {
+        showNotif("⚠ Panoya kopyalama başarısız oldu. Lütfen tarayıcı izinlerini kontrol edin.", true);
       });
     });
 
     // Download updated data/index.json
     document.getElementById('btn-download-json').addEventListener('click', () => {
-      const newEntry = buildCurrentEntry();
-      let fullData = existingData ? JSON.parse(JSON.stringify(existingData)) : {
-        title: "Yazı Tasarımcıları ve Yazıevleri",
-        subtitle: "Türkiye'den yazı tasarımcılarını, bağımsız yazıevlerini ve özgün yazı tasarımı üreticilerini bir araya getiren açık bir dizin.",
-        updated_at: new Date().toISOString().slice(0, 10),
-        total_count: 0,
-        designers_count: 0,
-        foundries_count: 0,
-        items: []
-      };
+      if (!existingData) {
+        showNotif("⚠ data/index.json yüklenemedi. Sayfayı yerel sunucuyla açın (ör. python3 -m http.server); aksi halde mevcut kayıtlar silinebilir.", true);
+        return;
+      }
+
+      const validation = validateForm(true);
+      if (!validation.valid) {
+        showNotif("⚠ Lütfen formdaki hataları düzelttikten sonra tekrar deneyin.", true);
+        return;
+      }
+
+      const newEntry = buildCurrentEntry(false);
+      let fullData = JSON.parse(JSON.stringify(existingData));
 
       fullData.items.push(newEntry);
       fullData.total_count = fullData.items.length;
@@ -491,14 +681,23 @@
       a.click();
       document.body.removeChild(a);
 
-      showNotif("✓ 'index.json' indirildi! Dosyayı projedeki 'data/' klasörünün içine taşıyın ve GitHub Desktop'tan Push edin.");
+      showNotif("✓ 'index.json' indirildi! Dosyayı projedeki 'data/' klasörünün içine taşıyın. Ardından `python3 add.py --update-jsonld` ve `python3 add.py --check` çalıştırın.");
     });
 
-    function showNotif(msg) {
+    function showNotif(msg, isError = false) {
       const el = document.getElementById('notif');
       el.textContent = msg;
+      if (isError) {
+        el.style.background = 'var(--danger-bg)';
+        el.style.color = 'var(--danger)';
+        el.style.border = '1px solid var(--danger-border)';
+      } else {
+        el.style.background = 'var(--info-bg)';
+        el.style.color = 'var(--info-ink)';
+        el.style.border = 'none';
+      }
       el.style.display = 'block';
-      setTimeout(() => { el.style.display = 'none'; }, 6000);
+      setTimeout(() => { el.style.display = 'none'; }, 8000);
     }
 
     init();

@@ -41,6 +41,19 @@ def get_clean_domain(url):
         return ""
 
 
+def normalize_url(url):
+    """URL'yi karşılaştırma için normalize eder (protokol ve www temizlenir, sondaki eğik çizgi kaldırılır)."""
+    if not url:
+        return ""
+    try:
+        p = urlparse(url.lower().strip())
+        netloc = p.netloc.replace("www.", "")
+        path = p.path.rstrip("/")
+        return f"{netloc}{path}"
+    except Exception:
+        return url.lower().strip().rstrip("/")
+
+
 def detect_platform(url):
     domain = get_clean_domain(url)
     if "myfonts.com" in domain:
@@ -286,6 +299,8 @@ def update_index_html_jsonld(data=None):
 
     jsonld_doc = generate_jsonld(data)
     jsonld_str = json.dumps(jsonld_doc, ensure_ascii=False, indent=2)
+    # JSON-LD metnindeki "</" dizilerini "<\/" olarak kaçışla (script tag kapatma veya XSS hatalarını önler)
+    jsonld_str = jsonld_str.replace("</", "<\\/")
 
     with open("index.html", "r", encoding="utf-8") as f:
         html = f.read()
@@ -296,7 +311,8 @@ def update_index_html_jsonld(data=None):
     )
 
     if pattern.search(html):
-        new_html = pattern.sub(f'\\1\n{jsonld_str}\n  \\3', html)
+        # Şablon sorunlarını ve kaçış karakteri bozulmalarını önlemek için lambda kullanılır
+        new_html = pattern.sub(lambda m: f"{m.group(1)}\n{jsonld_str}\n  {m.group(3)}", html)
     else:
         target = '  <!-- Preconnect Fonts -->'
         block = f'  <!-- Schema.org Structured Data (JSON-LD) -->\n  <script type="application/ld+json" id="schema-jsonld">\n{jsonld_str}\n  </script>\n\n'
@@ -468,6 +484,39 @@ def optimize_all_thumbnails():
         if not img_path or not os.path.isfile(img_path):
             continue
 
+        # Idempotency: genişliği <= MAX_IMAGE_WIDTH ve yüksekliği <= MAX_IMAGE_HEIGHT ise yeniden sıkıştırma; atla
+        skip = False
+        img_w, img_h = None, None
+        if HAS_PILLOW:
+            try:
+                with Image.open(img_path) as im:
+                    img_w, img_h = im.width, im.height
+                    if img_w <= MAX_IMAGE_WIDTH and img_h <= MAX_IMAGE_HEIGHT:
+                        skip = True
+            except Exception:
+                pass
+        else:
+            sips_bin = shutil.which("sips")
+            if sips_bin:
+                try:
+                    res_w = subprocess.run([sips_bin, "-g", "pixelWidth", img_path],
+                                           capture_output=True, text=True, check=False)
+                    res_h = subprocess.run([sips_bin, "-g", "pixelHeight", img_path],
+                                           capture_output=True, text=True, check=False)
+                    mw = re.search(r'pixelWidth:\s*(\d+)', res_w.stdout)
+                    mh = re.search(r'pixelHeight:\s*(\d+)', res_h.stdout)
+                    if mw and mh:
+                        img_w, img_h = int(mw.group(1)), int(mh.group(1))
+                        if img_w <= MAX_IMAGE_WIDTH and img_h <= MAX_IMAGE_HEIGHT:
+                            skip = True
+                except Exception:
+                    pass
+
+        if skip:
+            dim_str = f" ({img_w}x{img_h} px ≤ {MAX_IMAGE_WIDTH}x{MAX_IMAGE_HEIGHT})" if img_w and img_h else ""
+            print(f"  • {os.path.basename(img_path)}: atlandı{dim_str}")
+            continue
+
         orig_size = os.path.getsize(img_path)
         base_name, ext = os.path.splitext(img_path)
         preferred_ext = ext.lstrip(".").lower()
@@ -548,6 +597,18 @@ def main():
         if "(" in name or ")" in name:
             print("  ⚠ İsim alanında parantez kullanamazsınız. Marka adını bir sonraki marka sorusuna yazın.")
             continue
+
+        # Yinelenen isim kontrolü
+        existing_name_match = next(
+            (it for it in items if it.get("name", "").strip().lower() == name.lower()),
+            None
+        )
+        if existing_name_match:
+            print(f"  ⚠ Uyarı: '{existing_name_match['name']}' adında bir kayıt zaten mevcut (ID: {existing_name_match['id']}).")
+            confirm = input("    Yine de devam etmek istiyor musunuz? (e/h) [Varsayılan: h]: ").strip().lower()
+            if confirm not in ["e", "evet", "y", "yes"]:
+                print("    Lütfen farklı bir isim girin.")
+                continue
         break
 
     # 3. Türe Özel Alanlar
@@ -577,11 +638,25 @@ def main():
     # 4. Web Sitesi / Bağlantı
     while True:
         link = input("\n4. Web Sitesi / Portfolyo URL: ").strip()
-        if link:
-            if not link.startswith("http://") and not link.startswith("https://"):
-                link = "https://" + link
-            break
-        print("  Lütfen bir bağlantı adresi girin.")
+        if not link:
+            print("  Lütfen bir bağlantı adresi girin.")
+            continue
+        if not link.startswith("http://") and not link.startswith("https://"):
+            link = "https://" + link
+
+        # Yinelenen link kontrolü (domain + path bazında)
+        norm_new_link = normalize_url(link)
+        existing_link_match = next(
+            (it for it in items if normalize_url(it.get("link", "")) == norm_new_link),
+            None
+        )
+        if existing_link_match:
+            print(f"  ⚠ Uyarı: Bu bağlantı adresi ('{existing_link_match['link']}') zaten '{existing_link_match['name']}' kaydında mevcut (ID: {existing_link_match['id']}).")
+            confirm = input("    Yine de devam etmek istiyor musunuz? (e/h) [Varsayılan: h]: ").strip().lower()
+            if confirm not in ["e", "evet", "y", "yes"]:
+                print("    Lütfen farklı bir bağlantı adresi girin.")
+                continue
+        break
 
     # 5. Görsel (isteğe bağlı)
     image_source = input("\n5. Görsel URL'si veya Yerel Dosya Yolu (isteğe bağlı, geçmek için Enter): ").strip()
