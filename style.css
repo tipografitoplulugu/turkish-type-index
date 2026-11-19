@@ -560,7 +560,7 @@ mark.search-hit {
 
 .toolbar-search-input::placeholder {
   color: var(--placeholder);
-  opacity: .55;
+  opacity: 1;
 }
 
 .toolbar-search-clear {
