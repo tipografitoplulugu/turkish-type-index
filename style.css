@@ -894,8 +894,9 @@ mark.search-hit {
   padding: 0;
 }
 
-/* Letter Separator Card (occupies 1 grid cell) */
+/* Letter Separator Card (occupies 1 grid cell, always starts on column 1) */
 .letter-separator-card {
+  grid-column: 1;
   aspect-ratio: 4 / 3;
   width: 100%;
   border: 1px solid var(--line);

@@ -236,8 +236,8 @@
 
   function updateStickyOffset() {
     let offset = 0;
-    const width = window.innerWidth;
-    if (width > 1100) {
+    const isMobile = window.matchMedia("(max-width: 1100px)").matches;
+    if (!isMobile) {
       if (toolbarWrapper) {
         offset = toolbarWrapper.getBoundingClientRect().height;
       }
@@ -248,6 +248,7 @@
     }
     document.documentElement.style.setProperty("--sticky-offset", `${Math.round(offset)}px`);
     updateCachedLetterOffsets();
+    computeActiveLetterFromScroll();
   }
 
   function initStickyOffsetObserver() {
@@ -259,6 +260,18 @@
       });
       if (toolbarWrapper) ro.observe(toolbarWrapper);
       if (mobileLetterStrip) ro.observe(mobileLetterStrip);
+      if (directoryList) ro.observe(directoryList);
+    }
+
+    try {
+      const mql = window.matchMedia("(max-width: 1100px)");
+      if (mql.addEventListener) {
+        mql.addEventListener("change", updateStickyOffset);
+      } else if (mql.addListener) {
+        mql.addListener(updateStickyOffset);
+      }
+    } catch (e) {
+      /* ignore */
     }
 
     window.addEventListener("resize", updateStickyOffset, { passive: true });
