@@ -648,6 +648,14 @@ mark.search-hit {
   font-size: .74rem;
 }
 
+.seg-label-full {
+  display: inline;
+}
+
+.seg-label-short {
+  display: none;
+}
+
 /* Sort Dropdown */
 .toolbar-sort {
   position: relative;
@@ -1707,7 +1715,7 @@ mark.search-hit {
   }
 }
 
-/* 440px Mobile Viewport: Horizontal scroll for segments */
+/* 440px Mobile Viewport: Compact full-width segments without horizontal scroll */
 @media (max-width: 440px) {
   #dizin-toolbar-section.dizin-toolbar-wrapper {
     position: static;
@@ -1718,22 +1726,37 @@ mark.search-hit {
   }
 
   .segmented-control {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
+    display: flex;
     width: 100%;
-    scrollbar-width: none;
-  }
-
-  .segmented-control::-webkit-scrollbar {
-    display: none;
+    overflow-x: visible;
   }
 
   .segment-btn {
-    padding: 0 .75rem;
+    flex: 1 1 0;
+    min-width: 0;
+    padding: 0 .4rem;
+    justify-content: center;
+    font-size: .8rem;
+  }
+
+  .seg-label-full {
+    display: none;
+  }
+
+  .seg-label-short {
+    display: inline;
+  }
+
+  .seg-count {
+    display: none;
   }
 
   .toolbar-sort-select {
     font-size: .78rem;
+  }
+
+  .view-btn {
+    padding: 0 .6rem;
   }
 }
 
