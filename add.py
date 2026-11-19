@@ -433,6 +433,8 @@ def run_check():
     foundries_count = data.get("foundries_count")
 
     errors = []
+    warnings = []
+    info_messages = []
 
     # 1. Sayaç ve toplam denetimi
     actual_total = len(items)
@@ -448,11 +450,15 @@ def run_check():
     if (designers_count + foundries_count) != total_count:
         errors.append(f"designers_count ({designers_count}) + foundries_count ({foundries_count}) != total_count ({total_count})")
 
-    # 2. Tekillik (id ve index) denetimi
+    # 2. Tekillik (id, index, link) denetimi
     seen_ids = set()
     duplicate_ids = set()
     seen_indices = set()
     duplicate_indices = set()
+    seen_links = {}
+    duplicate_links = []
+
+    id_pattern = re.compile(r"^\d{2,}-[a-z0-9]+(?:-[a-z0-9]+)*$")
 
     for idx, item in enumerate(items, start=1):
         item_id = item.get("id")
@@ -460,6 +466,10 @@ def run_check():
             if item_id in seen_ids:
                 duplicate_ids.add(item_id)
             seen_ids.add(item_id)
+
+            # id'nin "NN-slug" biçimine uygunluğu: hata
+            if not id_pattern.match(item_id):
+                errors.append(f"[{item_id}] 'id' değeri 'NN-slug' biçimine uymuyor (en az iki basamaklı sayı, tire ve küçük harf/sayı tire ayrılmış slug olmalı): '{item_id}'")
         else:
             errors.append(f"[{idx}. kayıt] 'id' alanı eksik.")
 
@@ -471,15 +481,59 @@ def run_check():
         else:
             errors.append(f"[{item_id or idx}. kayıt] 'index' alanı eksik.")
 
+        # Yinelenen link: hata
+        link = (item.get("link") or "").strip()
+        norm_link = normalize_url(link)
+        if norm_link:
+            if norm_link in seen_links:
+                duplicate_links.append((item_id or f"sira-{idx}", seen_links[norm_link], link))
+            else:
+                seen_links[norm_link] = item_id or f"sira-{idx}"
+
     if duplicate_ids:
         errors.append(f"Yinelenen id değerleri bulundu: {sorted(list(duplicate_ids))}")
     if duplicate_indices:
         errors.append(f"Yinelenen index değerleri bulundu: {sorted(list(duplicate_indices))}")
+    if duplicate_links:
+        for dup_id, orig_id, lk in duplicate_links:
+            errors.append(f"Yinelenen link bulundu: [{dup_id}] ile [{orig_id}] aynı bağlantıyı paylaşıyor ('{lk}').")
+
+    # İndeks numaralarındaki boşlukları yalnızca bilgi olarak raporla, hata sayma
+    numeric_indices = sorted([it["index"] for it in items if isinstance(it.get("index"), int)])
+    if numeric_indices:
+        min_idx, max_idx = min(numeric_indices), max(numeric_indices)
+        full_range = set(range(min_idx, max_idx + 1))
+        missing_indices = sorted(list(full_range - set(numeric_indices)))
+        if missing_indices:
+            info_messages.append(f"İndeks numaralarında boşluk(lar) var ({min_idx}-{max_idx} aralığında eksik): {missing_indices}")
 
     # 3. Her kayıt için kural denetimleri
     for idx, item in enumerate(items, start=1):
         item_id = item.get("id", f"sira-{idx}")
         name = item.get("name", "")
+        link = (item.get("link") or "").strip()
+
+        # Link https değilse: uyarı (hata sayma)
+        if link and not link.startswith("https://"):
+            warnings.append(f"[{item_id}] Bağlantı HTTPS protokolü kullanmıyor: '{link}'")
+
+        # "image" alanındaki dosyanın diskte var olması: hata
+        image_path = item.get("image")
+        if image_path:
+            if not os.path.exists(image_path):
+                errors.append(f"[{item_id}] 'image' alanında belirtilen görsel dosyası diskte bulunamadı: '{image_path}'")
+
+        # "domain" alanının linkten türetilen domain ile tutarlılığı: hata
+        expected_domain = get_clean_domain(link)
+        actual_domain = item.get("domain")
+        if actual_domain != expected_domain:
+            errors.append(f"[{item_id}] 'domain' alanı ('{actual_domain}') linkten türetilen domain ('{expected_domain}') ile tutarsız.")
+
+        # "platform" alanının detect_platform(link) sonucuyla tutarlılığı: hata
+        expected_platform = detect_platform(link)
+        actual_platform = item.get("platform")
+        if actual_platform != expected_platform:
+            errors.append(f"[{item_id}] 'platform' alanı ('{actual_platform}') detect_platform(link) sonucu ('{expected_platform}') ile tutarsız.")
 
         # (a) categories tek elemanlı mı?
         categories = item.get("categories")
@@ -537,6 +591,17 @@ def run_check():
                         errors.append(f"index.html JSON-LD içindeki kayıt sayısı ({num_items}) ile index.json ({actual_total}) uyuşmuyor. 'python3 add.py --update-jsonld' çalıştırın.")
         except Exception as e:
             errors.append(f"index.html JSON-LD doğrulanırken hata oluştu: {e}")
+
+    # Raporlama
+    if info_messages:
+        print(f"\nℹ️  BİLGİ ({len(info_messages)} not):")
+        for inf in info_messages:
+            print(f"  • {inf}")
+
+    if warnings:
+        print(f"\n⚠️  UYARILAR ({len(warnings)} uyarı, hata sayılmaz):")
+        for warn in warnings:
+            print(f"  • {warn}")
 
     if errors:
         print(f"\n❌ DENETİM BAŞARISIZ: {len(errors)} hata bulundu:\n")
