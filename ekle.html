@@ -427,6 +427,12 @@
         `;
       }
 
+      let descHtml = '';
+      if (entry.description && entry.description.trim()) {
+        const safeDesc = entry.description.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        descHtml = `<p class="vitrin-desc" style="font-size: 0.84rem; line-height: 1.45; color: var(--muted); margin: .4rem 0 0; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; line-clamp: 3; overflow: hidden; text-overflow: ellipsis;">${safeDesc}</p>`;
+      }
+
       document.getElementById('card-preview').innerHTML = `
         <article class="vitrin-item" style="border: 1px solid var(--line); border-radius: 12px; padding: 1.25rem; background: var(--surface);">
           <div class="vitrin-meta">
@@ -443,6 +449,7 @@
             <a class="vitrin-card-link" href="${entry.link}" target="_blank" rel="noopener noreferrer">${entry.name}</a>
           </h3>
           ${identityLineHtml}
+          ${descHtml}
         </article>
       `;
 

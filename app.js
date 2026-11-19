@@ -527,11 +527,18 @@
     return "";
   }
 
+  function renderDescriptionHtml(item, className) {
+    if (!item.description || !item.description.trim()) return "";
+    const highlightedDesc = highlightMatches(item.description.trim(), activeQuery);
+    return `<p class="${className}" title="${escapeHtml(item.description.trim())}">${highlightedDesc}</p>`;
+  }
+
   function renderVitrinItemHtml(item) {
     const monogram = getMonogram(item.name);
     const highlightedName = highlightMatches(item.name, activeQuery);
     const badgeHtml = renderBadgeHtml(item);
     const identityLineHtml = renderIdentityLineHtml(item);
+    const descHtml = renderDescriptionHtml(item, "vitrin-desc");
 
     const imageHtml = item.image
       ? `<div class="vitrin-media">
@@ -565,6 +572,7 @@
         </h3>
 
         ${identityLineHtml}
+        ${descHtml}
       </li>
     `;
   }
@@ -605,6 +613,7 @@
     const highlightedName = highlightMatches(item.name, activeQuery);
     const badgeHtml = renderBadgeHtml(item);
     const identityLineHtml = renderIdentityLineHtml(item);
+    const descHtml = renderDescriptionHtml(item, "list-row-desc");
 
     const imageHtml = item.image
       ? `<div class="list-row-media">
@@ -620,9 +629,12 @@
         <a href="${escapeHtml(item.link)}" target="_blank" rel="noopener noreferrer" class="list-row-link">
           ${imageHtml}
           <div class="list-row-content">
-            <div class="list-row-line1">
-              <span class="list-row-title">${highlightedName}</span>
-              <div class="list-row-badges">${badgeHtml}</div>
+            <div class="list-row-main">
+              <div class="list-row-line1">
+                <span class="list-row-title">${highlightedName}</span>
+                <div class="list-row-badges">${badgeHtml}</div>
+              </div>
+              ${descHtml}
             </div>
             <div class="list-row-line2">
               ${identityLineHtml}

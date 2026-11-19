@@ -216,6 +216,8 @@ def generate_jsonld(data):
         if item.get("image"):
             img = item["image"]
             schema_item["image"] = base_url + img.lstrip("/") if not img.startswith("http") else img
+        if item.get("description"):
+            schema_item["description"] = item["description"]
         if is_foundry:
             if item.get("members"):
                 schema_item["member"] = [{"@type": "Person", "name": m} for m in item["members"]]
