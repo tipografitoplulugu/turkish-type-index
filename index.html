@@ -112,16 +112,16 @@
             </div>
 
             <!-- Segmented Category Control -->
-            <div class="segmented-control" role="tablist" aria-label="Kategori filtreleri" id="category-segmented">
-              <button type="button" class="segment-btn active" data-category="all" role="tab" aria-selected="true" id="seg-all">
+            <div class="segmented-control" role="group" aria-label="Kategori filtreleri" id="category-segmented">
+              <button type="button" class="segment-btn active" data-category="all" aria-pressed="true" id="seg-all">
                 <span>Tümü</span>
                 <span class="seg-count" id="count-all"></span>
               </button>
-              <button type="button" class="segment-btn" data-category="designer" role="tab" aria-selected="false" id="seg-designer">
+              <button type="button" class="segment-btn" data-category="designer" aria-pressed="false" id="seg-designer">
                 <span><span class="seg-prefix">Yazı </span>Tasarımcıları</span>
                 <span class="seg-count" id="count-designers"></span>
               </button>
-              <button type="button" class="segment-btn" data-category="foundry" role="tab" aria-selected="false" id="seg-foundry">
+              <button type="button" class="segment-btn" data-category="foundry" aria-pressed="false" id="seg-foundry">
                 <span>Yazıevleri</span>
                 <span class="seg-count" id="count-foundries"></span>
               </button>
@@ -141,7 +141,7 @@
 
             <!-- View Switcher -->
             <div class="toolbar-view" role="group" aria-label="Görünüm seçimi">
-              <button type="button" class="view-btn active" id="view-grid-btn" aria-label="Vitrin görünümü" title="Vitrin görünümü">
+              <button type="button" class="view-btn active" id="view-grid-btn" aria-label="Vitrin görünümü" title="Vitrin görünümü" aria-pressed="true">
                 <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                   <rect x="3" y="3" width="7" height="7"></rect>
                   <rect x="14" y="3" width="7" height="7"></rect>
@@ -150,7 +150,7 @@
                 </svg>
                 <span>Vitrin</span>
               </button>
-              <button type="button" class="view-btn" id="view-list-btn" aria-label="Liste görünümü" title="Liste görünümü">
+              <button type="button" class="view-btn" id="view-list-btn" aria-label="Liste görünümü" title="Liste görünümü" aria-pressed="false">
                 <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                   <line x1="8" y1="6" x2="21" y2="6"></line>
                   <line x1="8" y1="12" x2="21" y2="12"></line>

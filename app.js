@@ -975,7 +975,7 @@
     buttons.forEach((btn) => {
       const match = btn.getAttribute("data-category") === category;
       btn.classList.toggle("active", match);
-      btn.setAttribute("aria-selected", match ? "true" : "false");
+      btn.setAttribute("aria-pressed", match ? "true" : "false");
     });
   }
 
