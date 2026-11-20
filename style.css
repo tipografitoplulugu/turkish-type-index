@@ -265,6 +265,49 @@ mark.search-hit {
   color: var(--link);
 }
 
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: .3rem;
+  margin-left: auto;
+  flex: 0 0 auto;
+}
+
+.language-switcher {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  height: 34px;
+  padding: 3px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface);
+}
+
+.language-btn {
+  min-width: 30px;
+  height: 26px;
+  padding: 0 .35rem;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted);
+  font-family: "DM Mono", monospace;
+  font-size: .72rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.language-btn:hover {
+  color: var(--ink);
+}
+
+.language-btn.active {
+  background: var(--surface-subtle);
+  color: var(--ink);
+  font-weight: 600;
+}
+
 .theme-toggle-btn {
   display: grid;
   place-items: center;
@@ -1546,7 +1589,7 @@ mark.search-hit {
     position: relative;
   }
 
-  .theme-toggle-btn {
+  .header-controls {
     position: absolute;
     top: 4px;
     right: 0;

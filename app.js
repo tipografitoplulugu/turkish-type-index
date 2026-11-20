@@ -13,6 +13,9 @@
   const THEME_STORAGE_KEY_INDEX = "tipografi-index-theme";
   const THEME_STORAGE_KEY_ARCHIVE = "tipografi-archive-theme";
   const VIEW_STORAGE_KEY = "tipografi-index-view";
+  const translations = window.TTTI18N;
+  let activeLanguage = translations.getLanguage();
+  const t = (key, values) => translations.t(key, activeLanguage, values);
 
   const SUN_SVG = `<circle cx="12" cy="12" r="3.5"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/>`;
   const MOON_SVG = `<path d="M20.1 15.2A8.4 8.4 0 0 1 8.8 3.9 8.5 8.5 0 1 0 20.1 15.2Z"/>`;
@@ -28,6 +31,8 @@
   let activeSort = "name-asc"; // 'name-asc' | 'name-desc' | 'default'
   let activeView = "grid"; // 'grid' | 'list'
   let activeLetterInView = "";
+  let lastUpdatedAt = "";
+  let lastLoadError = null;
 
   // Scroll & Offset State
   let cachedLetterOffsets = [];
@@ -80,12 +85,12 @@
     if (!themeIcon || !themeToggleBtn) return;
     if (theme === "dark") {
       themeIcon.innerHTML = SUN_SVG;
-      themeToggleBtn.setAttribute("aria-label", "Açık moda geç");
-      themeToggleBtn.setAttribute("title", "Açık moda geç");
+      themeToggleBtn.setAttribute("aria-label", t("theme.toLight"));
+      themeToggleBtn.setAttribute("title", t("theme.toLight"));
     } else {
       themeIcon.innerHTML = MOON_SVG;
-      themeToggleBtn.setAttribute("aria-label", "Koyu moda geç");
-      themeToggleBtn.setAttribute("title", "Koyu moda geç");
+      themeToggleBtn.setAttribute("aria-label", t("theme.toDark"));
+      themeToggleBtn.setAttribute("title", t("theme.toDark"));
     }
   }
 
@@ -156,6 +161,11 @@
       item.platform,
       ...(Array.isArray(item.members) ? item.members : []),
       ...(Array.isArray(item.category_labels) ? item.category_labels : []),
+      ...(Array.isArray(item.categories)
+        ? item.categories.map((category) => category === "designer"
+          ? "Type Designer Type Designers Designer Designers"
+          : "Type Foundry Type Foundries Foundry Foundries")
+        : []),
     ].filter(Boolean).join(" "));
 
     return terms.every((term) => searchableText.includes(term));
@@ -255,7 +265,7 @@
     return "#";
   }
 
-  function formatTurkishDate(dateStr) {
+  function formatDate(dateStr) {
     if (!dateStr) return "";
     try {
       const isoStr = dateStr.includes("T") ? dateStr : `${dateStr}T00:00:00`;
@@ -263,7 +273,8 @@
       if (isNaN(date.getTime())) {
         return dateStr;
       }
-      return date.toLocaleDateString("tr-TR", { day: "numeric", month: "long", year: "numeric" });
+      const locale = activeLanguage === "en" ? "en-GB" : "tr-TR";
+      return date.toLocaleDateString(locale, { day: "numeric", month: "long", year: "numeric" });
     } catch (e) {
       return dateStr;
     }
@@ -326,11 +337,12 @@
 
   async function loadData() {
     appState = "loading";
+    lastLoadError = null;
     if (directoryList) {
       directoryList.setAttribute("aria-busy", "true");
     }
     if (resultSummary) {
-      resultSummary.textContent = "Yükleniyor...";
+      resultSummary.textContent = t("summary.loading");
     }
     if (statusContainer) {
       statusContainer.innerHTML = "";
@@ -339,48 +351,54 @@
     try {
       const response = await fetch(DATA_URL);
       if (!response.ok) {
-        throw new Error(`Veri dosyası yüklenemedi: HTTP ${response.status}`);
+        throw new Error(`HTTP ${response.status}`);
       }
       const data = await response.json();
       allItems = Array.isArray(data.items) ? data.items : [];
 
       appState = "ready";
+      lastUpdatedAt = data.updated_at || "";
       if (directoryList) {
         directoryList.setAttribute("aria-busy", "false");
       }
 
-      if (heroUpdatedAt && data.updated_at) {
-        const trDate = formatTurkishDate(data.updated_at);
-        heroUpdatedAt.textContent = `Son güncelleme: ${trDate}`;
-      }
+      renderUpdatedAt();
 
       calculateAndRenderCounts(data);
       readUrlParams();
       applyFiltersAndSort();
     } catch (error) {
       appState = "error";
+      lastLoadError = error;
       if (directoryList) {
         directoryList.setAttribute("aria-busy", "false");
         directoryList.innerHTML = "";
       }
-      if (resultSummary) {
-        resultSummary.textContent = "Bağlantı hatası";
-      }
       console.error("Dizin yükleme hatası:", error);
-      if (statusContainer) {
-        statusContainer.innerHTML = `
-          <div class="app-status" role="alert">
-            <h2 class="empty-title">Dizin Yüklenemedi</h2>
-            <p class="empty-desc">Veriler yüklenirken bir sorun oluştu (${escapeHtml(error.message)}). Lütfen internet bağlantınızı kontrol edip tekrar deneyin.</p>
-            <button type="button" class="reset-filter-btn" id="retry-fetch-btn">Yeniden Dene</button>
-          </div>
-        `;
-        const retryBtn = document.getElementById("retry-fetch-btn");
-        if (retryBtn) {
-          retryBtn.addEventListener("click", () => loadData());
-        }
-      }
+      renderLoadError(error);
     }
+  }
+
+  function renderUpdatedAt() {
+    if (!heroUpdatedAt || !lastUpdatedAt) return;
+    heroUpdatedAt.textContent = t("hero.updatedAt", { date: formatDate(lastUpdatedAt) });
+  }
+
+  function renderLoadError(error) {
+    if (resultSummary) resultSummary.textContent = t("status.loadError");
+    if (!statusContainer) return;
+
+    const httpCode = String(error?.message || "").match(/HTTP (\d+)/)?.[1];
+    const detail = httpCode ? t("status.httpDetail", { code: httpCode }) : t("status.networkDetail");
+    statusContainer.innerHTML = `
+      <div class="app-status" role="alert">
+        <h2 class="empty-title">${t("status.errorTitle")}</h2>
+        <p class="empty-desc">${t("status.errorDescription", { detail: escapeHtml(detail) })}</p>
+        <button type="button" class="reset-filter-btn" id="retry-fetch-btn">${t("status.retry")}</button>
+      </div>
+    `;
+    const retryBtn = document.getElementById("retry-fetch-btn");
+    if (retryBtn) retryBtn.addEventListener("click", () => loadData());
   }
 
   function calculateAndRenderCounts(data) {
@@ -452,18 +470,40 @@
     if (!directoryList || !resultSummary) return;
 
     const count = currentResults.length;
-    let catLabel = "KAYIT";
-    if (activeCategory === "designer") catLabel = "YAZI TASARIMCISI";
-    else if (activeCategory === "foundry") catLabel = "YAZIEVİ";
+    let catLabel;
+    if (activeLanguage === "en") {
+      if (activeCategory === "designer") catLabel = t(count === 1 ? "category.summary.designer" : "category.summary.designers");
+      else if (activeCategory === "foundry") catLabel = t(count === 1 ? "category.summary.foundry" : "category.summary.foundries");
+      else catLabel = t(count === 1 ? "category.summary.record" : "category.summary.records");
+    } else {
+      catLabel = activeCategory === "designer"
+        ? t("category.designerUpper")
+        : activeCategory === "foundry"
+          ? t("category.foundryUpper")
+          : t("category.record");
+    }
 
     if (activeQuery) {
-      const resultVerb = count === 0 ? "BULUNAMADI" : "BULUNDU";
-      resultSummary.innerHTML = `<strong>${escapeHtml(activeQuery)}</strong> ARAMASI İÇİN <strong>${count}</strong> ${catLabel} ${resultVerb}`;
+      if (activeLanguage === "en") {
+        resultSummary.innerHTML = t("summary.searchEnglish", {
+          query: escapeHtml(activeQuery),
+          count,
+          resultLabel: t(count === 1 ? "summary.result" : "summary.results"),
+        });
+      } else {
+        const resultVerb = t(count === 0 ? "summary.notFound" : "summary.found");
+        resultSummary.innerHTML = t("summary.search", {
+          query: escapeHtml(activeQuery),
+          count,
+          category: catLabel,
+          verb: resultVerb,
+        });
+      }
     } else {
       if (activeCategory === "all") {
-        resultSummary.innerHTML = `TOPLAM <strong>${count}</strong> KAYIT LİSTELENİYOR`;
+        resultSummary.innerHTML = t("summary.all", { count });
       } else {
-        resultSummary.innerHTML = `<strong>${count}</strong> ${catLabel} LİSTELENİYOR`;
+        resultSummary.innerHTML = t("summary.category", { count, category: catLabel });
       }
     }
 
@@ -475,22 +515,22 @@
       updateStickyOffset();
 
       const emptyDescription = activeQuery && activeCategory !== "all"
-        ? `“${escapeHtml(activeQuery)}” araması ve seçili kategoriyle eşleşen herhangi bir kayıt bulunamadı.`
+        ? t("empty.queryAndCategory", { query: escapeHtml(activeQuery) })
         : activeQuery
-          ? `“${escapeHtml(activeQuery)}” aramasıyla eşleşen herhangi bir kayıt bulunamadı.`
+          ? t("empty.query", { query: escapeHtml(activeQuery) })
           : activeCategory !== "all"
-            ? "Seçili kategoride eşleşen herhangi bir kayıt bulunamadı."
-            : "Şu anda listelenecek kayıt bulunamadı.";
+            ? t("empty.category")
+            : t("empty.general");
       const resetLabel = activeQuery && activeCategory !== "all"
-        ? "Arama ve filtreleri temizle"
+        ? t("empty.resetBoth")
         : activeQuery
-          ? "Aramayı temizle"
+          ? t("empty.resetSearch")
           : activeCategory !== "all"
-            ? "Filtreyi temizle"
-            : "Tümünü sıfırla";
+            ? t("empty.resetCategory")
+            : t("empty.resetAll");
       statusContainer.innerHTML = `
         <div class="app-status" role="status">
-          <h2 class="empty-title">Kayıt Bulunamadı</h2>
+          <h2 class="empty-title">${t("empty.title")}</h2>
           <p class="empty-desc">${emptyDescription}</p>
           <button type="button" class="reset-filter-btn" id="empty-reset-btn">${resetLabel}</button>
         </div>
@@ -531,9 +571,9 @@
 
   function renderBadgeHtml(item) {
     if (item.categories && item.categories.includes("foundry")) {
-      return `<span class="badge badge-foundry">Yazıevi</span>`;
+      return `<span class="badge badge-foundry">${t("badge.foundry")}</span>`;
     }
-    return `<span class="badge badge-designer">Yazı Tasarımcısı</span>`;
+    return `<span class="badge badge-designer">${t("badge.designer")}</span>`;
   }
 
   function renderIdentityLineHtml(item) {
@@ -541,7 +581,7 @@
       const highlightedMembers = item.members.map((m) => highlightMatches(m, activeQuery)).join(" · ");
       return `
         <div class="identity-line">
-          <span class="identity-label">Ekip</span>
+          <span class="identity-label">${t("identity.team")}</span>
           <span class="identity-val">${highlightedMembers}</span>
         </div>
       `;
@@ -549,7 +589,7 @@
     if (item.brand) {
       return `
         <div class="identity-line">
-          <span class="identity-label">Marka</span>
+          <span class="identity-label">${t("identity.brand")}</span>
           <span class="identity-val">${highlightMatches(item.brand, activeQuery)}</span>
         </div>
       `;
@@ -557,7 +597,7 @@
     if (item.affiliation) {
       return `
         <div class="identity-line">
-          <span class="identity-label">Yazıevi</span>
+          <span class="identity-label">${t("identity.foundry")}</span>
           <span class="identity-val">${highlightMatches(item.affiliation, activeQuery)}</span>
         </div>
       `;
@@ -573,7 +613,7 @@
 
     const imageHtml = item.image
       ? `<div class="vitrin-media">
-           <img src="${escapeHtml(item.image)}" alt="${escapeHtml(item.name)} önizleme görseli" loading="lazy" decoding="async" onerror="this.parentElement.classList.add('no-img');">
+           <img src="${escapeHtml(item.image)}" alt="${escapeHtml(item.name)} ${t("image.preview")}" loading="lazy" decoding="async" onerror="this.parentElement.classList.add('no-img');">
            <span class="vitrin-fallback" aria-hidden="true">${escapeHtml(monogram)}</span>
          </div>`
       : `<div class="vitrin-media no-img">
@@ -603,7 +643,7 @@
         <h3 class="vitrin-title">
           <a href="${escapeHtml(item.link)}" target="_blank" rel="noopener noreferrer" class="vitrin-card-link">
             ${highlightedName}
-            <span class="sr-only"> (yeni sekmede açılır)</span>
+            <span class="sr-only">${t("link.newTab")}</span>
           </a>
         </h3>
 
@@ -651,7 +691,7 @@
 
     const imageHtml = item.image
       ? `<div class="list-row-media">
-           <img src="${escapeHtml(item.image)}" alt="${escapeHtml(item.name)} görseli" loading="lazy" decoding="async" onerror="this.parentElement.classList.add('no-img');">
+           <img src="${escapeHtml(item.image)}" alt="${escapeHtml(item.name)} ${t("image.list")}" loading="lazy" decoding="async" onerror="this.parentElement.classList.add('no-img');">
            <span class="media-fallback" aria-hidden="true">${escapeHtml(monogram)}</span>
          </div>`
       : `<div class="list-row-media no-img">
@@ -668,7 +708,7 @@
           ${imageHtml}
           <div class="list-row-content">
             <div class="list-row-line1">
-              <span class="list-row-title">${highlightedName}<span class="sr-only"> (yeni sekmede açılır)</span></span>
+              <span class="list-row-title">${highlightedName}<span class="sr-only">${t("link.newTab")}</span></span>
               <div class="list-row-badges">${badgeHtml}</div>
             </div>
             <div class="list-row-line2">
@@ -725,7 +765,7 @@
     const railButtonsHtml = letters
       .map(
         (ltr) => `
-        <button type="button" class="rail-letter-btn${ltr === currentLetter ? " active" : ""}" data-letter="${escapeHtml(ltr)}" tabindex="${ltr === currentLetter ? "0" : "-1"}" aria-current="${ltr === currentLetter ? "location" : "false"}" aria-label="${escapeHtml(ltr)} harfine atla">
+        <button type="button" class="rail-letter-btn${ltr === currentLetter ? " active" : ""}" data-letter="${escapeHtml(ltr)}" tabindex="${ltr === currentLetter ? "0" : "-1"}" aria-current="${ltr === currentLetter ? "location" : "false"}" aria-label="${escapeHtml(t("letter.jump", { letter: ltr }))}">
           ${escapeHtml(ltr)}
         </button>
       `
@@ -735,7 +775,7 @@
     const stripButtonsHtml = letters
       .map(
         (ltr) => `
-        <button type="button" class="strip-letter-btn${ltr === currentLetter ? " active" : ""}" data-letter="${escapeHtml(ltr)}" tabindex="${ltr === currentLetter ? "0" : "-1"}" aria-current="${ltr === currentLetter ? "location" : "false"}" aria-label="${escapeHtml(ltr)} harfine atla">
+        <button type="button" class="strip-letter-btn${ltr === currentLetter ? " active" : ""}" data-letter="${escapeHtml(ltr)}" tabindex="${ltr === currentLetter ? "0" : "-1"}" aria-current="${ltr === currentLetter ? "location" : "false"}" aria-label="${escapeHtml(t("letter.jump", { letter: ltr }))}">
           ${escapeHtml(ltr)}
         </button>
       `
@@ -809,7 +849,8 @@
         const isMatch = btn.getAttribute("data-letter") === letter;
         btn.classList.toggle("active", isMatch);
         btn.setAttribute("tabindex", isMatch ? "0" : "-1");
-        btn.setAttribute("aria-selected", isMatch ? "true" : "false");
+        btn.setAttribute("aria-current", isMatch ? "location" : "false");
+        btn.setAttribute("aria-label", t("letter.jump", { letter: btn.getAttribute("data-letter") }));
       });
     }
 
@@ -819,7 +860,8 @@
         const isMatch = btn.getAttribute("data-letter") === letter;
         btn.classList.toggle("active", isMatch);
         btn.setAttribute("tabindex", isMatch ? "0" : "-1");
-        btn.setAttribute("aria-selected", isMatch ? "true" : "false");
+        btn.setAttribute("aria-current", isMatch ? "location" : "false");
+        btn.setAttribute("aria-label", t("letter.jump", { letter: btn.getAttribute("data-letter") }));
         if (isMatch) {
           // btn.scrollIntoView kaldırıldı, yerine horizontal scrollTo kullanıldı
           const stripRect = mobileLetterStrip.getBoundingClientRect();
@@ -1045,6 +1087,19 @@
   // -------------------------------------------------------------
 
   function initEventListeners() {
+    window.addEventListener("ttti:languagechange", (event) => {
+      activeLanguage = event.detail?.language === "en" ? "en" : "tr";
+      updateThemeUI(getActiveTheme());
+      renderUpdatedAt();
+      if (appState === "ready") {
+        renderResults();
+      } else if (appState === "error" && lastLoadError) {
+        renderLoadError(lastLoadError);
+      } else if (resultSummary) {
+        resultSummary.textContent = t("summary.loading");
+      }
+    });
+
     // Search input
     if (searchInput) {
       searchInput.addEventListener("input", (e) => {
