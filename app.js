@@ -124,6 +124,84 @@
     }
   }
 
+  function initSuggestEntryForm() {
+    const dialog = document.getElementById("suggest-entry-dialog");
+    const form = document.getElementById("suggest-entry-form");
+    const openButton = document.getElementById("suggest-entry-open");
+    const closeButton = document.getElementById("suggest-entry-close");
+    const cancelButton = document.getElementById("suggest-entry-cancel");
+    const typeSelect = document.getElementById("suggest-entry-type");
+    const membersField = document.getElementById("suggest-members-field");
+    const membersInput = document.getElementById("suggest-entry-members");
+    if (!dialog || !form || !openButton || !typeSelect || !membersField || !membersInput) return;
+
+    const translate = (key, values = {}) => translations.t(key, translations.getLanguage(), values);
+
+    function updateMembersField() {
+      const isFoundry = typeSelect.value === "foundry";
+      membersField.hidden = !isFoundry;
+      membersInput.required = isFoundry;
+      if (!isFoundry) {
+        membersInput.setCustomValidity("");
+        return;
+      }
+      const memberNames = membersInput.value.split(",").map((name) => name.trim()).filter(Boolean);
+      membersInput.setCustomValidity(memberNames.length >= 2 ? "" : translate("suggest.validation.members"));
+    }
+
+    openButton.addEventListener("click", () => {
+      if (typeof dialog.showModal === "function") {
+        dialog.showModal();
+        openButton.setAttribute("aria-expanded", "true");
+      }
+    });
+
+    const closeDialog = () => dialog.close();
+    if (closeButton) closeButton.addEventListener("click", closeDialog);
+    if (cancelButton) cancelButton.addEventListener("click", closeDialog);
+    dialog.addEventListener("click", (event) => {
+      if (event.target === dialog) closeDialog();
+    });
+    dialog.addEventListener("close", () => {
+      openButton.setAttribute("aria-expanded", "false");
+      form.reset();
+      updateMembersField();
+    });
+
+    typeSelect.addEventListener("change", updateMembersField);
+    membersInput.addEventListener("input", updateMembersField);
+    window.addEventListener("ttti:languagechange", updateMembersField);
+
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      updateMembersField();
+      if (!form.reportValidity()) return;
+
+      const formData = new FormData(form);
+      const name = String(formData.get("name") || "").trim().replace(/[\r\n]+/g, " ");
+      const entryType = typeSelect.value === "foundry" ? "category.foundry" : "category.designer";
+      const fields = [
+        ["suggest.mail.type", translate(entryType)],
+        ["suggest.mail.name", name],
+        ["suggest.mail.url", formData.get("url")],
+        ["suggest.mail.brand", formData.get("brand")],
+        ["suggest.mail.affiliation", formData.get("affiliation")],
+        ["suggest.mail.members", formData.get("members")],
+        ["suggest.mail.contact", formData.get("contact")],
+        ["suggest.mail.notes", formData.get("notes")],
+      ].filter(([, value]) => String(value || "").trim());
+
+      const body = [
+        translate("suggest.mail.intro"),
+        "",
+        ...fields.map(([key, value]) => `${translate(key)}: ${String(value).trim()}`),
+      ].join("\n");
+      const subject = translate("suggest.mail.subject", { name });
+      const mailto = `mailto:tipografitoplulugu@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+      window.location.href = mailto;
+    });
+  }
+
   // -------------------------------------------------------------
   // String & Turkish Normalization Utilities
   // -------------------------------------------------------------
@@ -1181,6 +1259,7 @@
 
   document.addEventListener("DOMContentLoaded", () => {
     initTheme();
+    initSuggestEntryForm();
     initViewMode();
     initStickyOffsetObserver();
     window.addEventListener("scroll", onWindowScroll, { passive: true });

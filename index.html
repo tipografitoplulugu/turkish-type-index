@@ -665,7 +665,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&display=swap">
   <link rel="stylesheet" href="style.css">
-  <script src="i18n.js?v=20261120"></script>
+  <script src="i18n.js?v=20261120b"></script>
 
   <!-- Instant Theme Setup to prevent FOUC -->
   <script>
@@ -729,9 +729,9 @@
           </div>
 
           <div class="dizin-hero-action-area">
-            <a href="mailto:tipografitoplulugu@gmail.com" class="hero-cta-btn" title="Dizine yeni bir yazı tasarımcısı veya yazıevi önerin" data-i18n-title="hero.suggestTitle">
+            <button type="button" class="hero-cta-btn" id="suggest-entry-open" aria-haspopup="dialog" aria-controls="suggest-entry-dialog" aria-expanded="false" title="Dizine yeni bir yazı tasarımcısı veya yazıevi önerin" data-i18n-title="hero.suggestTitle">
               <span data-i18n="hero.suggest">Kayıt Öner</span>
-            </a>
+            </button>
           </div>
         </div>
 
@@ -742,6 +742,63 @@
           <div class="hero-updated-at" id="hero-updated-at" data-i18n="hero.updatedAt" data-i18n-date="2026-11-19">Son güncelleme: 19 Kasım 2026</div>
         </div>
       </header>
+
+      <dialog class="suggest-dialog" id="suggest-entry-dialog" aria-labelledby="suggest-entry-title" aria-describedby="suggest-entry-intro suggest-entry-email-note">
+        <form id="suggest-entry-form">
+          <div class="suggest-dialog-heading">
+            <div>
+              <h2 id="suggest-entry-title" data-i18n="suggest.dialog.title">Dizine yeni kayıt öner</h2>
+              <p id="suggest-entry-intro" data-i18n="suggest.dialog.intro">Önerinizi form üzerinden iletin. Gönder düğmesi, bilgileri e-posta taslağı olarak hazırlar.</p>
+            </div>
+            <button type="button" class="suggest-dialog-close" id="suggest-entry-close" aria-label="Formu kapat" data-i18n-aria-label="suggest.close">&times;</button>
+          </div>
+
+          <div class="suggest-form-grid">
+            <div class="suggest-form-field suggest-form-span-2">
+              <label for="suggest-entry-type" data-i18n="suggest.field.type">Kayıt türü *</label>
+              <select id="suggest-entry-type" name="type" required>
+                <option value="designer" data-i18n="category.designer">Yazı Tasarımcısı</option>
+                <option value="foundry" data-i18n="category.foundry">Yazıevi</option>
+              </select>
+            </div>
+            <div class="suggest-form-field suggest-form-span-2">
+              <label for="suggest-entry-name" data-i18n="suggest.field.name">İsim veya yazıevi adı *</label>
+              <input id="suggest-entry-name" name="name" type="text" autocomplete="organization" placeholder="Örn: Ceyhun Birinci veya Element Type" data-i18n-placeholder="suggest.placeholder.name" required>
+            </div>
+            <div class="suggest-form-field">
+              <label for="suggest-entry-brand" data-i18n="suggest.field.brand">Marka adı (varsa)</label>
+              <input id="suggest-entry-brand" name="brand" type="text" placeholder="Örn: Artegra Type" data-i18n-placeholder="suggest.placeholder.brand">
+            </div>
+            <div class="suggest-form-field">
+              <label for="suggest-entry-affiliation" data-i18n="suggest.field.affiliation">Bağlı olduğu yazıevi (varsa)</label>
+              <input id="suggest-entry-affiliation" name="affiliation" type="text" placeholder="Örn: Element Type" data-i18n-placeholder="suggest.placeholder.affiliation">
+            </div>
+            <div class="suggest-form-field suggest-form-span-2" id="suggest-members-field" hidden>
+              <label for="suggest-entry-members" data-i18n="suggest.field.members">Üyeler *</label>
+              <input id="suggest-entry-members" name="members" type="text" placeholder="Örn: İsim Soyisim, İsim Soyisim" data-i18n-placeholder="suggest.placeholder.members" aria-describedby="suggest-members-help">
+              <small id="suggest-members-help" data-i18n="suggest.members.help">Yazıevleri için en az iki üyeyi virgülle ayırarak yazın.</small>
+            </div>
+            <div class="suggest-form-field suggest-form-span-2">
+              <label for="suggest-entry-url" data-i18n="suggest.field.url">Web sitesi veya portfolyo bağlantısı *</label>
+              <input id="suggest-entry-url" name="url" type="url" placeholder="https://..." data-i18n-placeholder="suggest.placeholder.url" required>
+            </div>
+            <div class="suggest-form-field suggest-form-span-2">
+              <label for="suggest-entry-contact" data-i18n="suggest.field.contact">E-posta adresiniz (isteğe bağlı)</label>
+              <input id="suggest-entry-contact" name="contact" type="email" autocomplete="email" placeholder="ornek@eposta.com" data-i18n-placeholder="suggest.placeholder.contact">
+            </div>
+            <div class="suggest-form-field suggest-form-span-2">
+              <label for="suggest-entry-notes" data-i18n="suggest.field.notes">Ek bilgi (isteğe bağlı)</label>
+              <textarea id="suggest-entry-notes" name="notes" rows="3" placeholder="Kayıtla ilgili eklemek istedikleriniz" data-i18n-placeholder="suggest.placeholder.notes"></textarea>
+            </div>
+          </div>
+
+          <p class="suggest-email-note" id="suggest-entry-email-note" data-i18n="suggest.email.note">Gönder düğmesi e-posta uygulamanızda bir taslak açar. E-postayı orada gözden geçirip göndermeniz gerekir.</p>
+          <div class="suggest-dialog-actions">
+            <button type="button" class="suggest-cancel-btn" id="suggest-entry-cancel" data-i18n="suggest.cancel">Vazgeç</button>
+            <button type="submit" class="suggest-submit-btn" data-i18n="suggest.submit">Gönder</button>
+          </div>
+        </form>
+      </dialog>
 
       <!-- Sticky Toolbar -->
       <section class="dizin-toolbar-wrapper" id="dizin-toolbar-section" aria-label="Dizin araçları" data-i18n-aria-label="toolbar.label">
@@ -932,6 +989,6 @@
     </footer>
   </div>
 
-  <script src="app.js?v=20261120"></script>
+  <script src="app.js?v=20261120b"></script>
 </body>
 </html>
